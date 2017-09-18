@@ -30,6 +30,20 @@
 
 // ------------------ Method Definition ------------------
 void executeTraceProcess(void);
+void traceForwardArea_01(void);
+void traceForwardArea_02(void);
+void traceForwardArea_03(void);
+void traceForwardArea_04(void);
+void traceForwardArea_05(void);
+void traceForwardArea_06(void);
+void traceTurnAroundPoint(void);
+void traceBackwardArea_01(void);
+void traceBackwardArea_02(void);
+void traceBackwardArea_03(void);
+void traceBackwardArea_04(void);
+void traceBackwardArea_05(void);
+void traceBackwardArea_06(void);
+
 int isRightRound(void);
 int isLeftRound(void);
 int isStraightDetected(int sensor);
@@ -294,6 +308,136 @@ void executeTraceProcess(void) {
 		prePrevTraceAction = previousTraceAction;
 		previousTraceAction = currentTraceAction;
 	}
+}
+
+/*
+ * 往路エリア 1 のトレース動作
+ * @return なし
+ * @condition
+ *   開始条件：スタートコマンドを受信する。
+ *   終了条件：センサで左ターンを検出する。
+ */
+ void traceForwardArea_01(void) {
+}
+
+/*
+ * 往路エリア 2 のトレース動作
+ * @return なし
+ * @condition
+ *   開始条件：なし（往路エリア 1 のトレース動作から継続）。
+ *   終了条件：センサで左ターンを検出する。
+ */
+ void traceForwardArea_02(void) {
+}
+
+/*
+ * 往路エリア 3 のトレース動作
+ * @return なし
+ * @condition
+ *   開始条件：なし（往路エリア 2 のトレース動作から継続）。
+ *   終了条件：センサで左ターンを検出する。
+ */
+ void traceForwardArea_03(void) {
+}
+
+/*
+ * 往路エリア 4 のトレース動作
+ * @return なし
+ * @condition
+ *   開始条件：なし（往路エリア 3 のトレース動作から継続）。
+ *   終了条件：センサで右ターンを検出する。
+ */
+ void traceForwardArea_04(void) {
+}
+
+/*
+ * 往路エリア 5 のトレース動作
+ * @return なし
+ * @condition
+ *   開始条件：なし（往路エリア 4 のトレース動作から継続）。
+ *   終了条件：センサで右ターンを検出する。
+ */
+ void traceForwardArea_05(void) {
+}
+
+/*
+ * 往路エリア 6 のトレース動作
+ * @return なし
+ * @condition
+ *   開始条件：なし（往路エリア 5 のトレース動作から継続）。
+ *   終了条件：宝物（白）を検出する。
+ */
+ void traceForwardArea_06(void) {
+}
+
+/*
+ * 折り返し点のトレース動作
+ * @return なし
+ * @condition
+ *   開始条件：宝物（白）を回収する。
+ *   終了条件：折り返し動作を終了する。
+ */
+ void traceTurnAroundPoint(void) {
+}
+
+/*
+ * 復路エリア 1 のトレース動作
+ * @return なし
+ * @condition
+ *   開始条件：なし（折り返し点のトレース動作から継続）。
+ *   終了条件：センサで左ターンを検出する。
+ */
+ void traceBackwardArea_01(void) {
+}
+
+/*
+ * 復路エリア 2 のトレース動作
+ * @return なし
+ * @condition
+ *   開始条件：なし（復路エリア 1 のトレース動作から継続）。
+ *   終了条件：センサで左ターンを検出する。
+ */
+ void traceBackwardArea_02(void) {
+}
+
+/*
+ * 復路エリア 3 のトレース動作
+ * @return なし
+ * @condition
+ *   開始条件：なし（復路エリア 2 のトレース動作から継続）。
+ *   終了条件：センサで右ターンを検出する。
+ */
+ void traceBackwardArea_03(void) {
+}
+
+/*
+ * 復路エリア 4 のトレース動作
+ * @return なし
+ * @condition
+ *   開始条件：なし（復路エリア 3 のトレース動作から継続）。
+ *   終了条件：センサで右ターンを検出する。
+ */
+ void traceBackwardArea_04(void) {
+}
+
+/*
+ * 復路エリア 5 のトレース動作
+ * @return なし
+ * @condition
+ *   開始条件：なし（復路エリア 4 のトレース動作から継続）。
+ *   終了条件：センサで右ターンを検出する。
+ */
+ void traceBackwardArea_05(void) {
+}
+
+/*
+ * 復路エリア 6 のトレース動作
+ * @return なし
+ * @condition
+ *   開始条件：なし（復路エリア 5 のトレース動作から継続）。
+ *   終了条件：ゴールエリアを検出する。
+ */
+ void traceBackwardArea_06(void) {
 }
 
 /**
