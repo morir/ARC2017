@@ -13,7 +13,7 @@
 //#define _MOTOR_OFF_
 
 // Speed settings
-#define MAX_SPEED (460)
+#define MAX_SPEED (200)
 
 #define HIGH_RATE (0.90)
 #define SOFT_ROUND_RATE (0.80)
