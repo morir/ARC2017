@@ -347,7 +347,7 @@ void executeTraceProcess(void) {
  * @return なし
  * @condition
  *   開始条件：スタートコマンドを受信する。
- *   終了条件：センサで左ターンを検出する。
+ *   終了条件：センサで左ターンを検出して直角旋回が完了する。
  */
  void traceForwardArea_01(void) {
 }
@@ -357,7 +357,7 @@ void executeTraceProcess(void) {
  * @return なし
  * @condition
  *   開始条件：なし（往路エリア 1 のトレース動作から継続）。
- *   終了条件：センサで左ターンを検出する。
+ *   終了条件：センサで左ターンを検出して直角旋回が完了する。
  */
  void traceForwardArea_02(void) {
 }
@@ -367,7 +367,7 @@ void executeTraceProcess(void) {
  * @return なし
  * @condition
  *   開始条件：なし（往路エリア 2 のトレース動作から継続）。
- *   終了条件：センサで左ターンを検出する。
+ *   終了条件：センサで左ターンを検出して直角旋回が完了する。
  */
  void traceForwardArea_03(void) {
 }
@@ -377,7 +377,7 @@ void executeTraceProcess(void) {
  * @return なし
  * @condition
  *   開始条件：なし（往路エリア 3 のトレース動作から継続）。
- *   終了条件：センサで右ターンを検出する。
+ *   終了条件：センサで右ターンを検出して直角旋回が完了する。
  */
  void traceForwardArea_04(void) {
 }
@@ -387,7 +387,7 @@ void executeTraceProcess(void) {
  * @return なし
  * @condition
  *   開始条件：なし（往路エリア 4 のトレース動作から継続）。
- *   終了条件：センサで右ターンを検出する。
+ *   終了条件：センサで右ターンを検出して直角旋回が完了する。
  */
  void traceForwardArea_05(void) {
 }
@@ -397,7 +397,7 @@ void executeTraceProcess(void) {
  * @return なし
  * @condition
  *   開始条件：なし（往路エリア 5 のトレース動作から継続）。
- *   終了条件：宝物（白）を検出する。
+ *   終了条件：宝物（白）を検出して回収が完了する。
  */
  void traceForwardArea_06(void) {
 }
@@ -406,7 +406,7 @@ void executeTraceProcess(void) {
  * 折り返し点のトレース動作
  * @return なし
  * @condition
- *   開始条件：宝物（白）を回収する。
+ *   開始条件：宝物（白）の回収が完了する。
  *   終了条件：折り返し動作を終了する。
  */
  void traceTurnAroundPoint(void) {
@@ -417,7 +417,7 @@ void executeTraceProcess(void) {
  * @return なし
  * @condition
  *   開始条件：なし（折り返し点のトレース動作から継続）。
- *   終了条件：センサで左ターンを検出する。
+ *   終了条件：センサで左ターンを検出して直角旋回が完了する。
  */
  void traceBackwardArea_01(void) {
 }
@@ -427,7 +427,7 @@ void executeTraceProcess(void) {
  * @return なし
  * @condition
  *   開始条件：なし（復路エリア 1 のトレース動作から継続）。
- *   終了条件：センサで左ターンを検出する。
+ *   終了条件：センサで左ターンを検出して直角旋回が完了する。
  */
  void traceBackwardArea_02(void) {
 }
@@ -437,7 +437,7 @@ void executeTraceProcess(void) {
  * @return なし
  * @condition
  *   開始条件：なし（復路エリア 2 のトレース動作から継続）。
- *   終了条件：センサで右ターンを検出する。
+ *   終了条件：センサで右ターンを検出して直角旋回が完了する。
  */
  void traceBackwardArea_03(void) {
 }
@@ -447,7 +447,7 @@ void executeTraceProcess(void) {
  * @return なし
  * @condition
  *   開始条件：なし（復路エリア 3 のトレース動作から継続）。
- *   終了条件：センサで右ターンを検出する。
+ *   終了条件：センサで右ターンを検出して直角旋回が完了する。
  */
  void traceBackwardArea_04(void) {
 }
@@ -457,7 +457,7 @@ void executeTraceProcess(void) {
  * @return なし
  * @condition
  *   開始条件：なし（復路エリア 4 のトレース動作から継続）。
- *   終了条件：センサで右ターンを検出する。
+ *   終了条件：センサで右ターンを検出して直角旋回が完了する。
  */
  void traceBackwardArea_05(void) {
 }
@@ -467,7 +467,7 @@ void executeTraceProcess(void) {
  * @return なし
  * @condition
  *   開始条件：なし（復路エリア 5 のトレース動作から継続）。
- *   終了条件：ゴールエリアを検出する。
+ *   終了条件：ゴールエリアを検出して終了動作が完了する。
  */
  void traceBackwardArea_06(void) {
 }
