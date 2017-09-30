@@ -26,7 +26,7 @@
 
 #define DELAY_MAX_TIME      (100)//delay時間の最大値(ミリ秒)
 #define STOP_JUDGE_MAX_LIMIT	(10)//停止判定の上限値
-#define SLOW_TURN_RATE_BY_BASE	(50)//ベースの20%の速さ
+#define SLOW_TURN_RATE_BY_BASE	(40)//ベースの20%の速さ
 
 // ------------------ Method Definition ------------------
 void executeTraceProcess(void);
@@ -172,8 +172,8 @@ int main(void) {
     initIRSensor();
     MotorInit();
     initSerial();
-	LOG_DEBUG("Call initPETbottlesMotor() %s\r\n", "");
-	initPETbottlesMotor();
+//	LOG_DEBUG("Call initPETbottlesMotor() %s\r\n", "");
+//	initPETbottlesMotor();
 
     LOG_DEBUG("Call initDumpMotor() %s\r\n", "");
  	_delay_ms(5000);//1秒待つ⇒動作に合わせて変更してください
@@ -201,7 +201,7 @@ int main(void) {
 #endif /* _MODE_SKIP_ */
 
 	// トレース動作開始
-//	executeTraceProcess();
+	executeTraceProcess();
 
     // ゴール判定後の動作実質ここから開始？
 	executeFinalAction();
@@ -216,6 +216,9 @@ int main(void) {
 void executeTraceProcess(void) {
 	static int sensorPattern = BIT_000000;
     static int counter = 0;
+    int leftTrurnCount = 0;
+    int RighteTurnCount = 0;
+
 	
 #ifdef _MODE_SKIP_
 	//ショートカットモードの場合は、初期動作不要
@@ -273,6 +276,7 @@ void executeTraceProcess(void) {
 				//LED_on(5);
 				//_delay_ms(250);	// 200ms 間隔を空ける
 			//}
+			leftTrurnCount++;
 		}
 		else if (currentTraceAction == TRACE_R_TURN)
 		{
@@ -297,6 +301,7 @@ void executeTraceProcess(void) {
 				//LED_on(5);
 				//_delay_ms(250);	// 200ms 間隔を空ける
 			//}
+			RighteTurnCount++;
 		}
 		else if (isLeftRound() || isRightRound()) {
 			executeRound();
@@ -330,6 +335,13 @@ void executeTraceProcess(void) {
 		// 今回の動作を前回の動作に退避する。
 		prePrevTraceAction = previousTraceAction;
 		previousTraceAction = currentTraceAction;
+
+		// 2017事前審査用
+		// 右旋回と左旋回を1回以上実施していたらライトレースを抜ける
+		if (leftTrurnCount >= 1 && RighteTurnCount >= 1) {
+			return;
+		}
+
 	}
 }
 
@@ -546,23 +558,24 @@ int getSensorPattern(void) {
 	// 判定条件数を減らすためゴール判定用センサ値をフィルタリングする。
 	ptn = ((IR_BitPattern >> 1) << 1);
 
+	// 事前審査用なのでゴール判定はしない。
 	// ゴール判定カウント（ラインセンサーが白の時カウント）
-	if (IR[GOAL_JUDGE] >= COMPARE_VALUE_GOAL && (ptn == BIT_000000)) {
-		goalCounter++;
-	} else {
-		//一度でも白なら判定解除
-		goalCounter = 0;
-	}
+	//if (IR[GOAL_JUDGE] >= COMPARE_VALUE_GOAL && (ptn == BIT_000000)) {
+		//goalCounter++;
+	//} else {
+		////一度でも白なら判定解除
+		//goalCounter = 0;
+	//}
 
-	if (goalCounter >= 50 &&
-		( (IR_BitPattern == BIT_000011 ) ||
-		(IR_BitPattern == BIT_000111 ) ||
-		(IR_BitPattern == BIT_001111 ) ||
-		(IR_BitPattern == BIT_011111 ) ||
-		(IR_BitPattern == BIT_111111 )
-		)){
-		ptn = TRACE_FINALACTION;
-	}
+	//if (goalCounter >= 50 &&
+		//( (IR_BitPattern == BIT_000011 ) ||
+		//(IR_BitPattern == BIT_000111 ) ||
+		//(IR_BitPattern == BIT_001111 ) ||
+		//(IR_BitPattern == BIT_011111 ) ||
+		//(IR_BitPattern == BIT_111111 )
+		//)){
+		//ptn = TRACE_FINALACTION;
+	//}
 
 	return ptn;
 }
@@ -579,22 +592,22 @@ void getSensors(void) {
 	
 	/* IR状態をBITパターンに変換 */
 	IR_BitPattern = 0;
-	if ( IR[GOAL_JUDGE]		<= COMPARE_VALUE_GOAL )	IR_BitPattern |= BIT_GOAL_JUDGE_ON;
+	if ( IR[GOAL_JUDGE]		<= COMPARE_VALUE )	IR_BitPattern |= BIT_GOAL_JUDGE_ON;
 	if ( IR[RIGHT_OUTSIDE]	<= COMPARE_VALUE )	IR_BitPattern |= BIT_RIGHT_OUTSIDE_ON;
 	if ( IR[RIGHT_INSIDE]	<= COMPARE_VALUE )	IR_BitPattern |= BIT_RIGHT_INSIDE_ON;
 	if ( IR[CENTER]			<= COMPARE_VALUE )	IR_BitPattern |= BIT_CENTER_ON;
 	if ( IR[LEFT_INSIDE]	<= COMPARE_VALUE )	IR_BitPattern |= BIT_LEFT_INSIDE_ON;
-	if ( IR[LEFT_OUTSIDE]	<= COMPARE_VALUE_OTHER )	IR_BitPattern |= BIT_LEFT_OUTSIDE_ON;
+	if ( IR[LEFT_OUTSIDE]	<= COMPARE_VALUE )	IR_BitPattern |= BIT_LEFT_OUTSIDE_ON;
 
     LOG_INFO("sensor %3d: %3d: %3d: %3d: %3d: %3d \r\n",
 	       IR[LEFT_OUTSIDE], IR[LEFT_INSIDE], IR[CENTER], IR[RIGHT_INSIDE], IR[RIGHT_OUTSIDE], IR[GOAL_JUDGE]);
 	LOG_DEBUG("IR[R %1d%1d%1d%1d%1d L] GOAL[%1d]\r\n",
-				((IR[LEFT_OUTSIDE]	<= COMPARE_VALUE_OTHER)?  1 : 0),
+				((IR[LEFT_OUTSIDE]	<= COMPARE_VALUE)?  1 : 0),
 				((IR[LEFT_INSIDE]	<= COMPARE_VALUE)?  1 : 0),
 				((IR[CENTER]		<= COMPARE_VALUE)?  1 : 0),
 				((IR[RIGHT_INSIDE]	<= COMPARE_VALUE)?  1 : 0),
 				((IR[RIGHT_OUTSIDE]	<= COMPARE_VALUE)?  1 : 0),
-				((IR[GOAL_JUDGE]	<= COMPARE_VALUE_GOAL)?  1 : 0));
+				((IR[GOAL_JUDGE]	<= COMPARE_VALUE)?  1 : 0));
 	
 }
 
@@ -606,31 +619,31 @@ void getSensors(void) {
 void executeFinalAction(void)
 {
 	LOG_INFO("executeFinalAction!!\r\n");
-	StopMove();
-	_delay_ms(5000);
-
-	/* 200度くらい右回りで回転 */
-	MotorControl(RIGHT_MOTOR, 75);
-	MotorControl(LEFT_MOTOR, 75);
-	_delay_ms(1200);
-	StopMove();
-	_delay_ms(10);
-
-	/* ペットボトル設置を実行 */
-	placePETbottles();
-	_delay_ms(10);
-
-	/* ゆっくり後進 */
-	MotorControl(RIGHT_MOTOR, 40);
-	MotorControl(LEFT_MOTOR, 1063);
-	_delay_ms(500);
-	StopMove();//停止を実行
-	_delay_ms(10);
+	//StopMove();
+	//_delay_ms(5000);
+//
+	///* 200度くらい右回りで回転 */
+	//MotorControl(RIGHT_MOTOR, 75);
+	//MotorControl(LEFT_MOTOR, 75);
+	//_delay_ms(1200);
+	//StopMove();
+	//_delay_ms(10);
+//
+	///* ペットボトル設置を実行 */
+	//placePETbottles();
+	//_delay_ms(10);
+//
+	///* ゆっくり後進 */
+	//MotorControl(RIGHT_MOTOR, 40);
+	//MotorControl(LEFT_MOTOR, 1063);
+	//_delay_ms(500);
+	//StopMove();//停止を実行
+	//_delay_ms(10);
 	
 	/* ゆっくり前進 */
 	MotorControl(RIGHT_MOTOR, 1063);
 	MotorControl(LEFT_MOTOR, 40);
-	_delay_ms(500);
+	_delay_ms(1000);
 	StopMove();//停止を実行
 }
 
@@ -759,7 +772,7 @@ int executeLeftTurn(void){
 	LED_on(1);
 
 	//停止が確定したらベース速度に応じて、前進or後進を実行
-	adjustTurnPosition();
+	//adjustTurnPosition();
 
 //	_delay_ms(5000);	// 10ms 間隔を空ける
 //	LeftTurnByBaseSpeedAdjust();
@@ -839,7 +852,7 @@ int executeRightTurn(void){
 	LED_on(1);
 
 	//停止が確定したらベース速度に応じて、前進or後進を実行
-	adjustTurnPosition();
+	//adjustTurnPosition();
 
 //	_delay_ms(5000);	// 10ms 間隔を空ける
 
@@ -1039,17 +1052,18 @@ int initLeftTurnAction(int maxVal) {
 	StopMove();//停止を実行
 	int judgeSpeed = 0;
 	while(1) {
-		sensorPattern = getSensorPattern();//センサー値を取得
-		if(sensorPattern == BIT_111110 || sensorPattern == BIT_111111 ||
-		sensorPattern == BIT_011110 || sensorPattern == BIT_011111 ||
-		sensorPattern == BIT_001110 || sensorPattern == BIT_001111 ||
-		sensorPattern == BIT_000110 || sensorPattern == BIT_000111 ||
-		sensorPattern == BIT_000010 || sensorPattern == BIT_000011
-		) {
-			//旋回判定後の停止中に黒ラインになったら旋回を止めて、直進する
-			//旋回を止める条件は、センサー値がBIT_XXXX1Xでも良いかな。。。
-			return TRACE_SLOW_STRAIGHT;
-		}
+		//事前審査用なので判定しない
+		//sensorPattern = getSensorPattern();//センサー値を取得
+		//if(sensorPattern == BIT_111110 || sensorPattern == BIT_111111 ||
+		//sensorPattern == BIT_011110 || sensorPattern == BIT_011111 ||
+		//sensorPattern == BIT_001110 || sensorPattern == BIT_001111 ||
+		//sensorPattern == BIT_000110 || sensorPattern == BIT_000111 ||
+		//sensorPattern == BIT_000010 || sensorPattern == BIT_000011
+		//) {
+			////旋回判定後の停止中に黒ラインになったら旋回を止めて、直進する
+			////旋回を止める条件は、センサー値がBIT_XXXX1Xでも良いかな。。。
+			//return TRACE_SLOW_STRAIGHT;
+		//}
 
 		judgeSpeed = GetCurrentSpeedR();//モーターの速度を取得
 		if( (judgeSpeed >= 0 && judgeSpeed <= maxVal) ||
@@ -1071,17 +1085,18 @@ int initRightTurnAction(int maxVal) {
 	StopMove();//停止を実行
 	int judgeSpeed = 0;
 	while(1) {
-		sensorPattern = getSensorPattern();//センサー値を取得
-		if(sensorPattern == BIT_111110 || sensorPattern == BIT_111111 ||
-		sensorPattern == BIT_111100 || sensorPattern == BIT_111101 ||
-		sensorPattern == BIT_111000 || sensorPattern == BIT_111001 ||
-		sensorPattern == BIT_110000 || sensorPattern == BIT_110001 ||
-		sensorPattern == BIT_100000 || sensorPattern == BIT_100001
-		) {
-			//旋回判定後の停止中に黒ラインになったら旋回を止めて、直進する
-			//旋回を止める条件は、センサー値がBIT_1XXXXXでも良いかな。。。
-			return TRACE_SLOW_STRAIGHT;
-		}
+		//事前審査用なので判定しない
+		//sensorPattern = getSensorPattern();//センサー値を取得
+		//if(sensorPattern == BIT_111110 || sensorPattern == BIT_111111 ||
+		//sensorPattern == BIT_111100 || sensorPattern == BIT_111101 ||
+		//sensorPattern == BIT_111000 || sensorPattern == BIT_111001 ||
+		//sensorPattern == BIT_110000 || sensorPattern == BIT_110001 ||
+		//sensorPattern == BIT_100000 || sensorPattern == BIT_100001
+		//) {
+			////旋回判定後の停止中に黒ラインになったら旋回を止めて、直進する
+			////旋回を止める条件は、センサー値がBIT_1XXXXXでも良いかな。。。
+			//return TRACE_SLOW_STRAIGHT;
+		//}
 
 		judgeSpeed = GetCurrentSpeedR();//モーターの速度を取得
 		if( (judgeSpeed >= 0 && judgeSpeed <= maxVal) ||
