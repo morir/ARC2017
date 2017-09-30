@@ -41,6 +41,7 @@
 #else // DINAMIXEL_AX_12
 #define RIGHT_MOTOR         32      // Right Motor address
 #define LEFT_MOTOR          33      // Left Motor address
+
 #define CENTER_AXS1_SENSOR	100		// AX-S1 Sensor address
 #define DELAY_MSEC          1       // Delay time
 #define OVER_RUN_TIME       500     // Over run time
@@ -48,7 +49,14 @@
 
 #define PETBOTTOLE_MOTOR	18		// Cover Motor address
 
+#define SHOULDER_MOTOR       12      // Shoulder Motor address
+#define UPPER_ARM_MOTOR      25      // Upper arm Motor address
+#define FORE_ARM_MOTOR       14      // ForeArm Motor address
+#define WRIST_MOTOR          23      // Wrist Motor address
+
 // MX-12W Control Table Address
+#define CTRL_TBL_ADDR_PRESENT_POSITION_L	(36)	// Lowest byte of Current Position 
+#define CTRL_TBL_ADDR_PRESENT_POSITION_H	(37)	// Highest byte of Current Position 
 #define CTRL_TBL_ADDR_PRESENT_SPEED_L	(38)	// Lowest byte of Current Speed 
 #define CTRL_TBL_ADDR_PRESENT_SPEED_H	(39)	// Highest byte of Current Speed
 

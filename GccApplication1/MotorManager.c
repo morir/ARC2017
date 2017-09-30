@@ -495,6 +495,139 @@ int GetCurrentSpeedL(void) {
 	return speed;
 }
 
+
+/**
+ * 現在の位置(肩モータ)取得。
+ * @brief 現在の位置(肩モータ)取得。
+ * @return 現在の位置(肩モータ)
+ * @detail 上位バイト2bit、下位8bitから現在の位置(肩モータ)を取得する。
+ *         パケット通信失敗時、前回の速度を返す。
+ *         出力軸：0～300°、0～1023　※中央：150° = 512
+ *         300～360°の間：不定値
+ */
+int GetCurrentPositionShoulder(void) {
+	int readValueHigh = 0;	// 上位バイト
+	int readValueLow = 0;	// 下位バイト
+	static int position = 0;	// 現在の位置
+	
+	// 上位バイト取得
+	readValueHigh = dxl_read_byte(SHOULDER_MOTOR, CTRL_TBL_ADDR_PRESENT_POSITION_H) & 0x03;
+	if(dxl_get_result() != COMM_RXSUCCESS) {
+		// パケット通信失敗時、前回値を返す。
+		return position;
+	}
+	// 下位バイト取得
+	readValueLow  = dxl_read_byte(SHOULDER_MOTOR, CTRL_TBL_ADDR_PRESENT_POSITION_L) & 0xFF;
+	if(dxl_get_result() != COMM_RXSUCCESS) {
+		// パケット通信失敗時、前回値を返す。
+		return position;
+	}
+	// 上位バイトと下位バイトから現在の位置を計算
+	position = ((readValueHigh << 8) + readValueLow);
+	LOG_DEBUG("GetCurrentPositionR() is %d\n", position);
+
+	return position;
+}
+
+/**
+ * 現在の位置(上腕モータ)取得。
+ * @brief 現在の位置(上腕モータ)取得。
+ * @return 現在の位置(上腕モータ)
+ * @detail 上位バイト2bit、下位8bitから現在の位置(上腕モータ)を取得する。
+ *         パケット通信失敗時、前回の速度を返す。
+ *         出力軸：0～300°、0～1023　※中央：150° = 512
+ *         300～360°の間：不定値
+ */
+int GetCurrentPositionUpperArm(void) {
+	int readValueHigh = 0;	// 上位バイト
+	int readValueLow = 0;	// 下位バイト
+	static int position = 0;	// 現在の位置
+	
+	// 上位バイト取得
+	readValueHigh = dxl_read_byte(UPPER_ARM_MOTOR, CTRL_TBL_ADDR_PRESENT_POSITION_H) & 0x03;
+	if(dxl_get_result() != COMM_RXSUCCESS) {
+		// パケット通信失敗時、前回値を返す。
+		return position;
+	}
+	// 下位バイト取得
+	readValueLow  = dxl_read_byte(UPPER_ARM_MOTOR, CTRL_TBL_ADDR_PRESENT_POSITION_L) & 0xFF;
+	if(dxl_get_result() != COMM_RXSUCCESS) {
+		// パケット通信失敗時、前回値を返す。
+		return position;
+	}
+	// 上位バイトと下位バイトから現在の位置を計算
+	position = ((readValueHigh << 8) + readValueLow);
+	LOG_DEBUG("GetCurrentPositionL() is %d\n", position);
+
+	return position;
+}
+
+/**
+ * 現在の位置(前腕モータ)取得。
+ * @brief 現在の位置(前腕モータ)取得。
+ * @return 現在の位置(前腕モータ)
+ * @detail 上位バイト2bit、下位8bitから現在の位置(前腕モータ)を取得する。
+ *         パケット通信失敗時、前回の速度を返す。
+ *         出力軸：0～300°、0～1023　※中央：150° = 512
+ *         300～360°の間：不定値
+ */
+int GetCurrentPositionForeArm(void) {
+	int readValueHigh = 0;	// 上位バイト
+	int readValueLow = 0;	// 下位バイト
+	static int position = 0;	// 現在の位置
+	
+	// 上位バイト取得
+	readValueHigh = dxl_read_byte(FORE_ARM_MOTOR, CTRL_TBL_ADDR_PRESENT_POSITION_H) & 0x03;
+	if(dxl_get_result() != COMM_RXSUCCESS) {
+		// パケット通信失敗時、前回値を返す。
+		return position;
+	}
+	// 下位バイト取得
+	readValueLow  = dxl_read_byte(FORE_ARM_MOTOR, CTRL_TBL_ADDR_PRESENT_POSITION_L) & 0xFF;
+	if(dxl_get_result() != COMM_RXSUCCESS) {
+		// パケット通信失敗時、前回値を返す。
+		return position;
+	}
+	// 上位バイトと下位バイトから現在の位置を計算
+	position = ((readValueHigh << 8) + readValueLow);
+	LOG_DEBUG("GetCurrentPositionR() is %d\n", position);
+
+	return position;
+}
+
+/**
+ * 現在の位置(手首モータ)取得。
+ * @brief 現在の位置(手首モータ)取得。
+ * @return 現在の位置(手首モータ)
+ * @detail 上位バイト2bit、下位8bitから現在の位置(手首モータ)を取得する。
+ *         パケット通信失敗時、前回の速度を返す。
+ *         出力軸：0～300°、0～1023　※中央：150° = 512
+ *         300～360°の間：不定値
+ */
+int GetCurrentPositionWrist(void) {
+	int readValueHigh = 0;	// 上位バイト
+	int readValueLow = 0;	// 下位バイト
+	static int position = 0;	// 現在の位置
+	
+	// 上位バイト取得
+	readValueHigh = dxl_read_byte(WRIST_MOTOR, CTRL_TBL_ADDR_PRESENT_POSITION_H) & 0x03;
+	if(dxl_get_result() != COMM_RXSUCCESS) {
+		// パケット通信失敗時、前回値を返す。
+		return position;
+	}
+	// 下位バイト取得
+	readValueLow  = dxl_read_byte(WRIST_MOTOR, CTRL_TBL_ADDR_PRESENT_POSITION_L) & 0xFF;
+	if(dxl_get_result() != COMM_RXSUCCESS) {
+		// パケット通信失敗時、前回値を返す。
+		return position;
+	}
+	// 上位バイトと下位バイトから現在の位置を計算
+	position = ((readValueHigh << 8) + readValueLow);
+	LOG_DEBUG("GetCurrentPositionL() is %d\n", position);
+
+	return position;
+}
+
 /**
  * AX-S1の赤外線センサ値を取得する。
  * @brief AX-S1の赤外線センサ値を取得する。

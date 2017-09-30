@@ -53,8 +53,13 @@ int isDetectedNothing(int sensor);
 int doesNeedToResetSpeed(void);
 int getSensorPattern(void);
 void initPETbottlesMotor(void);
+void initDumpMotor(void);
 void placePETbottles(void);
 void stopMoveLessThanVal(int val);
+
+void TraceFormation(void);
+void FindFormation(void);
+void CatchAndReleaseFormation(void);
 
 void getSensors(void);
 
@@ -167,7 +172,25 @@ int main(void) {
     initIRSensor();
     MotorInit();
     initSerial();
+	LOG_DEBUG("Call initPETbottlesMotor() %s\r\n", "");
 	initPETbottlesMotor();
+
+    LOG_DEBUG("Call initDumpMotor() %s\r\n", "");
+ 	_delay_ms(5000);//1秒待つ⇒動作に合わせて変更してください
+	initDumpMotor();
+	
+	LOG_DEBUG("Call FindFormation() %s\r\n", "");
+ 	_delay_ms(5000);//1秒待つ⇒動作に合わせて変更してください
+	FindFormation();
+	
+	LOG_DEBUG("Call CatchAndReleaseFormation() %s\r\n", ""); 
+	_delay_ms(5000);//1秒待つ⇒動作に合わせて変更してください
+	CatchAndReleaseFormation();
+	
+//  LOG_DEBUG("Call TraceFormation() %s\r\n", "");
+//	_delay_ms(5000);//1秒待つ⇒動作に合わせて変更してください
+//	TraceFormation();
+
 	getSensorPattern();
 
 	// ロボ動作開始
@@ -178,7 +201,7 @@ int main(void) {
 #endif /* _MODE_SKIP_ */
 
 	// トレース動作開始
-	executeTraceProcess();
+//	executeTraceProcess();
 
     // ゴール判定後の動作実質ここから開始？
 	executeFinalAction();
@@ -617,7 +640,79 @@ void executeFinalAction(void)
 /************************************************************************/
 void initPETbottlesMotor(void) {
 	//最大速度で、642の位置へ動かす
-	MotorControlJoint( PETBOTTOLE_MOTOR, 0, 642 );
+LOG_DEBUG("Call MotorControlJoint() %s\r\n", "");
+	MotorControlJoint( PETBOTTOLE_MOTOR, 100, 512 );
+}
+
+/************************************************************************/
+// ペットボトル掴む用モーターの初期設定
+// ットボトル掴む用モーターをライントレースする為の位置に設定
+/************************************************************************/
+void initDumpMotor(void) {
+	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+	MotorControlJoint( WRIST_MOTOR, 100, 512 );
+	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+	MotorControlJoint( SHOULDER_MOTOR, 200, 410 );
+	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+	MotorControlJoint( UPPER_ARM_MOTOR, 100, 820 );
+	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+	MotorControlJoint( FORE_ARM_MOTOR, 100, 615 );
+}
+
+/************************************************************************/
+// ライントレース用のペットボトル掴む用モーターの位置
+// ペットボトル掴む用モーターをライントレースする為の位置に設定する。
+/************************************************************************/
+void TraceFormation(void)
+{
+	initDumpMotor();
+}
+
+/************************************************************************/
+// ペットボトルサーチ用のモーターの位置
+// ペットボトル掴む用モーターをペットボトルサーチ用の位置に設定する。
+/************************************************************************/
+void FindFormation(void)
+{
+	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+	MotorControlJoint( FORE_ARM_MOTOR, 100, 205 );
+	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+	MotorControlJoint( SHOULDER_MOTOR, 100, 512 );	
+	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+	MotorControlJoint( UPPER_ARM_MOTOR, 100, 666 );
+	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+	MotorControlJoint( SHOULDER_MOTOR, 100, 615 );
+	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+	MotorControlJoint( UPPER_ARM_MOTOR, 100, 137 );
+	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+	MotorControlJoint( WRIST_MOTOR, 100, 665 );			
+}
+
+/************************************************************************/
+// ペットボトル掴み入れる用モーターの位置
+// ペットボトル掴む用モーターをペットボトルを掴み入れる為の位置に設定する。
+/************************************************************************/
+void CatchAndReleaseFormation(void)
+{
+	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+	MotorControlJoint( WRIST_MOTOR, 100, 768 );
+
+	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+	MotorControlJoint( UPPER_ARM_MOTOR, 100, 205 );
+	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+	MotorControlJoint( SHOULDER_MOTOR, 100, 478 );
+	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+	MotorControlJoint( UPPER_ARM_MOTOR, 100, 222 );	
+	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+	MotorControlJoint( SHOULDER_MOTOR, 100, 444 );
+
+	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+	MotorControlJoint( WRIST_MOTOR, 100, 512 );
+
+	// 持ち上げる
+	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+	LOG_DEBUG("Call MotorControlJoint() %s\r\n", "");
+	MotorControlJoint( SHOULDER_MOTOR, 100, 546 );
 }
 
 /************************************************************************/
