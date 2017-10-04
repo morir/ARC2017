@@ -68,10 +68,10 @@ ISR(TIMER1_COMPA_vect) {
     unsigned int * IR = NULL;
     
     ReadIRSensors(IRArrays);
-    LOG_DEBUG( "LEFT_OUTSIDE :%d\r\n", IR[LEFT_OUTSIDE]);
-    LOG_DEBUG( "LEFT_INSIDE  :%d\r\n", IR[LEFT_INSIDE]);
-    LOG_DEBUG( "CENTER       :%d\r\n", IR[CENTER]);
-    LOG_DEBUG( "RIGHT_INSIDE :%d\r\n", IR[RIGHT_INSIDE]);
-    LOG_DEBUG( "RIGHT_OUTSIDE:%d\r\n", IR[RIGHT_OUTSIDE]);
-    LOG_DEBUG( "GOAL_JUDGE   :%d\r\n", IR[GOAL_JUDGE]);
+    LOG_DEBUG( "LEFT_OUTSIDE  :%d\r\n", IR[LEFT_OUTSIDE]);
+    LOG_DEBUG( "LEFT_CENTER   :%d\r\n", IR[LEFT_CENTER]);
+    LOG_DEBUG( "LEFT_INSIDE   :%d\r\n", IR[LEFT_INSIDE]);
+    LOG_DEBUG( "RIGHT_INSIDE  :%d\r\n", IR[RIGHT_INSIDE]);
+    LOG_DEBUG( "RIGHT_CENTER  :%d\r\n", IR[RIGHT_CENTER]);
+    LOG_DEBUG( "RIGHT_OUTSIDE :%d\r\n", IR[RIGHT_OUTSIDE]);
 }

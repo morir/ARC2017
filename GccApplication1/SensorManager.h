@@ -23,15 +23,14 @@
 
 /* 赤外線センサの役割
  * 下記はセンサの配置
- * 進行方向↑　LEFT_OUTSIDE | LEFT_INSIDE | CENTER     | RIGHT_INSIDE | RIGHT_INSIDE | RIGHT_OUTSIDE |
- *                                          GOAL_JUDGE
+ * 進行方向↑　LEFT_OUTSIDE | LEFT_CENTER | LEFT_INSIDE | RIGHT_INSIDE | RIGHT_CENTER | RIGHT_OUTSIDE |
  */
-#define LEFT_OUTSIDE	(ADC_PORT_4)	//!< 進行方向左外側のセンサ
-#define LEFT_INSIDE		(ADC_PORT_1)	//!< 進行方向左側のセンサ
-#define CENTER			(ADC_PORT_6)	//!< 中心のセンサ
-#define RIGHT_INSIDE	(ADC_PORT_3)	//!< 進行方向右側のセンサ
-#define RIGHT_OUTSIDE	(ADC_PORT_5)	//!< 進行方向右外側のセンサ
-#define GOAL_JUDGE		(ADC_PORT_2)	//!< ゴール判定用のセンサ
+#define LEFT_OUTSIDE	(ADC_PORT_4)	//!< 進行方向 左外側のセンサ
+#define LEFT_CENTER		(ADC_PORT_1)	//!< 進行方向 左中央のセンサ
+#define LEFT_INSIDE		(ADC_PORT_6)	//!< 進行方向 左内側のセンサ
+#define RIGHT_INSIDE	(ADC_PORT_3)	//!< 進行方向 右内側のセンサ
+#define RIGHT_CENTER	(ADC_PORT_5)	//!< 進行方向 右中央のセンサ
+#define RIGHT_OUTSIDE	(ADC_PORT_2)	//!< 進行方向 右外側のセンサ
 
 
 /* 赤外線センサの状態(BITパターン)のBITマスク */
@@ -101,11 +100,11 @@
 #define BIT_111111 (0x003F) //!< 2進数：111111
 
 /* 赤外線センサの状態(BITパターン)のフラグ */
-#define BIT_GOAL_JUDGE_ON		BIT_000001	 //!< 2進数：000001
-#define BIT_RIGHT_OUTSIDE_ON	BIT_000010	 //!< 2進数：000010
+#define BIT_RIGHT_OUTSIDE_ON	BIT_000001	 //!< 2進数：000001
+#define BIT_RIGHT_CENTER_ON		BIT_000010	 //!< 2進数：000010
 #define BIT_RIGHT_INSIDE_ON		BIT_000100	 //!< 2進数：000100
-#define BIT_CENTER_ON			BIT_001000	 //!< 2進数：001000
-#define BIT_LEFT_INSIDE_ON		BIT_010000	 //!< 2進数：010000
+#define BIT_LEFT_INSIDE_ON		BIT_001000	 //!< 2進数：001000
+#define BIT_LEFT_CENTER_ON		BIT_010000	 //!< 2進数：010000
 #define BIT_LEFT_OUTSIDE_ON		BIT_100000	 //!< 2進数：100000
 
 //#define COMPARE_VALUE 450//450
