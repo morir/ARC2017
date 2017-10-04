@@ -53,13 +53,15 @@ int isDetectedNothing(int sensor);
 int doesNeedToResetSpeed(void);
 int getSensorPattern(void);
 void initPETbottlesMotor(void);
-void initDumpMotor(void);
+
 void placePETbottles(void);
 void stopMoveLessThanVal(int val);
 
+void initDumpMotor(void);
 void TraceFormation(void);
 void FindFormation(void);
 void CatchAndReleaseFormation(void);
+void executeRotate(int motorId, int speed, int position);
 
 void getSensors(void);
 
@@ -159,6 +161,13 @@ int ActionTable[] = {
 	/* 31:BIT_11111x */	TRACE_SLOW_STRAIGHT
 };
 
+FuncTable GetCurrentPositionfunc[] = {
+	GetCurrentPositionShoulder,
+	GetCurrentPositionUpperArm,
+	GetCurrentPositionForeArm,
+	GetCurrentPositionWrist
+};
+
 /**
 * エントリーポイント
 * @brief エントリーポイント
@@ -175,7 +184,8 @@ int main(void) {
 //	LOG_DEBUG("Call initPETbottlesMotor() %s\r\n", "");
 //	initPETbottlesMotor();
 
-    LOG_DEBUG("Call initDumpMotor() %s\r\n", "");
+#if(0)
+	LOG_DEBUG("Call initDumpMotor() %s\r\n", "");
  	_delay_ms(5000);//1秒待つ⇒動作に合わせて変更してください
 	initDumpMotor();
 	
@@ -190,6 +200,7 @@ int main(void) {
 //  LOG_DEBUG("Call TraceFormation() %s\r\n", "");
 //	_delay_ms(5000);//1秒待つ⇒動作に合わせて変更してください
 //	TraceFormation();
+#endif
 
 	getSensorPattern();
 
@@ -659,22 +670,26 @@ LOG_DEBUG("Call MotorControlJoint() %s\r\n", "");
 
 /************************************************************************/
 // ペットボトル掴む用モーターの初期設定
-// ットボトル掴む用モーターをライントレースする為の位置に設定
+// ペットボトル掴む用モーターをライントレース用の位置に設定
 /************************************************************************/
 void initDumpMotor(void) {
-	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	MotorControlJoint( WRIST_MOTOR, 100, 512 );
-	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	MotorControlJoint( SHOULDER_MOTOR, 200, 410 );
-	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	MotorControlJoint( UPPER_ARM_MOTOR, 100, 820 );
-	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	MotorControlJoint( FORE_ARM_MOTOR, 100, 615 );
+//	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+//	MotorControlJoint( WRIST_MOTOR, 100, 512 );
+//	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+//	MotorControlJoint( SHOULDER_MOTOR, 100, 410 );
+//	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+//	MotorControlJoint( UPPER_ARM_MOTOR, 100, 820 );
+//	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+//	MotorControlJoint( FORE_ARM_MOTOR, 100, 615 );
+	executeRotate(WRIST_MOTOR, 100, 512);
+	executeRotate(SHOULDER_MOTOR, 100, 410);
+	executeRotate(UPPER_ARM_MOTOR, 100, 820);
+	executeRotate(FORE_ARM_MOTOR, 100, 615);	
 }
 
 /************************************************************************/
-// ライントレース用のペットボトル掴む用モーターの位置
-// ペットボトル掴む用モーターをライントレースする為の位置に設定する。
+// ライントレース用形態
+// ライントレース用の位置に設定する。
 /************************************************************************/
 void TraceFormation(void)
 {
@@ -682,11 +697,12 @@ void TraceFormation(void)
 }
 
 /************************************************************************/
-// ペットボトルサーチ用のモーターの位置
-// ペットボトル掴む用モーターをペットボトルサーチ用の位置に設定する。
+// お宝検索用形態
+// お宝検索用の位置に設定する。
 /************************************************************************/
 void FindFormation(void)
 {
+/*
 	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
 	MotorControlJoint( FORE_ARM_MOTOR, 100, 205 );
 	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
@@ -698,18 +714,25 @@ void FindFormation(void)
 	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
 	MotorControlJoint( UPPER_ARM_MOTOR, 100, 137 );
 	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	MotorControlJoint( WRIST_MOTOR, 100, 665 );			
+	MotorControlJoint( WRIST_MOTOR, 100, 665 );
+*/
+	executeRotate(FORE_ARM_MOTOR, 100, 512);
+	executeRotate(SHOULDER_MOTOR, 100, 410);
+	executeRotate(UPPER_ARM_MOTOR, 100, 820);
+	executeRotate(SHOULDER_MOTOR, 100, 615);	
+	executeRotate(UPPER_ARM_MOTOR, 100, 615);
+	executeRotate(WRIST_MOTOR, 100, 615);	
 }
 
 /************************************************************************/
-// ペットボトル掴み入れる用モーターの位置
-// ペットボトル掴む用モーターをペットボトルを掴み入れる為の位置に設定する。
+// お宝回収＆搭載用形態
+// お宝回収＆搭載用の位置に設定する。
 /************************************************************************/
 void CatchAndReleaseFormation(void)
 {
+/*
 	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
 	MotorControlJoint( WRIST_MOTOR, 100, 768 );
-
 	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
 	MotorControlJoint( UPPER_ARM_MOTOR, 100, 205 );
 	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
@@ -718,14 +741,68 @@ void CatchAndReleaseFormation(void)
 	MotorControlJoint( UPPER_ARM_MOTOR, 100, 222 );	
 	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
 	MotorControlJoint( SHOULDER_MOTOR, 100, 444 );
-
 	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
 	MotorControlJoint( WRIST_MOTOR, 100, 512 );
 
 	// 持ち上げる
 	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	LOG_DEBUG("Call MotorControlJoint() %s\r\n", "");
 	MotorControlJoint( SHOULDER_MOTOR, 100, 546 );
+	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+	MotorControlJoint( UPPER_ARM_MOTOR, 100, 768 );
+	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+	MotorControlJoint( FORE_ARM_MOTOR, 100, 768 );
+	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+	MotorControlJoint( WRIST_MOTOR, 100, 768 );
+*/
+	executeRotate(WRIST_MOTOR, 100, 768);
+	executeRotate(UPPER_ARM_MOTOR, 100, 205);
+	executeRotate(SHOULDER_MOTOR, 100, 478);
+	executeRotate(UPPER_ARM_MOTOR, 100, 222);
+	executeRotate(SHOULDER_MOTOR, 100, 444);
+	executeRotate(WRIST_MOTOR, 100, 512);
+
+	// 持ち上げる
+	executeRotate(SHOULDER_MOTOR, 100, 546);
+	executeRotate(UPPER_ARM_MOTOR, 100, 768);
+	executeRotate(FORE_ARM_MOTOR, 100, 768);
+	executeRotate(WRIST_MOTOR, 100, 768);
+}
+
+
+/**
+ * 位置が入力値のpositionになるまで回転する 
+ * @param motorId モータID
+ * @param speed 回転速度
+ * @param position 位置
+ */
+void executeRotate(int motorId, int speed, int position){
+	MotorControlJoint( motorId, speed, position );//モータの位置を設定
+	int judgePosition = 0;
+	int id = 0;
+
+	switch (motorId)
+	{
+		case SHOULDER_MOTOR:
+			id = 0;
+		case UPPER_ARM_MOTOR:
+			id = 1;
+		case FORE_ARM_MOTOR:
+			id = 2;
+		case WRIST_MOTOR:
+			id = 3;
+		default:
+			id = 0;
+	}
+
+	while(1) {
+		judgePosition = GetCurrentPositionfunc[id]();//モータの位置を取得
+		// とりあえず、誤差として20(5.9度)に
+		if( judgePosition >= position -	20 ) {	
+			// 位置がposition以上なら抜ける
+			break;
+		}
+//		MotorControlJoint( motorId, speed, position );//モータの位置を設定
+	}
 }
 
 /************************************************************************/

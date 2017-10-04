@@ -180,6 +180,13 @@ void PrintCommStatus(int CommStatus);
 
 int GetCurrentSpeedR(void);
 int GetCurrentSpeedL(void);
+int GetCurrentPositionShoulder(void);
+int GetCurrentPositionUpperArm(void);
+int GetCurrentPositionForeArm(void);
+int GetCurrentPositionWrist(void);
+
+/* typedef */
+typedef int (*FuncTable)(void);
 
 void GetAXS1SensorFireData(int *out_fire_data_left, int *out_fire_data_center, int *out_fire_data_right);
 
