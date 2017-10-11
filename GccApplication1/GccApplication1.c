@@ -544,7 +544,7 @@ int doesNeedToResetSpeed(void) {
 * @return 戻り値の説明
 */
 int getSensorPattern(void) {
-    int ptn = 0;
+    static int ptn = 0;
 	
 	// LEDを設定
 	//setLED();
