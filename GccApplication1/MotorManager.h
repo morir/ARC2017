@@ -106,6 +106,7 @@
 #endif // DINAMIXEL_AX_12
 
 // Trace pattern
+#define TRACE_UNDEFINED			(-1)// 未定義(前回の動作を継続)
 #define TRACE_STRAIGHT			0	// 直進
 #define TRACE_L_STRAIGHT		1	// 左前進
 #define TRACE_L_ROUND_SOFT		7	// 左カーブ(Soft)

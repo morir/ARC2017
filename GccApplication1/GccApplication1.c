@@ -27,6 +27,14 @@
 #define DELAY_MAX_TIME      (100)//delay時間の最大値(ミリ秒)
 #define STOP_JUDGE_MAX_LIMIT	(10)//停止判定の上限値
 #define SLOW_TURN_RATE_BY_BASE	(50)//ベースの20%の速さ
+#define HISTORY_MAXSIZE (5)//履歴管理最大数
+
+#define PATTERN_L_ROUND_TIGHT (-3)
+#define PATTERN_L_ROUND_MIDDLE (-2)
+#define PATTERN_L_ROUND_SOFT (-1)
+#define PATTERN_R_ROUND_SOFT (1)
+#define PATTERN_R_ROUND_MIDDLE (2)
+#define PATTERN_R_ROUND_TIGHT (3)
 
 // ------------------ Method Definition ------------------
 void executeTraceProcess(void);
@@ -92,10 +100,13 @@ int goalCounter = 0;
 //int mBeforeMoveState = MOVE_SELECTION_TYPE_STRAIGHT;
 
 // IR Sensor 
-unsigned int IR[ADC_PORT_6 + 1] = {0,0,0,0,0,0,0};
+unsigned int IR[HISTORY_MAXSIZE][ADC_PORT_6 + 1];
+int currentCount = 0;
 
 // IRの状態(BITパターン)
 int IR_BitPattern = 0;
+int IR_BitPatternHistory[HISTORY_MAXSIZE] = {0,0,0,0,0};
+
 
 int mMoveCount = 1;
 
@@ -129,59 +140,59 @@ int ActionTable[] = {
 	/* 06:BIT_000110 */	TRACE_R_ROUND_MIDDLE,
 	/* 07:BIT_000111 */	TRACE_R_TURN,
 	/* 08:BIT_001000 */	TRACE_L_ROUND_SOFT,
-	/* 09:BIT_001001 */	TRACE_R_ROUND_MIDDLE,
-	/* 10:BIT_001010 */	TRACE_R_ROUND_SOFT,
-	/* 11:BIT_001011 */	TRACE_R_TURN,
+	/* 09:BIT_001001 */	TRACE_UNDEFINED,
+	/* 10:BIT_001010 */	TRACE_UNDEFINED,
+	/* 11:BIT_001011 */	TRACE_UNDEFINED,
 	/* 12:BIT_001100 */	TRACE_STRAIGHT,
-	/* 13:BIT_001101 */	TRACE_R_TURN,
+	/* 13:BIT_001101 */	TRACE_UNDEFINED,
 	/* 14:BIT_001110 */	TRACE_R_ROUND_MIDDLE,
 	/* 15:BIT_001111 */	TRACE_R_TURN,
 	/* 16:BIT_010000 */	TRACE_L_ROUND_MIDDLE,
-	/* 17:BIT_010001 */	TRACE_R_ROUND_TIGHT,
-	/* 18:BIT_010010 */	TRACE_STRAIGHT,
-	/* 19:BIT_010011 */	TRACE_R_TURN,
-	/* 20:BIT_010100 */	TRACE_L_ROUND_SOFT,
-	/* 21:BIT_010101 */	TRACE_R_ROUND_MIDDLE,
-	/* 22:BIT_010110 */	TRACE_R_ROUND_TIGHT,
-	/* 23:BIT_010111 */	TRACE_R_TURN,
+	/* 17:BIT_010001 */	TRACE_UNDEFINED,
+	/* 18:BIT_010010 */	TRACE_UNDEFINED,
+	/* 19:BIT_010011 */	TRACE_UNDEFINED,
+	/* 20:BIT_010100 */	TRACE_UNDEFINED,
+	/* 21:BIT_010101 */	TRACE_UNDEFINED,
+	/* 22:BIT_010110 */	TRACE_UNDEFINED,
+	/* 23:BIT_010111 */	TRACE_UNDEFINED,
 	/* 24:BIT_011000 */	TRACE_L_ROUND_MIDDLE,
-	/* 25:BIT_011001 */	TRACE_STRAIGHT,
-	/* 26:BIT_011010 */	TRACE_L_ROUND_TIGHT,
-	/* 27:BIT_011011 */	TRACE_R_ROUND_MIDDLE,
+	/* 25:BIT_011001 */	TRACE_UNDEFINED,
+	/* 26:BIT_011010 */	TRACE_UNDEFINED,
+	/* 27:BIT_011011 */	TRACE_UNDEFINED,
 	/* 28:BIT_011100 */	TRACE_L_ROUND_MIDDLE,
-	/* 29:BIT_011101 */	TRACE_R_ROUND_MIDDLE,
+	/* 29:BIT_011101 */	TRACE_UNDEFINED,
 	/* 30:BIT_011110 */	TRACE_STRAIGHT,
 	/* 31:BIT_011111 */	TRACE_R_TURN,
 	/* 32:BIT_100000 */	TRACE_L_ROUND_TIGHT,
-	/* 33:BIT_100001 */	TRACE_STRAIGHT,
-	/* 34:BIT_100010 */	TRACE_L_ROUND_TIGHT,
-	/* 35:BIT_100011 */	TRACE_R_ROUND_MIDDLE,
-	/* 36:BIT_100100 */	TRACE_L_ROUND_MIDDLE,
-	/* 37:BIT_100101 */	TRACE_R_ROUND_MIDDLE,
-	/* 38:BIT_100110 */	TRACE_STRAIGHT,
-	/* 39:BIT_100111 */	TRACE_R_ROUND_TIGHT,
+	/* 33:BIT_100001 */	TRACE_UNDEFINED,
+	/* 34:BIT_100010 */	TRACE_UNDEFINED,
+	/* 35:BIT_100011 */	TRACE_UNDEFINED,
+	/* 36:BIT_100100 */	TRACE_UNDEFINED,
+	/* 37:BIT_100101 */	TRACE_UNDEFINED,
+	/* 38:BIT_100110 */	TRACE_UNDEFINED,
+	/* 39:BIT_100111 */	TRACE_UNDEFINED,
 	/* 40:BIT_101000 */	TRACE_L_TURN,
-	/* 41:BIT_101001 */	TRACE_L_ROUND_MIDDLE,
-	/* 42:BIT_101010 */	TRACE_L_ROUND_MIDDLE,
-	/* 43:BIT_101011 */	TRACE_R_ROUND_MIDDLE,
-	/* 44:BIT_101100 */	TRACE_L_TURN,
-	/* 45:BIT_101101 */	TRACE_STRAIGHT,
-	/* 46:BIT_101110 */	TRACE_L_ROUND_MIDDLE,
-	/* 47:BIT_101111 */	TRACE_R_TURN,
+	/* 41:BIT_101001 */	TRACE_UNDEFINED,
+	/* 42:BIT_101010 */	TRACE_UNDEFINED,
+	/* 43:BIT_101011 */	TRACE_UNDEFINED,
+	/* 44:BIT_101100 */	TRACE_UNDEFINED,
+	/* 45:BIT_101101 */	TRACE_UNDEFINED,
+	/* 46:BIT_101110 */	TRACE_UNDEFINED,
+	/* 47:BIT_101111 */	TRACE_UNDEFINED,
 	/* 48:BIT_110000 */	TRACE_L_TURN,
-	/* 49:BIT_110001 */	TRACE_L_ROUND_MIDDLE,
-	/* 50:BIT_110010 */	TRACE_L_TURN,
-	/* 51:BIT_110011 */	TRACE_STRAIGHT,
-	/* 52:BIT_110100 */	TRACE_L_TURN,
-	/* 53:BIT_110101 */	TRACE_L_ROUND_MIDDLE,
-	/* 54:BIT_110110 */	TRACE_L_ROUND_MIDDLE,
-	/* 55:BIT_110111 */	TRACE_R_ROUND_MIDDLE,
+	/* 49:BIT_110001 */	TRACE_UNDEFINED,
+	/* 50:BIT_110010 */	TRACE_UNDEFINED,
+	/* 51:BIT_110011 */	TRACE_UNDEFINED,
+	/* 52:BIT_110100 */	TRACE_UNDEFINED,
+	/* 53:BIT_110101 */	TRACE_UNDEFINED,
+	/* 54:BIT_110110 */	TRACE_UNDEFINED,
+	/* 55:BIT_110111 */	TRACE_UNDEFINED,
 	/* 56:BIT_111000 */	TRACE_L_TURN,
-	/* 57:BIT_111001 */	TRACE_L_ROUND_TIGHT,
-	/* 58:BIT_111010 */	TRACE_L_TURN,
-	/* 59:BIT_111011 */	TRACE_L_ROUND_MIDDLE,
+	/* 57:BIT_111001 */	TRACE_UNDEFINED,
+	/* 58:BIT_111010 */	TRACE_UNDEFINED,
+	/* 59:BIT_111011 */	TRACE_UNDEFINED,
 	/* 60:BIT_111100 */	TRACE_L_TURN,
-	/* 61:BIT_111101 */	TRACE_L_TURN,
+	/* 61:BIT_111101 */	TRACE_UNDEFINED,
 	/* 62:BIT_111110 */	TRACE_L_TURN,
 	/* 63:BIT_111111 */	TRACE_SLOW_STRAIGHT
 };
@@ -197,6 +208,7 @@ int main(void) {
     initEmergencyStop();
     setLED();
     initIRSensor();
+	memset(IR, 0, sizeof(IR));
     MotorInit();
     initSerial();
 	initPETbottlesMotor();
@@ -569,34 +581,120 @@ int getSensorPattern(void) {
 }
 
 /**
+* 履歴管理を使ったセンサー値のBitパターンを取得する。
+* @brief センサー値を参照し、対応するアクションを取得する。
+* @return 戻り値の説明
+*/
+int getSensorPatternWithHistory(void) {
+	static int ptn = 0;
+	static int maxIndex = 0;
+	static int maxCount = 0;
+	static int patternCounter[] = {
+		0,	// [0]: TRACE_L_TURN
+		0,	// [1]: TRACE_L_ROUND_TIGHT
+		0,	// [2]: TRACE_L_ROUND_MIDDLE
+		0,	// [3]: TRACE_L_ROUND_SOFT
+		0,	// [4]: TRACE_STRAIGHT
+		0,	// [5]: TRACE_R_ROUND_SOFT
+		0,	// [6]: TRACE_R_ROUND_MIDDLE
+		0,	// [7]: TRACE_R_ROUND_TIGHT
+		0,	// [8]: TRACE_R_TURN
+		0	// [9]: TRACE_UNDEFINED
+	};
+
+	// センサー値を取得
+	for (int i = 0; i < HISTORY_MAXSIZE; i++) {
+		if (IR_BitPatternHistory[i] == TRACE_L_TURN) {
+			patternCounter[0]++;
+		} else if (IR_BitPatternHistory[i] == TRACE_L_ROUND_TIGHT) {
+			patternCounter[1]++;
+		} else if (IR_BitPatternHistory[i] == TRACE_L_ROUND_MIDDLE) {
+			patternCounter[2]++;
+		} else if (IR_BitPatternHistory[i] == TRACE_L_ROUND_SOFT) {
+			patternCounter[3]++;
+		} else if (IR_BitPatternHistory[i] == TRACE_STRAIGHT) {
+			patternCounter[4]++;
+		} else if (IR_BitPatternHistory[i] == TRACE_R_ROUND_SOFT) {
+			patternCounter[5]++;
+		} else if (IR_BitPatternHistory[i] == TRACE_R_ROUND_MIDDLE) {
+			patternCounter[6]++;
+		} else if (IR_BitPatternHistory[i] == TRACE_R_ROUND_TIGHT) {
+			patternCounter[7]++;
+		} else if (IR_BitPatternHistory[i] == TRACE_R_TURN) {
+			patternCounter[8]++;
+		} else {
+			patternCounter[9]++;
+		}
+	}
+	
+	maxIndex = 0;
+	maxCount = patternCounter[0];
+	// 一番多かったパターンを採用する
+	for (int j = 1; j < 10; j++) {
+		if (patternCounter[j] > maxCount) {
+			maxIndex = j;
+			maxCount = patternCounter[j];
+		}
+	}
+
+	if (maxIndex == 0) {
+		ptn = TRACE_L_TURN;
+	} else if (maxIndex == 1) {
+		ptn = TRACE_L_ROUND_TIGHT;
+	} else if (maxIndex == 2) {
+		ptn = TRACE_L_ROUND_MIDDLE;
+	} else if (maxIndex == 3) {
+		ptn = TRACE_L_ROUND_SOFT;
+	} else if (maxIndex == 4) {
+		ptn = TRACE_STRAIGHT;
+	} else if (maxIndex == 5) {
+		ptn = TRACE_R_ROUND_SOFT;
+	} else if (maxIndex == 6) {
+		ptn = TRACE_R_ROUND_MIDDLE;
+	} else if (maxIndex == 7) {
+		ptn = TRACE_R_ROUND_TIGHT;
+	} else if (maxIndex == 8) {
+		ptn = TRACE_R_TURN;
+	} else {
+		ptn = currentTraceAction;
+	}
+
+	return ptn;
+}
+
+/**
  * センサー値を取得
  * @brief センサー値を取得
  * @return なし
  * @detail センサー値を取得し、IR[]およびIR_BitPatternを更新する。
  */
 void getSensors(void) {
+	/* 現在のカウンタ値を更新 */
+    currentCount = ((currentCount + 1) % HISTORY_MAXSIZE);
 	/* センサー値を取得 */
-    ReadIRSensors(IR);
+    ReadIRSensors(IR[currentCount]);
 	
 	/* IR状態をBITパターンに変換 */
 	IR_BitPattern = 0;
-	if (IR[RIGHT_OUTSIDE] <= COMPARE_VALUE)	IR_BitPattern |= BIT_RIGHT_OUTSIDE_ON;
-	if (IR[RIGHT_CENTER]  <= COMPARE_VALUE)	IR_BitPattern |= BIT_RIGHT_CENTER_ON;
-	if (IR[RIGHT_INSIDE]  <= COMPARE_VALUE)	IR_BitPattern |= BIT_RIGHT_INSIDE_ON;
-	if (IR[LEFT_INSIDE]   <= COMPARE_VALUE)	IR_BitPattern |= BIT_LEFT_INSIDE_ON;
-	if (IR[LEFT_CENTER]   <= COMPARE_VALUE)	IR_BitPattern |= BIT_LEFT_CENTER_ON;
-	if (IR[LEFT_OUTSIDE]  <= COMPARE_VALUE)	IR_BitPattern |= BIT_LEFT_OUTSIDE_ON;
+	if (IR[currentCount][RIGHT_OUTSIDE] <= COMPARE_VALUE)	IR_BitPattern |= BIT_RIGHT_OUTSIDE_ON;
+	if (IR[currentCount][RIGHT_CENTER]  <= COMPARE_VALUE)	IR_BitPattern |= BIT_RIGHT_CENTER_ON;
+	if (IR[currentCount][RIGHT_INSIDE]  <= COMPARE_VALUE)	IR_BitPattern |= BIT_RIGHT_INSIDE_ON;
+	if (IR[currentCount][LEFT_INSIDE]   <= COMPARE_VALUE)	IR_BitPattern |= BIT_LEFT_INSIDE_ON;
+	if (IR[currentCount][LEFT_CENTER]   <= COMPARE_VALUE)	IR_BitPattern |= BIT_LEFT_CENTER_ON;
+	if (IR[currentCount][LEFT_OUTSIDE]  <= COMPARE_VALUE)	IR_BitPattern |= BIT_LEFT_OUTSIDE_ON;
 
-    LOG_INFO("sensor %3d: %3d: %3d: %3d: %3d: %3d \r\n",
-	       IR[LEFT_OUTSIDE], IR[LEFT_CENTER], IR[LEFT_INSIDE], IR[RIGHT_INSIDE], IR[RIGHT_CENTER], IR[RIGHT_OUTSIDE]);
-	LOG_DEBUG("IR[R %1d%1d%1d%1d%1d%1d L]\r\n",
-	          ((IR[LEFT_OUTSIDE]  <= COMPARE_VALUE)? 1 : 0),
-	          ((IR[LEFT_CENTER]	  <= COMPARE_VALUE)? 1 : 0),
-	          ((IR[LEFT_INSIDE]	  <= COMPARE_VALUE)? 1 : 0),
-	          ((IR[RIGHT_INSIDE]  <= COMPARE_VALUE)? 1 : 0),
-	          ((IR[RIGHT_CENTER]  <= COMPARE_VALUE)? 1 : 0),
-		      ((IR[RIGHT_OUTSIDE] <= COMPARE_VALUE)? 1 : 0));
+	IR_BitPatternHistory[currentCount] = IR_BitPattern;
 	
+    LOG_INFO("sensor %3d: %3d: %3d: %3d: %3d: %3d \r\n",
+			 IR[currentCount][LEFT_OUTSIDE], IR[currentCount][LEFT_CENTER], IR[currentCount][LEFT_INSIDE],
+			 IR[currentCount][RIGHT_INSIDE], IR[currentCount][RIGHT_CENTER], IR[currentCount][RIGHT_OUTSIDE]);
+    LOG_DEBUG("IR[R %1d%1d%1d%1d%1d%1d L]\r\n",
+			  ((IR[currentCount][LEFT_OUTSIDE]  <= COMPARE_VALUE)? 1 : 0),
+			  ((IR[currentCount][LEFT_CENTER]   <= COMPARE_VALUE)? 1 : 0),
+			  ((IR[currentCount][LEFT_INSIDE]   <= COMPARE_VALUE)? 1 : 0),
+			  ((IR[currentCount][RIGHT_INSIDE]  <= COMPARE_VALUE)? 1 : 0),
+			  ((IR[currentCount][RIGHT_CENTER]  <= COMPARE_VALUE)? 1 : 0),
+			  ((IR[currentCount][RIGHT_OUTSIDE] <= COMPARE_VALUE)? 1 : 0));
 }
 
 /**
