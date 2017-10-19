@@ -25,12 +25,12 @@
  * 下記はセンサの配置
  * 進行方向↑　LEFT_OUTSIDE | LEFT_CENTER | LEFT_INSIDE | RIGHT_INSIDE | RIGHT_CENTER | RIGHT_OUTSIDE |
  */
-#define LEFT_OUTSIDE	(ADC_PORT_4)	//!< 進行方向 左外側のセンサ
-#define LEFT_CENTER		(ADC_PORT_1)	//!< 進行方向 左中央のセンサ
-#define LEFT_INSIDE		(ADC_PORT_6)	//!< 進行方向 左内側のセンサ
-#define RIGHT_INSIDE	(ADC_PORT_3)	//!< 進行方向 右内側のセンサ
-#define RIGHT_CENTER	(ADC_PORT_5)	//!< 進行方向 右中央のセンサ
-#define RIGHT_OUTSIDE	(ADC_PORT_2)	//!< 進行方向 右外側のセンサ
+#define LEFT_OUTSIDE	(ADC_PORT_2)	//!< 進行方向 左外側のセンサ
+#define LEFT_CENTER		(ADC_PORT_4)	//!< 進行方向 左中央のセンサ
+#define LEFT_INSIDE		(ADC_PORT_1)	//!< 進行方向 左内側のセンサ
+#define RIGHT_INSIDE	(ADC_PORT_6)	//!< 進行方向 右内側のセンサ
+#define RIGHT_CENTER	(ADC_PORT_3)	//!< 進行方向 右中央のセンサ
+#define RIGHT_OUTSIDE	(ADC_PORT_5)	//!< 進行方向 右外側のセンサ
 
 
 /* 赤外線センサの状態(BITパターン)のBITマスク */
