@@ -60,6 +60,7 @@ int isRightInsideDetected(int sensor);
 int isDetectedNothing(int sensor);
 int doesNeedToResetSpeed(void);
 int getSensorPattern(void);
+int getSensorPatternWithHistory(void);
 void initPETbottlesMotor(void);
 void placePETbottles(void);
 void stopMoveLessThanVal(int val);
