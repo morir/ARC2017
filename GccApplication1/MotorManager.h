@@ -48,14 +48,7 @@
 
 #define PETBOTTOLE_MOTOR	18		// Cover Motor address
 
-#define SHOULDER_MOTOR       12      // Shoulder Motor address
-#define UPPER_ARM_MOTOR      25      // Upper arm Motor address
-#define FORE_ARM_MOTOR       14      // ForeArm Motor address
-#define WRIST_MOTOR          23      // Wrist Motor address
-
 // MX-12W Control Table Address
-#define CTRL_TBL_ADDR_PRESENT_POSITION_L	(36)	// Lowest byte of Current Position 
-#define CTRL_TBL_ADDR_PRESENT_POSITION_H	(37)	// Highest byte of Current Position 
 #define CTRL_TBL_ADDR_PRESENT_SPEED_L	(38)	// Lowest byte of Current Speed 
 #define CTRL_TBL_ADDR_PRESENT_SPEED_H	(39)	// Highest byte of Current Speed
 
@@ -180,7 +173,6 @@ void PrintCommStatus(int CommStatus);
 
 int GetCurrentSpeedR(void);
 int GetCurrentSpeedL(void);
-int GetCurrentAngle(int motorId);
 
 void GetAXS1SensorFireData(int *out_fire_data_left, int *out_fire_data_center, int *out_fire_data_right);
 
