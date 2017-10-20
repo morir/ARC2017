@@ -4,7 +4,6 @@
 //##                                           2009.11.10 ##
 //##########################################################
 
-#define F_CPU   16000000L   //16MHz
 #include <stdio.h>
 #include <math.h>
 #include <util/delay.h>
