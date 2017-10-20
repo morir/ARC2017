@@ -206,6 +206,19 @@ int ActionTable[] = {
 	/* 63:BIT_111111 */	TRACE_SLOW_STRAIGHT
 };
 
+enum patternIndex {
+	L_TURN,
+	L_ROUND_TIGHT,
+	L_ROUND_MIDDLE,
+	L_ROUND_SOFT,
+	STRAIGHT,
+	R_ROUND_SOFT,
+	R_ROUND_MIDDLE,
+	R_ROUND_TIGHT,
+	R_TURN,
+	UNDEFINED
+};
+
 /**
 * エントリーポイント
 * @brief エントリーポイント
@@ -623,76 +636,97 @@ void initSensorHistory(void) {
 */
 int getSensorPatternWithHistory(void) {
 	static int ptn = 0;
-	static int maxIndex = 0;
-	static int maxCount = 0;
+	int maxIndex = 0;
+	int maxCount = -1;
 	static int patternCounter[] = {
-		0,	// [0]: TRACE_L_TURN
-		0,	// [1]: TRACE_L_ROUND_TIGHT
-		0,	// [2]: TRACE_L_ROUND_MIDDLE
-		0,	// [3]: TRACE_L_ROUND_SOFT
-		0,	// [4]: TRACE_STRAIGHT
-		0,	// [5]: TRACE_R_ROUND_SOFT
-		0,	// [6]: TRACE_R_ROUND_MIDDLE
-		0,	// [7]: TRACE_R_ROUND_TIGHT
-		0,	// [8]: TRACE_R_TURN
-		0	// [9]: TRACE_UNDEFINED
+		0,	// [0]: L_TURN
+		0,	// [1]: L_ROUND_TIGHT
+		0,	// [2]: L_ROUND_MIDDLE
+		0,	// [3]: L_ROUND_SOFT
+		0,	// [4]: STRAIGHT
+		0,	// [5]: R_ROUND_SOFT
+		0,	// [6]: R_ROUND_MIDDLE
+		0,	// [7]: R_ROUND_TIGHT
+		0,	// [8]: R_TURN
+		0	// [9]: UNDEFINED
 	};
 
-	// センサー値を取得
+	// 履歴からパターンを集計する
 	for (int i = 0; i < HISTORY_MAXSIZE; i++) {
-		if (IR_BitPatternHistory[i] == TRACE_L_TURN) {
-			patternCounter[0]++;
-		} else if (IR_BitPatternHistory[i] == TRACE_L_ROUND_TIGHT) {
-			patternCounter[1]++;
-		} else if (IR_BitPatternHistory[i] == TRACE_L_ROUND_MIDDLE) {
-			patternCounter[2]++;
-		} else if (IR_BitPatternHistory[i] == TRACE_L_ROUND_SOFT) {
-			patternCounter[3]++;
-		} else if (IR_BitPatternHistory[i] == TRACE_STRAIGHT) {
-			patternCounter[4]++;
-		} else if (IR_BitPatternHistory[i] == TRACE_R_ROUND_SOFT) {
-			patternCounter[5]++;
-		} else if (IR_BitPatternHistory[i] == TRACE_R_ROUND_MIDDLE) {
-			patternCounter[6]++;
-		} else if (IR_BitPatternHistory[i] == TRACE_R_ROUND_TIGHT) {
-			patternCounter[7]++;
-		} else if (IR_BitPatternHistory[i] == TRACE_R_TURN) {
-			patternCounter[8]++;
-		} else {
-			patternCounter[9]++;
+		switch (IR_BitPatternHistory[i]) {
+			case TRACE_L_TURN:
+				patternCounter[L_TURN]++;
+				break;
+			case TRACE_L_ROUND_TIGHT:
+				patternCounter[L_ROUND_TIGHT]++;
+				break;
+			case TRACE_L_ROUND_MIDDLE:
+				patternCounter[L_ROUND_MIDDLE]++;
+				break;
+			case TRACE_L_ROUND_SOFT:
+				patternCounter[L_ROUND_SOFT]++;
+				break;
+			case TRACE_STRAIGHT:
+				patternCounter[STRAIGHT]++;
+				break;
+			case TRACE_R_ROUND_SOFT:
+				patternCounter[R_ROUND_SOFT]++;
+				break;
+			case TRACE_R_ROUND_MIDDLE:
+				patternCounter[R_ROUND_MIDDLE]++;
+				break;
+			case TRACE_R_ROUND_TIGHT:
+				patternCounter[R_ROUND_TIGHT]++;
+				break;
+			case TRACE_R_TURN:
+				patternCounter[R_TURN]++;
+				break;
+			default:
+				patternCounter[UNDEFINED]++;
+				break;
 		}
 	}
 	
-	maxIndex = 0;
-	maxCount = patternCounter[0];
+	maxCount = -1;
 	// 一番多かったパターンを採用する
-	for (int j = 1; j < 10; j++) {
+	for (int j = 0; j < 10; j++) {
 		if (patternCounter[j] > maxCount) {
 			maxIndex = j;
 			maxCount = patternCounter[j];
 		}
 	}
 
-	if (maxIndex == 0) {
-		ptn = TRACE_L_TURN;
-	} else if (maxIndex == 1) {
-		ptn = TRACE_L_ROUND_TIGHT;
-	} else if (maxIndex == 2) {
-		ptn = TRACE_L_ROUND_MIDDLE;
-	} else if (maxIndex == 3) {
-		ptn = TRACE_L_ROUND_SOFT;
-	} else if (maxIndex == 4) {
-		ptn = TRACE_STRAIGHT;
-	} else if (maxIndex == 5) {
-		ptn = TRACE_R_ROUND_SOFT;
-	} else if (maxIndex == 6) {
-		ptn = TRACE_R_ROUND_MIDDLE;
-	} else if (maxIndex == 7) {
-		ptn = TRACE_R_ROUND_TIGHT;
-	} else if (maxIndex == 8) {
-		ptn = TRACE_R_TURN;
-	} else {
-		ptn = currentTraceAction;
+	switch (maxIndex) {
+		case L_TURN:
+			ptn = TRACE_L_TURN;
+			break;
+		case L_ROUND_TIGHT:
+			ptn = TRACE_L_ROUND_TIGHT;
+			break;
+		case L_ROUND_MIDDLE:
+			ptn = TRACE_L_ROUND_MIDDLE;
+			break;
+		case L_ROUND_SOFT:
+			ptn = TRACE_L_ROUND_SOFT;
+			break;
+		case STRAIGHT:
+			ptn = TRACE_STRAIGHT;
+			break;
+		case R_ROUND_SOFT:
+			ptn = TRACE_R_ROUND_SOFT;
+			break;
+		case R_ROUND_MIDDLE:
+			ptn = TRACE_R_ROUND_MIDDLE;
+			break;
+		case R_ROUND_TIGHT:
+			ptn = TRACE_R_ROUND_TIGHT;
+			break;
+		case R_TURN:
+			ptn = TRACE_R_TURN;
+			break;
+		default: 
+			ptn = currentTraceAction;
+			break;
 	}
 
 	return ptn;
