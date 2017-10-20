@@ -12,6 +12,7 @@
 #include <math.h>
 #include <util/delay.h>
 #include "include/dynamixel.h"
+#include "AvrTimer.h"
 
 // ------------------ Defined ------------------
 #define DEFAULT_BAUDNUM     1 // 1Mbps
@@ -180,6 +181,10 @@ void PrintCommStatus(int CommStatus);
 
 int GetCurrentSpeedR(void);
 int GetCurrentSpeedL(void);
+#ifdef ENABLE_AVRTIMER
+void GetCurrentSpeedRCalledFromTimer(void);
+void GetCurrentSpeedLCalledFromTimer(void);
+#endif // ENABLE_AVRTIMER
 int GetCurrentAngle(int motorId);
 
 void GetAXS1SensorFireData(int *out_fire_data_left, int *out_fire_data_center, int *out_fire_data_right);

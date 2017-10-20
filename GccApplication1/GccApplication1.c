@@ -13,6 +13,7 @@
 #include "SensorManager.h"
 #include "MotorManager.h"
 #include "DebugLog.h"
+#include "AvrTimer.h"
 
 #include "pid.h"
 
@@ -36,6 +37,11 @@
 #define PATTERN_R_ROUND_MIDDLE (2)
 #define PATTERN_R_ROUND_TIGHT (3)
 
+#ifdef ENABLE_AVRTIMER
+// ------------------ Global variables ------------------
+static int curSensorPattern = 0;	// 現在のセンサー値
+#endif // ENABLE_AVRTIMER
+
 // ------------------ Method Definition ------------------
 void executeTraceProcess(void);
 void traceForwardArea_01(void);
@@ -51,6 +57,8 @@ void traceBackwardArea_03(void);
 void traceBackwardArea_04(void);
 void traceBackwardArea_05(void);
 void traceBackwardArea_06(void);
+void traceBackwardArea_17(void);
+void traceBackwardArea_18(void);
 
 int isRightRound(void);
 int isLeftRound(void);
@@ -59,6 +67,9 @@ int isLeftInsideDetected(int sensor);
 int isRightInsideDetected(int sensor);
 int isDetectedNothing(int sensor);
 int doesNeedToResetSpeed(void);
+#ifdef ENABLE_AVRTIMER
+int getSensorPatternCalledFromTimer(void);
+#endif // ENABLE_AVRTIMER
 int getSensorPattern(void);
 void initSensorHistory(void);
 int getSensorPatternWithHistory(void);
@@ -252,7 +263,15 @@ int main(void) {
 //	TraceFormation();
 #endif
 
+#ifdef ENABLE_AVRTIMER
+	getSensorPatternCalledFromTimer();
+
+	// AVRタイマ開始
+	AvrTimerStart();
+
+#else // ENABLE_AVRTIMER
 	getSensorPattern();
+#endif // ENABLE_AVRTIMER
 
 	// ロボ動作開始
 
@@ -266,6 +285,12 @@ int main(void) {
 
     // ゴール判定後の動作実質ここから開始？
 	executeFinalAction();
+
+#ifdef ENABLE_AVRTIMER
+	// AVRタイマ停止
+	AvrTimerEnd();
+	AvrTimerReset();
+#endif // ENABLE_AVRTIMER
 }
 
 /**
@@ -524,6 +549,27 @@ void executeTraceProcess(void) {
  void traceBackwardArea_06(void) {
 }
 
+/*
+ * 復路エリア 17 のトレース動作
+ * @return なし
+ * @condition
+ *   開始条件：なし（復路エリア 16 のトレース動作から継続）。
+ *   終了条件：ゴールエリアを検出して終了動作が完了する。
+ */
+void traceBackwardArea_17(void) {
+}
+
+/*
+ * 復路エリア 18 のトレース動作
+ * @return なし
+ * @condition
+ *   開始条件：なし（復路エリア 17 のトレース動作から継続）。
+ *   終了条件：ゴールエリアを検出して終了動作が完了する。
+ */
+void traceBackwardArea_18(void) {
+
+}
+
 /**
  * 右カーブ動作中か判定する 
  * @return 戻り値
@@ -590,6 +636,43 @@ int doesNeedToResetSpeed(void) {
 	return ((currentTraceAction == TRACE_L_TURN) || (currentTraceAction == TRACE_R_TURN));
 }
 
+#ifdef ENABLE_AVRTIMER
+/**
+ * センサー値のBitパターンを取得する。
+ * @brief センサー値を参照し、対応するアクションを取得する。
+ * @return 戻り値の説明
+ */
+int getSensorPatternCalledFromTimer(void) {
+	// センサー値を取得
+	getSensors();
+	
+	// 判定条件数を減らすためゴール判定用センサ値をフィルタリングする。
+	curSensorPattern = ((IR_BitPattern >> 1) << 1);
+
+	if (goalCounter >= 50 &&
+		((IR_BitPattern == BIT_000011 ) ||
+		 (IR_BitPattern == BIT_000111 ) ||
+		 (IR_BitPattern == BIT_001111 ) ||
+		 (IR_BitPattern == BIT_011111 ) ||
+		 (IR_BitPattern == BIT_111111 )
+		)){
+		curSensorPattern = TRACE_FINALACTION;
+	}
+
+	return curSensorPattern;
+}
+
+/**
+ * センサー値のBitパターンを取得する。
+ * @brief センサー値を参照し、対応するアクションを取得する。
+ * @return 戻り値の説明
+ */
+int getSensorPattern(void) {
+	return curSensorPattern;
+}
+
+#else // ENABLE_AVRTIMER
+
 /**
 * センサー値のBitパターンを取得する。
 * @brief センサー値を参照し、対応するアクションを取得する。
@@ -619,6 +702,8 @@ int getSensorPattern(void) {
 
 	return ptn;
 }
+
+#endif // ENABLE_AVRTIMER
 
 /**
 * Bitパターンの履歴を初期化する。

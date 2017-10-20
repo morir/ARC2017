@@ -144,7 +144,13 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AvrTimer.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="DebugLog.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="AvrTimer.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="include\dynamixel.h">
