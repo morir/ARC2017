@@ -60,6 +60,7 @@ int isRightInsideDetected(int sensor);
 int isDetectedNothing(int sensor);
 int doesNeedToResetSpeed(void);
 int getSensorPattern(void);
+void initSensorHistory(void);
 int getSensorPatternWithHistory(void);
 void initPETbottlesMotor(void);
 void placePETbottles(void);
@@ -107,12 +108,13 @@ int goalCounter = 0;
 //int mBeforeMoveState = MOVE_SELECTION_TYPE_STRAIGHT;
 
 // IR Sensor 
-unsigned int IR[HISTORY_MAXSIZE][ADC_PORT_6 + 1];
-int currentCount = 0;
+unsigned int IR[ADC_PORT_6 + 1] = {0,0,0,0,0,0,0};
 
 // IRの状態(BITパターン)
 int IR_BitPattern = 0;
-int IR_BitPatternHistory[HISTORY_MAXSIZE] = {0,0,0,0,0};
+int IR_BitPatternHistory[HISTORY_MAXSIZE] =
+ { TRACE_STRAIGHT, TRACE_STRAIGHT, TRACE_STRAIGHT, TRACE_STRAIGHT, TRACE_STRAIGHT };
+int currentCount = 0;
 
 
 int mMoveCount = 1;
@@ -215,7 +217,7 @@ int main(void) {
     initEmergencyStop();
     setLED();
     initIRSensor();
-	memset(IR, 0, sizeof(IR));
+	initSensorHistory();
     MotorInit();
     initSerial();
 	initPETbottlesMotor();
@@ -606,6 +608,15 @@ int getSensorPattern(void) {
 }
 
 /**
+* Bitパターンの履歴を初期化する。
+* @brief Bitパターンの履歴を直進のBitパターンで初期化する。
+* @return 戻り値の説明
+*/
+void initSensorHistory(void) {
+	memset(IR_BitPatternHistory, TRACE_STRAIGHT, sizeof(IR_BitPatternHistory));
+}
+
+/**
 * 履歴管理を使ったセンサー値のBitパターンを取得する。
 * @brief センサー値を参照し、対応するアクションを取得する。
 * @return 戻り値の説明
@@ -697,29 +708,29 @@ void getSensors(void) {
 	/* 現在のカウンタ値を更新 */
     currentCount = ((currentCount + 1) % HISTORY_MAXSIZE);
 	/* センサー値を取得 */
-    ReadIRSensors(IR[currentCount]);
+    ReadIRSensors(IR);
 	
 	/* IR状態をBITパターンに変換 */
 	IR_BitPattern = 0;
-	if (IR[currentCount][RIGHT_OUTSIDE] <= COMPARE_VALUE)	IR_BitPattern |= BIT_RIGHT_OUTSIDE_ON;
-	if (IR[currentCount][RIGHT_CENTER]  <= COMPARE_VALUE)	IR_BitPattern |= BIT_RIGHT_CENTER_ON;
-	if (IR[currentCount][RIGHT_INSIDE]  <= COMPARE_VALUE)	IR_BitPattern |= BIT_RIGHT_INSIDE_ON;
-	if (IR[currentCount][LEFT_INSIDE]   <= COMPARE_VALUE)	IR_BitPattern |= BIT_LEFT_INSIDE_ON;
-	if (IR[currentCount][LEFT_CENTER]   <= COMPARE_VALUE)	IR_BitPattern |= BIT_LEFT_CENTER_ON;
-	if (IR[currentCount][LEFT_OUTSIDE]  <= COMPARE_VALUE)	IR_BitPattern |= BIT_LEFT_OUTSIDE_ON;
+	if (IR[RIGHT_OUTSIDE] <= COMPARE_VALUE)	IR_BitPattern |= BIT_RIGHT_OUTSIDE_ON;
+	if (IR[RIGHT_CENTER]  <= COMPARE_VALUE)	IR_BitPattern |= BIT_RIGHT_CENTER_ON;
+	if (IR[RIGHT_INSIDE]  <= COMPARE_VALUE)	IR_BitPattern |= BIT_RIGHT_INSIDE_ON;
+	if (IR[LEFT_INSIDE]   <= COMPARE_VALUE)	IR_BitPattern |= BIT_LEFT_INSIDE_ON;
+	if (IR[LEFT_CENTER]   <= COMPARE_VALUE)	IR_BitPattern |= BIT_LEFT_CENTER_ON;
+	if (IR[LEFT_OUTSIDE]  <= COMPARE_VALUE)	IR_BitPattern |= BIT_LEFT_OUTSIDE_ON;
 
 	IR_BitPatternHistory[currentCount] = IR_BitPattern;
 	
     LOG_INFO("sensor %3d: %3d: %3d: %3d: %3d: %3d \r\n",
-			 IR[currentCount][LEFT_OUTSIDE], IR[currentCount][LEFT_CENTER], IR[currentCount][LEFT_INSIDE],
-			 IR[currentCount][RIGHT_INSIDE], IR[currentCount][RIGHT_CENTER], IR[currentCount][RIGHT_OUTSIDE]);
-    LOG_DEBUG("IR[R %1d%1d%1d%1d%1d%1d L]\r\n",
-			  ((IR[currentCount][LEFT_OUTSIDE]  <= COMPARE_VALUE)? 1 : 0),
-			  ((IR[currentCount][LEFT_CENTER]   <= COMPARE_VALUE)? 1 : 0),
-			  ((IR[currentCount][LEFT_INSIDE]   <= COMPARE_VALUE)? 1 : 0),
-			  ((IR[currentCount][RIGHT_INSIDE]  <= COMPARE_VALUE)? 1 : 0),
-			  ((IR[currentCount][RIGHT_CENTER]  <= COMPARE_VALUE)? 1 : 0),
-			  ((IR[currentCount][RIGHT_OUTSIDE] <= COMPARE_VALUE)? 1 : 0));
+			 IR[LEFT_OUTSIDE], IR[LEFT_CENTER], IR[LEFT_INSIDE],
+			 IR[RIGHT_INSIDE], IR[RIGHT_CENTER], IR[RIGHT_OUTSIDE]);
+    LOG_DEBUG("IR[L %1d%1d%1d%1d%1d%1d R]\r\n",
+			  ((IR[LEFT_OUTSIDE]  <= COMPARE_VALUE) ? 1 : 0),
+			  ((IR[LEFT_CENTER]   <= COMPARE_VALUE) ? 1 : 0),
+			  ((IR[LEFT_INSIDE]   <= COMPARE_VALUE) ? 1 : 0),
+			  ((IR[RIGHT_INSIDE]  <= COMPARE_VALUE) ? 1 : 0),
+			  ((IR[RIGHT_CENTER]  <= COMPARE_VALUE) ? 1 : 0),
+			  ((IR[RIGHT_OUTSIDE] <= COMPARE_VALUE) ? 1 : 0));
 }
 
 /**
