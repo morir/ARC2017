@@ -644,20 +644,7 @@ int doesNeedToResetSpeed(void) {
 int getSensorPatternCalledFromTimer(void) {
 	// センサー値を取得
 	getSensors();
-	
-	// 判定条件数を減らすためゴール判定用センサ値をフィルタリングする。
-	curSensorPattern = ((IR_BitPattern >> 1) << 1);
-
-	if (goalCounter >= 50 &&
-		((IR_BitPattern == BIT_000011 ) ||
-		 (IR_BitPattern == BIT_000111 ) ||
-		 (IR_BitPattern == BIT_001111 ) ||
-		 (IR_BitPattern == BIT_011111 ) ||
-		 (IR_BitPattern == BIT_111111 )
-		)){
-		curSensorPattern = TRACE_FINALACTION;
-	}
-
+	curSensorPattern = IR_BitPattern;
 	return curSensorPattern;
 }
 
@@ -678,28 +665,12 @@ int getSensorPattern(void) {
 * @return 戻り値の説明
 */
 int getSensorPattern(void) {
-    static int ptn = 0;
-	
 	// LEDを設定
 	//setLED();
 	
 	// センサー値を取得
 	getSensors();
-	
-	// 判定条件数を減らすためゴール判定用センサ値をフィルタリングする。
-	ptn = ((IR_BitPattern >> 1) << 1);
-
-	if (goalCounter >= 50 &&
-		((IR_BitPattern == BIT_000011 ) ||
-		 (IR_BitPattern == BIT_000111 ) ||
-		 (IR_BitPattern == BIT_001111 ) ||
-		 (IR_BitPattern == BIT_011111 ) ||
-		 (IR_BitPattern == BIT_111111 )
-		)){
-		ptn = TRACE_FINALACTION;
-	}
-
-	return ptn;
+	return IR_BitPattern;
 }
 
 #endif // ENABLE_AVRTIMER
