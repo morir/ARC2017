@@ -47,7 +47,7 @@
 #define OVER_RUN_TIME       500     // Over run time
 #endif // DINAMIXEL_AX_12
 
-#define PETBOTTOLE_MOTOR	18		// Cover Motor address
+#define CARGO_BED_MOTOR	     18		 // 荷台用モータのID
 
 #define SHOULDER_MOTOR       12      // Shoulder Motor address
 #define UPPER_ARM_MOTOR      25      // Upper arm Motor address

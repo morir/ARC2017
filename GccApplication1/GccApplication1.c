@@ -72,8 +72,8 @@ int getSensorPatternCalledFromTimer(void);
 int getSensorPattern(void);
 void initSensorHistory(void);
 int getSensorPatternWithHistory(void);
-void initPETbottlesMotor(void);
-void placePETbottles(void);
+void initCargoBedMotor(void);
+void dumpTreasures(void);
 void stopMoveLessThanVal(int val);
 
 void initDumpMotor(void);
@@ -243,7 +243,7 @@ int main(void) {
 	initSensorHistory();
     MotorInit();
     initSerial();
-	initPETbottlesMotor();
+	initCargoBedMotor();
 #if(0)
 	LOG_DEBUG("Call initDumpMotor() %s\r\n", "");
  	_delay_ms(5000);//1秒待つ⇒動作に合わせて変更してください
@@ -860,24 +860,24 @@ void executeFinalAction(void)
 {
 	LOG_INFO("executeFinalAction!!\r\n");
 	StopMove();
-	_delay_ms(5000);
-
-	/* 200度くらい右回りで回転 */
-	MotorControl(RIGHT_MOTOR, 75);
-	MotorControl(LEFT_MOTOR, 75);
-	_delay_ms(1200);
-	StopMove();
-	_delay_ms(10);
-
-	/* ペットボトル設置を実行 */
-	placePETbottles();
-	_delay_ms(10);
+	_delay_ms(1000);
 
 	/* ゆっくり後進 */
 	MotorControl(RIGHT_MOTOR, 40);
 	MotorControl(LEFT_MOTOR, 1063);
-	_delay_ms(500);
+	_delay_ms(500);//！要調整
 	StopMove();//停止を実行
+	_delay_ms(10);
+
+	/* 200度くらい右回りで回転 */
+	MotorControl(RIGHT_MOTOR, 75);
+	MotorControl(LEFT_MOTOR, 75);
+	_delay_ms(1200);//！要調整
+	StopMove();
+	_delay_ms(10);
+
+	/* 荷台を傾けて宝物を落とす */
+	dumpTreasures();
 	_delay_ms(10);
 	
 	/* ゆっくり前進 */
@@ -888,12 +888,13 @@ void executeFinalAction(void)
 }
 
 /************************************************************************/
-// ペットボトル用モータの初期設定
-// ペットボトル設置用モーターを少し前方に傾ける。
+// 荷台用モータの初期設定
+// 荷台用モーターを少し進行方向に傾ける。
 /************************************************************************/
-void initPETbottlesMotor(void) {
+void initCargoBedMotor(void) {
+	GetCurrentAngle(CARGO_BED_MOTOR);
 	//最大速度で、642の位置へ動かす
-	MotorControlJoint( PETBOTTOLE_MOTOR, 0, 642 );
+	//MotorControlJoint( CARGO_BED_MOTOR, 0, 642 );//！要調整
 }
 
 /************************************************************************/
@@ -1024,13 +1025,13 @@ void executeRotate(int motorId, int speed, int angle, int targetangle){
 }
 
 /************************************************************************/
-// ペットボトル設置
+// 宝物を落とす
 /************************************************************************/
-void placePETbottles(void) {
+void dumpTreasures(void) {
 	_delay_ms(1000);//1秒待つ⇒動作に合わせて変更してください
-	MotorControlJoint( PETBOTTOLE_MOTOR, 30, 352 );//モーターを後方にゆっくり傾ける
+	MotorControlJoint( CARGO_BED_MOTOR, 30, 352 );//モーターを後方にゆっくり傾ける！要調整
 	_delay_ms(6000);//6秒継続
-	MotorControlJoint( PETBOTTOLE_MOTOR, 100, 512 );//モーターをセンター位置に戻す
+	MotorControlJoint( CARGO_BED_MOTOR, 100, 512 );//モーターをセンター位置に戻す！要調整
 	_delay_ms(3000);//3秒待つ⇒動作に合わせて変更してください
 
 }
