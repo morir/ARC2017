@@ -43,6 +43,7 @@ static int curSensorPattern = 0;	// 現在のセンサー値
 
 // ------------------ Method Definition ------------------
 void executeTraceProcess(void);
+void traceCommon(int counter);
 void traceForwardArea_01(void);
 void traceForwardArea_02(void);
 void traceForwardArea_03(void);
@@ -337,6 +338,37 @@ void executeTraceProcess(void) {
 }
 
 /*
+ * 共通トレース動作
+ * @return なし
+ * @condition
+ *   開始条件：スタートコマンドを受信する。
+ *   終了条件：センサで左ターンを検出して直角旋回が完了する。
+ */
+ void traceCommon(int counter) {
+	// センサー値を取得
+	getSensors();
+	currentTraceAction = getActionWithHistory();
+	//if (isLeftRound() || isRightRound()) {
+		//executeRound();
+	//}
+
+#ifdef LOG_INFO_ON
+	if ((counter % 1) == 0) {
+		BaseSpeed = BaseSpeed + 1;
+		counter = 0;
+	}
+#else
+	if ((counter % 5) == 0) {
+		BaseSpeed = BaseSpeed + 2;
+		counter = 0;
+	}
+#endif /* _MODE_SKIP_ */
+
+	Execute(currentTraceAction);
+	_delay_ms(1);// delayTimeの間隔を空ける
+}
+
+/*
  * 往路エリア 1 のトレース動作
  * @return なし
  * @condition
@@ -344,59 +376,20 @@ void executeTraceProcess(void) {
  *   終了条件：センサで左ターンを検出して直角旋回が完了する。
  */
  void traceForwardArea_01(void) {
-	static int sensorPattern = BIT_000000;
 	static int counter = 0;
 
 	//初期動作（少しだけ直進）
 	StraightMove();
 	_delay_ms(100);	// 10ms 間隔を空ける
 
-	while (1) {
-		// センサ値のビットパターンを取得する。
-		sensorPattern = getSensorPattern();
-		currentTraceAction = ActionTable[sensorPattern];
-
-		if(currentTraceAction == TRACE_L_TURN)
-		{
-			// 旋回実行
-			currentTraceAction = executeLeftTurn();
-			if (currentTraceAction == TRACE_SLOW_STRAIGHT) {
-				StraightMove();
-				executeDelay();
-				sensorPattern = getSensorPattern();
-				if(sensorPattern != BIT_000000 ) {
-					currentTraceAction = TRACE_STRAIGHT;
-				}
-			}
-
-			BaseSpeed = BASE_SPEED_INIT_VAL;
-			break;
-		}
-		else
-		{
-			currentTraceAction = getActionWithHistory();
-			if (isLeftRound() || isRightRound()) {
-				executeRound();
-			}
-
-			counter++;
-
-#ifdef LOG_INFO_ON
-			if ((counter % 1) == 0) {
-				BaseSpeed = BaseSpeed + 1;
-				counter = 0;
-			}
-#else
-			if ((counter % 5) == 0) {
-				BaseSpeed = BaseSpeed + 2;
-				counter = 0;
-			}
-#endif /* _MODE_SKIP_ */
-
-			Execute(currentTraceAction);
-			_delay_ms(1);// delayTimeの間隔を空ける
-		}
+	while (currentTraceAction != TRACE_L_TURN) {
+		traceCommon(counter);
+		counter++;
 	}
+
+	// 左旋回実行
+	currentTraceAction = executeLeftTurn();
+	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
@@ -407,55 +400,16 @@ void executeTraceProcess(void) {
  *   終了条件：センサで左ターンを検出して直角旋回が完了する。
  */
  void traceForwardArea_02(void) {
-	static int sensorPattern = BIT_000000;
 	static int counter = 0;
 
-	while (1) {
-		// センサ値のビットパターンを取得する。
-		sensorPattern = getSensorPattern();
-		currentTraceAction = ActionTable[sensorPattern];
-
-		if(currentTraceAction == TRACE_L_TURN)
-		{
-			// 旋回実行
-			currentTraceAction = executeLeftTurn();
-			if (currentTraceAction == TRACE_SLOW_STRAIGHT) {
-				StraightMove();
-				executeDelay();
-				sensorPattern = getSensorPattern();
-				if(sensorPattern != BIT_000000 ) {
-					currentTraceAction = TRACE_STRAIGHT;
-				}
-			}
-
-			BaseSpeed = BASE_SPEED_INIT_VAL;
-			break;
-		}
-		else
-		{
-			currentTraceAction = getActionWithHistory();
-			if (isLeftRound() || isRightRound()) {
-				executeRound();
-			}
-
-			counter++;
-
-			#ifdef LOG_INFO_ON
-			if ((counter % 1) == 0) {
-				BaseSpeed = BaseSpeed + 1;
-				counter = 0;
-			}
-			#else
-			if ((counter % 5) == 0) {
-				BaseSpeed = BaseSpeed + 2;
-				counter = 0;
-			}
-			#endif /* _MODE_SKIP_ */
-
-			Execute(currentTraceAction);
-			_delay_ms(1);// delayTimeの間隔を空ける
-		}
+	while (currentTraceAction != TRACE_L_TURN) {
+		traceCommon(counter);
+		counter++;
 	}
+
+	// 左旋回実行
+	currentTraceAction = executeLeftTurn();
+	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
@@ -466,55 +420,16 @@ void executeTraceProcess(void) {
  *   終了条件：センサで左ターンを検出して直角旋回が完了する。
  */
  void traceForwardArea_03(void) {
-	static int sensorPattern = BIT_000000;
 	static int counter = 0;
 
-	while (1) {
-		// センサ値のビットパターンを取得する。
-		sensorPattern = getSensorPattern();
-		currentTraceAction = ActionTable[sensorPattern];
-
-		if(currentTraceAction == TRACE_L_TURN)
-		{
-			// 旋回実行
-			currentTraceAction = executeLeftTurn();
-			if (currentTraceAction == TRACE_SLOW_STRAIGHT) {
-				StraightMove();
-				executeDelay();
-				sensorPattern = getSensorPattern();
-				if(sensorPattern != BIT_000000 ) {
-					currentTraceAction = TRACE_STRAIGHT;
-				}
-			}
-
-			BaseSpeed = BASE_SPEED_INIT_VAL;
-			break;
-		}
-		else
-		{
-			currentTraceAction = getActionWithHistory();
-			if (isLeftRound() || isRightRound()) {
-				executeRound();
-			}
-
-			counter++;
-
-			#ifdef LOG_INFO_ON
-			if ((counter % 1) == 0) {
-				BaseSpeed = BaseSpeed + 1;
-				counter = 0;
-			}
-			#else
-			if ((counter % 5) == 0) {
-				BaseSpeed = BaseSpeed + 2;
-				counter = 0;
-			}
-			#endif /* _MODE_SKIP_ */
-
-			Execute(currentTraceAction);
-			_delay_ms(1);// delayTimeの間隔を空ける
-		}
+	while (currentTraceAction != TRACE_L_TURN) {
+		traceCommon(counter);
+		counter++;
 	}
+
+	// 左旋回実行
+	currentTraceAction = executeLeftTurn();
+	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
@@ -525,55 +440,16 @@ void executeTraceProcess(void) {
  *   終了条件：センサで右ターンを検出して直角旋回が完了する。
  */
  void traceForwardArea_04(void) {
-	static int sensorPattern = BIT_000000;
 	static int counter = 0;
 
-	while (1) {
-		// センサ値のビットパターンを取得する。
-		sensorPattern = getSensorPattern();
-		currentTraceAction = ActionTable[sensorPattern];
-
-		if(currentTraceAction == TRACE_R_TURN)
-		{
-			// 旋回実行
-			currentTraceAction = executeRightTurn();
-			if (currentTraceAction == TRACE_SLOW_STRAIGHT) {
-				StraightMove();
-				executeDelay();
-				sensorPattern = getSensorPattern();
-				if(sensorPattern != BIT_000000 ) {
-					currentTraceAction = TRACE_STRAIGHT;
-				}
-			}
-
-			BaseSpeed = BASE_SPEED_INIT_VAL;
-			break;
-		}
-		else
-		{
-			currentTraceAction = getActionWithHistory();
-			if (isLeftRound() || isRightRound()) {
-				executeRound();
-			}
-
-			counter++;
-
-			#ifdef LOG_INFO_ON
-			if ((counter % 1) == 0) {
-				BaseSpeed = BaseSpeed + 1;
-				counter = 0;
-			}
-			#else
-			if ((counter % 5) == 0) {
-				BaseSpeed = BaseSpeed + 2;
-				counter = 0;
-			}
-			#endif /* _MODE_SKIP_ */
-
-			Execute(currentTraceAction);
-			_delay_ms(1);// delayTimeの間隔を空ける
-		}
+	while (currentTraceAction != TRACE_R_TURN) {
+		traceCommon(counter);
+		counter++;
 	}
+
+	// 右旋回実行
+	currentTraceAction = executeRightTurn();
+	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
@@ -584,55 +460,16 @@ void executeTraceProcess(void) {
  *   終了条件：センサで右ターンを検出して直角旋回が完了する。
  */
  void traceForwardArea_05(void) {
-	static int sensorPattern = BIT_000000;
 	static int counter = 0;
 
-	while (1) {
-		// センサ値のビットパターンを取得する。
-		sensorPattern = getSensorPattern();
-		currentTraceAction = ActionTable[sensorPattern];
-
-		if(currentTraceAction == TRACE_R_TURN)
-		{
-			// 旋回実行
-			currentTraceAction = executeRightTurn();
-			if (currentTraceAction == TRACE_SLOW_STRAIGHT) {
-				StraightMove();
-				executeDelay();
-				sensorPattern = getSensorPattern();
-				if(sensorPattern != BIT_000000 ) {
-					currentTraceAction = TRACE_STRAIGHT;
-				}
-			}
-
-			BaseSpeed = BASE_SPEED_INIT_VAL;
-			break;
-		}
-		else
-		{
-			currentTraceAction = getActionWithHistory();
-			if (isLeftRound() || isRightRound()) {
-				executeRound();
-			}
-
-			counter++;
-
-			#ifdef LOG_INFO_ON
-			if ((counter % 1) == 0) {
-				BaseSpeed = BaseSpeed + 1;
-				counter = 0;
-			}
-			#else
-			if ((counter % 5) == 0) {
-				BaseSpeed = BaseSpeed + 2;
-				counter = 0;
-			}
-			#endif /* _MODE_SKIP_ */
-
-			Execute(currentTraceAction);
-			_delay_ms(1);// delayTimeの間隔を空ける
-		}
+	while (currentTraceAction != TRACE_R_TURN) {
+		traceCommon(counter);
+		counter++;
 	}
+
+	// 右旋回実行
+	currentTraceAction = executeRightTurn();
+	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
@@ -653,55 +490,16 @@ void executeTraceProcess(void) {
  *   終了条件：センサで左ターンを検出して直角旋回が完了する。
  */
  void traceBackwardArea_01(void) {
-	static int sensorPattern = BIT_000000;
 	static int counter = 0;
 
-	while (1) {
-		// センサ値のビットパターンを取得する。
-		sensorPattern = getSensorPattern();
-		currentTraceAction = ActionTable[sensorPattern];
-
-		if(currentTraceAction == TRACE_L_TURN)
-		{
-			// 旋回実行
-			currentTraceAction = executeLeftTurn();
-			if (currentTraceAction == TRACE_SLOW_STRAIGHT) {
-				StraightMove();
-				executeDelay();
-				sensorPattern = getSensorPattern();
-				if(sensorPattern != BIT_000000 ) {
-					currentTraceAction = TRACE_STRAIGHT;
-				}
-			}
-
-			BaseSpeed = BASE_SPEED_INIT_VAL;
-			break;
-		}
-		else
-		{
-			currentTraceAction = getActionWithHistory();
-			if (isLeftRound() || isRightRound()) {
-				executeRound();
-			}
-
-			counter++;
-
-			#ifdef LOG_INFO_ON
-			if ((counter % 1) == 0) {
-				BaseSpeed = BaseSpeed + 1;
-				counter = 0;
-			}
-			#else
-			if ((counter % 5) == 0) {
-				BaseSpeed = BaseSpeed + 2;
-				counter = 0;
-			}
-			#endif /* _MODE_SKIP_ */
-
-			Execute(currentTraceAction);
-			_delay_ms(1);// delayTimeの間隔を空ける
-		}
+	while (currentTraceAction != TRACE_L_TURN) {
+		traceCommon(counter);
+		counter++;
 	}
+
+	// 左旋回実行
+	currentTraceAction = executeLeftTurn();
+	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
@@ -712,55 +510,16 @@ void executeTraceProcess(void) {
  *   終了条件：センサで左ターンを検出して直角旋回が完了する。
  */
  void traceBackwardArea_02(void) {
-	static int sensorPattern = BIT_000000;
 	static int counter = 0;
 
-	while (1) {
-		// センサ値のビットパターンを取得する。
-		sensorPattern = getSensorPattern();
-		currentTraceAction = ActionTable[sensorPattern];
-
-		if(currentTraceAction == TRACE_L_TURN)
-		{
-			// 旋回実行
-			currentTraceAction = executeLeftTurn();
-			if (currentTraceAction == TRACE_SLOW_STRAIGHT) {
-				StraightMove();
-				executeDelay();
-				sensorPattern = getSensorPattern();
-				if(sensorPattern != BIT_000000 ) {
-					currentTraceAction = TRACE_STRAIGHT;
-				}
-			}
-
-			BaseSpeed = BASE_SPEED_INIT_VAL;
-			break;
-		}
-		else
-		{
-			currentTraceAction = getActionWithHistory();
-			if (isLeftRound() || isRightRound()) {
-				executeRound();
-			}
-
-			counter++;
-
-			#ifdef LOG_INFO_ON
-			if ((counter % 1) == 0) {
-				BaseSpeed = BaseSpeed + 1;
-				counter = 0;
-			}
-			#else
-			if ((counter % 5) == 0) {
-				BaseSpeed = BaseSpeed + 2;
-				counter = 0;
-			}
-			#endif /* _MODE_SKIP_ */
-
-			Execute(currentTraceAction);
-			_delay_ms(1);// delayTimeの間隔を空ける
-		}
+	while (currentTraceAction != TRACE_L_TURN) {
+		traceCommon(counter);
+		counter++;
 	}
+
+	// 左旋回実行
+	currentTraceAction = executeLeftTurn();
+	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
@@ -771,47 +530,17 @@ void executeTraceProcess(void) {
  *   終了条件：センサで右ターンを検出して直角旋回が完了する。
  */
  void traceBackwardArea_03(void) {
-	static int sensorPattern = BIT_000000;
 	static int counter = 0;
 
-	while (1) {
-		// センサ値のビットパターンを取得する。
-		sensorPattern = getSensorPattern();
-		currentTraceAction = ActionTable[sensorPattern];
-
-		if(currentTraceAction == TRACE_R_TURN)
-		{
-			// 停止実行
-			StopMove();
-			initSensorHistory();
-			currentTraceAction = TRACE_STRAIGHT;
-			break;
-		}
-		else
-		{
-			currentTraceAction = getActionWithHistory();
-			if (isLeftRound() || isRightRound()) {
-				executeRound();
-			}
-
-			counter++;
-
-			#ifdef LOG_INFO_ON
-			if ((counter % 1) == 0) {
-				BaseSpeed = BaseSpeed + 1;
-				counter = 0;
-			}
-			#else
-			if ((counter % 5) == 0) {
-				BaseSpeed = BaseSpeed + 2;
-				counter = 0;
-			}
-			#endif /* _MODE_SKIP_ */
-
-			Execute(currentTraceAction);
-			_delay_ms(1);// delayTimeの間隔を空ける
-		}
+	while (currentTraceAction != TRACE_R_TURN) {
+		traceCommon(counter);
+		counter++;
 	}
+
+	// 停止実行
+	StopMove();
+	initSensorHistory();
+	currentTraceAction = TRACE_STRAIGHT;
 }
 
 /*
@@ -842,55 +571,16 @@ void executeTraceProcess(void) {
  *   終了条件：
  */
  void traceBackwardArea_06(void) {
-	static int sensorPattern = BIT_000000;
 	static int counter = 0;
 
-	while (1) {
-		// センサ値のビットパターンを取得する。
-		sensorPattern = getSensorPattern();
-		currentTraceAction = ActionTable[sensorPattern];
-
-		if(currentTraceAction == TRACE_R_TURN)
-		{
-			// 旋回実行
-			currentTraceAction = executeRightTurn();
-			if (currentTraceAction == TRACE_SLOW_STRAIGHT) {
-				StraightMove();
-				executeDelay();
-				sensorPattern = getSensorPattern();
-				if(sensorPattern != BIT_000000 ) {
-					currentTraceAction = TRACE_STRAIGHT;
-				}
-			}
-
-			BaseSpeed = BASE_SPEED_INIT_VAL;
-			break;
-		}
-		else
-		{
-			currentTraceAction = getActionWithHistory();
-			if (isLeftRound() || isRightRound()) {
-				executeRound();
-			}
-
-			counter++;
-
-			#ifdef LOG_INFO_ON
-			if ((counter % 1) == 0) {
-				BaseSpeed = BaseSpeed + 1;
-				counter = 0;
-			}
-			#else
-			if ((counter % 5) == 0) {
-				BaseSpeed = BaseSpeed + 2;
-				counter = 0;
-			}
-			#endif /* _MODE_SKIP_ */
-
-			Execute(currentTraceAction);
-			_delay_ms(1);// delayTimeの間隔を空ける
-		}
+	while (currentTraceAction != TRACE_R_TURN) {
+		traceCommon(counter);
+		counter++;
 	}
+
+	// 右旋回実行
+	currentTraceAction = executeRightTurn();
+	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
@@ -901,55 +591,16 @@ void executeTraceProcess(void) {
  *   終了条件：
  */
  void traceBackwardArea_07(void) {
-	static int sensorPattern = BIT_000000;
 	static int counter = 0;
 
-	while (1) {
-		// センサ値のビットパターンを取得する。
-		sensorPattern = getSensorPattern();
-		currentTraceAction = ActionTable[sensorPattern];
-
-		if(currentTraceAction == TRACE_R_TURN)
-		{
-			// 旋回実行
-			currentTraceAction = executeRightTurn();
-			if (currentTraceAction == TRACE_SLOW_STRAIGHT) {
-				StraightMove();
-				executeDelay();
-				sensorPattern = getSensorPattern();
-				if(sensorPattern != BIT_000000 ) {
-					currentTraceAction = TRACE_STRAIGHT;
-				}
-			}
-
-			BaseSpeed = BASE_SPEED_INIT_VAL;
-			break;
-		}
-		else
-		{
-			currentTraceAction = getActionWithHistory();
-			if (isLeftRound() || isRightRound()) {
-				executeRound();
-			}
-
-			counter++;
-
-			#ifdef LOG_INFO_ON
-			if ((counter % 1) == 0) {
-				BaseSpeed = BaseSpeed + 1;
-				counter = 0;
-			}
-			#else
-			if ((counter % 5) == 0) {
-				BaseSpeed = BaseSpeed + 2;
-				counter = 0;
-			}
-			#endif /* _MODE_SKIP_ */
-
-			Execute(currentTraceAction);
-			_delay_ms(1);// delayTimeの間隔を空ける
-		}
+	while (currentTraceAction != TRACE_R_TURN) {
+		traceCommon(counter);
+		counter++;
 	}
+
+	// 右旋回実行
+	currentTraceAction = executeRightTurn();
+	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
@@ -970,55 +621,16 @@ void executeTraceProcess(void) {
  *   終了条件：
  */
  void traceBackwardArea_09(void) {
-	static int sensorPattern = BIT_000000;
 	static int counter = 0;
 
-	while (1) {
-		// センサ値のビットパターンを取得する。
-		sensorPattern = getSensorPattern();
-		currentTraceAction = ActionTable[sensorPattern];
-
-		if(currentTraceAction == TRACE_L_TURN)
-		{
-			//旋回実行
-			currentTraceAction = executeRightTurn();
-			if (currentTraceAction == TRACE_SLOW_STRAIGHT) {
-				StraightMove();
-				executeDelay();
-				sensorPattern = getSensorPattern();
-				if(sensorPattern != BIT_000000 ) {
-					currentTraceAction = TRACE_STRAIGHT;
-				}
-			}
-
-			BaseSpeed = BASE_SPEED_INIT_VAL;
-			break;
-		}
-		else
-		{
-			currentTraceAction = getActionWithHistory();
-			if (isLeftRound() || isRightRound()) {
-				executeRound();
-			}
-
-			counter++;
-
-			#ifdef LOG_INFO_ON
-			if ((counter % 1) == 0) {
-				BaseSpeed = BaseSpeed + 1;
-				counter = 0;
-			}
-			#else
-			if ((counter % 5) == 0) {
-				BaseSpeed = BaseSpeed + 2;
-				counter = 0;
-			}
-			#endif /* _MODE_SKIP_ */
-
-			Execute(currentTraceAction);
-			_delay_ms(1);// delayTimeの間隔を空ける
-		}
+	while (currentTraceAction != TRACE_L_TURN) {
+		traceCommon(counter);
+		counter++;
 	}
+
+	// 右旋回実行
+	currentTraceAction = executeRightTurn();
+	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
@@ -1089,55 +701,16 @@ void executeTraceProcess(void) {
  *   終了条件：
  */
  void traceBackwardArea_15(void) {
-	static int sensorPattern = BIT_000000;
 	static int counter = 0;
 
-	while (1) {
-		// センサ値のビットパターンを取得する。
-		sensorPattern = getSensorPattern();
-		currentTraceAction = ActionTable[sensorPattern];
-
-		if(currentTraceAction == TRACE_L_TURN)
-		{
-			//旋回実行
-			currentTraceAction = executeLeftTurn();
-			if (currentTraceAction == TRACE_SLOW_STRAIGHT) {
-				StraightMove();
-				executeDelay();
-				sensorPattern = getSensorPattern();
-				if(sensorPattern != BIT_000000 ) {
-					currentTraceAction = TRACE_STRAIGHT;
-				}
-			}
-
-			BaseSpeed = BASE_SPEED_INIT_VAL;
-			break;
-		}
-		else
-		{
-			currentTraceAction = getActionWithHistory();
-			if (isLeftRound() || isRightRound()) {
-				executeRound();
-			}
-
-			counter++;
-
-			#ifdef LOG_INFO_ON
-			if ((counter % 1) == 0) {
-				BaseSpeed = BaseSpeed + 1;
-				counter = 0;
-			}
-			#else
-			if ((counter % 5) == 0) {
-				BaseSpeed = BaseSpeed + 2;
-				counter = 0;
-			}
-			#endif /* _MODE_SKIP_ */
-
-			Execute(currentTraceAction);
-			_delay_ms(1);// delayTimeの間隔を空ける
-		}
+	while (currentTraceAction != TRACE_L_TURN) {
+		traceCommon(counter);
+		counter++;
 	}
+
+	// 左旋回実行
+	currentTraceAction = executeLeftTurn();
+	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
@@ -1158,47 +731,17 @@ void executeTraceProcess(void) {
  *   終了条件：
  */
 void traceBackwardArea_17(void) {
-	static int sensorPattern = BIT_000000;
 	static int counter = 0;
 
-	while (1) {
-		// センサ値のビットパターンを取得する。
-		sensorPattern = getSensorPattern();
-		currentTraceAction = ActionTable[sensorPattern];
-
-		if(currentTraceAction == TRACE_R_TURN)
-		{
-			// 停止実行
-			StopMove();
-			initSensorHistory();
-			currentTraceAction = TRACE_STRAIGHT;
-			break;
-		}
-		else
-		{
-			currentTraceAction = getActionWithHistory();
-			if (isLeftRound() || isRightRound()) {
-				executeRound();
-			}
-
-			counter++;
-
-			#ifdef LOG_INFO_ON
-			if ((counter % 1) == 0) {
-				BaseSpeed = BaseSpeed + 1;
-				counter = 0;
-			}
-			#else
-			if ((counter % 5) == 0) {
-				BaseSpeed = BaseSpeed + 2;
-				counter = 0;
-			}
-			#endif /* _MODE_SKIP_ */
-
-			Execute(currentTraceAction);
-			_delay_ms(1);// delayTimeの間隔を空ける
-		}
+	while (currentTraceAction != TRACE_R_TURN) {
+		traceCommon(counter);
+		counter++;
 	}
+
+	// 停止実行
+	StopMove();
+	initSensorHistory();
+	currentTraceAction = TRACE_STRAIGHT;
 }
 
 /*
