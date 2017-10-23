@@ -92,6 +92,8 @@ void TraceFormation(void);
 void FindFormation(void);
 void CatchAndReleaseFormation(void);
 void executeRotate(int motorId, int speed, int angle, int targetangle);
+void TreasureFindingLineTrace(void);
+void execute180DegreesTurn(void);
 
 void getSensors(void);
 
@@ -480,6 +482,32 @@ void executeTraceProcess(void) {
  *   終了条件：宝物（白）を回収、180度旋回が完了する。
  */
  void treasureHunt_01(void) {
+         //int sensorPattern = BIT_000000;
+         int left, senter, right;
+         GetAXS1SensorFireData(&left, &senter, &right);
+         while (senter >= 180) {
+             // 宝物検索用ライントレースを実行
+             TreasureFindingLineTrace();
+         }
+         // 停止する
+         StopMove();
+         _delay_ms(100);
+         // 前進or後進する（実動作に合わせて設定）。
+         // executeXXXX();
+         
+         // 停止する
+         StopMove();
+         _delay_ms(100);
+
+         // 宝物を掴んで荷台に乗せる
+         CatchAndReleaseFormation();
+
+         // 180度旋回を行う
+         execute180DegreesTurn();
+
+         // 停止する
+         StopMove();
+         _delay_ms(100);
 }
 
 /*
@@ -1193,6 +1221,43 @@ void dumpTreasures(void) {
 	MotorControlJoint( CARGO_BED_MOTOR, 100, 512 );//モーターをセンター位置に戻す！要調整
 	_delay_ms(3000);//3秒待つ⇒動作に合わせて変更してください
 
+}
+
+/************************************************************************/
+// 左右大き目にロボットを揺らしたライントレースを実行
+//
+//
+//
+/************************************************************************/
+void TreasureFindingLineTrace(void) {
+    int sensorPattern = BIT_000000;
+    //
+    //int left, senter, right;
+    //int counter = 0;
+    sensorPattern = getSensorPattern();
+    // ジグザグライントレース
+    switch (sensorPattern) {
+        case TRACE_R_ROUND_MIDDLE:
+        case TRACE_R_ROUND_TIGHT:
+            RightTightRoundMove();
+            break;
+        case TRACE_L_ROUND_MIDDLE:
+        case TRACE_L_ROUND_TIGHT:
+            LeftTightRoundMove();
+            break;
+        default:
+            break;
+    }
+    _delay_ms(50);
+    
+}
+
+/************************************************************************/
+// 180度の旋回を行う。
+// 旋回後、中央のセンサーがトレースラインを検出したら処理を終了する。
+/************************************************************************/
+void execute180DegreesTurn(void) {
+    
 }
 
 /**
