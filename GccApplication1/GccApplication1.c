@@ -908,7 +908,7 @@ int getActionWithHistory(void) {
 	int maxIndex = 0;
 	int maxCount = -1;
 	int actionPattern = 0;
-	static int patternCounter[] = {
+	int patternCounter[] = {
 		0,	// [0]: L_TURN
 		0,	// [1]: L_ROUND_TIGHT
 		0,	// [2]: L_ROUND_MIDDLE
@@ -969,33 +969,43 @@ int getActionWithHistory(void) {
 
 	switch (maxIndex) {
 		case L_TURN:
+		    LOG_DEBUG("TRACE_L_TURN: maxCount = %d\r\n", maxCount);
 			ptn = TRACE_L_TURN;
 			break;
 		case L_ROUND_TIGHT:
+		    LOG_DEBUG("TRACE_L_ROUND_TIGHT: maxCount = %d\r\n", maxCount);
 			ptn = TRACE_L_ROUND_TIGHT;
 			break;
 		case L_ROUND_MIDDLE:
+		    LOG_DEBUG("TRACE_L_ROUND_MIDDLE: maxCount = %d\r\n", maxCount);
 			ptn = TRACE_L_ROUND_MIDDLE;
 			break;
 		case L_ROUND_SOFT:
+		    LOG_DEBUG("TRACE_L_ROUND_SOFT: maxCount = %d\r\n", maxCount);
 			ptn = TRACE_L_ROUND_SOFT;
 			break;
 		case STRAIGHT:
+		    LOG_DEBUG("TRACE_STRAIGHT: maxCount = %d\r\n", maxCount);
 			ptn = TRACE_STRAIGHT;
 			break;
 		case R_ROUND_SOFT:
+		    LOG_DEBUG("TRACE_R_ROUND_SOFT: maxCount = %d\r\n", maxCount);
 			ptn = TRACE_R_ROUND_SOFT;
 			break;
 		case R_ROUND_MIDDLE:
+		    LOG_DEBUG("TRACE_R_ROUND_MIDDLE: maxCount = %d\r\n", maxCount);
 			ptn = TRACE_R_ROUND_MIDDLE;
 			break;
 		case R_ROUND_TIGHT:
+		    LOG_DEBUG("TRACE_R_ROUND_TIGHT: maxCount = %d\r\n", maxCount);
 			ptn = TRACE_R_ROUND_TIGHT;
 			break;
 		case R_TURN:
+		    LOG_DEBUG("TRACE_R_TURN: maxCount = %d\r\n", maxCount);
 			ptn = TRACE_R_TURN;
 			break;
 		default: 
+		    LOG_DEBUG("currentTraceAction[%d]: maxCount = %d\r\n", currentTraceAction, maxCount);
 			ptn = currentTraceAction;
 			break;
 	}
