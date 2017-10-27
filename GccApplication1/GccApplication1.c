@@ -165,11 +165,11 @@ int PID_ctlr = 0;	//!< PID制御用変数。中心のセンサからの距離を
 int ActionTable[] = {
 	/* 00:BIT_000000 */	TRACE_STRAIGHT,
 	/* 01:BIT_000001 */	TRACE_R_ROUND_TIGHT,
-	/* 02:BIT_000010 */	TRACE_R_ROUND_MIDDLE,
+	/* 02:BIT_000010 */	TRACE_R_ROUND_SOFT,
 	/* 03:BIT_000011 */	TRACE_R_TURN,
 	/* 04:BIT_000100 */	TRACE_R_ROUND_SOFT,
 	/* 05:BIT_000101 */	TRACE_R_TURN,
-	/* 06:BIT_000110 */	TRACE_R_ROUND_MIDDLE,
+	/* 06:BIT_000110 */	TRACE_R_ROUND_SOFT,
 	/* 07:BIT_000111 */	TRACE_R_TURN,
 	/* 08:BIT_001000 */	TRACE_L_ROUND_SOFT,
 	/* 09:BIT_001001 */	TRACE_UNDEFINED,
@@ -177,9 +177,9 @@ int ActionTable[] = {
 	/* 11:BIT_001011 */	TRACE_UNDEFINED,
 	/* 12:BIT_001100 */	TRACE_STRAIGHT,
 	/* 13:BIT_001101 */	TRACE_UNDEFINED,
-	/* 14:BIT_001110 */	TRACE_R_ROUND_MIDDLE,
+	/* 14:BIT_001110 */	TRACE_R_ROUND_SOFT,
 	/* 15:BIT_001111 */	TRACE_R_TURN,
-	/* 16:BIT_010000 */	TRACE_L_ROUND_MIDDLE,
+	/* 16:BIT_010000 */	TRACE_L_ROUND_SOFT,
 	/* 17:BIT_010001 */	TRACE_UNDEFINED,
 	/* 18:BIT_010010 */	TRACE_UNDEFINED,
 	/* 19:BIT_010011 */	TRACE_UNDEFINED,
@@ -187,11 +187,11 @@ int ActionTable[] = {
 	/* 21:BIT_010101 */	TRACE_UNDEFINED,
 	/* 22:BIT_010110 */	TRACE_UNDEFINED,
 	/* 23:BIT_010111 */	TRACE_UNDEFINED,
-	/* 24:BIT_011000 */	TRACE_L_ROUND_MIDDLE,
+	/* 24:BIT_011000 */	TRACE_L_ROUND_SOFT,
 	/* 25:BIT_011001 */	TRACE_UNDEFINED,
 	/* 26:BIT_011010 */	TRACE_UNDEFINED,
 	/* 27:BIT_011011 */	TRACE_UNDEFINED,
-	/* 28:BIT_011100 */	TRACE_L_ROUND_MIDDLE,
+	/* 28:BIT_011100 */	TRACE_L_ROUND_SOFT,
 	/* 29:BIT_011101 */	TRACE_UNDEFINED,
 	/* 30:BIT_011110 */	TRACE_STRAIGHT,
 	/* 31:BIT_011111 */	TRACE_R_TURN,
@@ -296,7 +296,8 @@ int main(void) {
 	executeTraceProcess();
 
     // ゴール判定後の動作実質ここから開始？
-	executeFinalAction();
+	//executeFinalAction();
+	StopMove();
 
 #ifdef ENABLE_AVRTIMER
 	// AVRタイマ停止
@@ -365,6 +366,9 @@ void executeTraceProcess(void) {
 		counter = 0;
 	}
 #endif /* _MODE_SKIP_ */
+	if (BaseSpeed > MAX_SPEED) {
+		BaseSpeed = MAX_SPEED;
+	}
 
 	Execute(currentTraceAction);
 	_delay_ms(1);// delayTimeの間隔を空ける
@@ -953,7 +957,7 @@ int getActionWithHistory(void) {
 				patternCounter[R_TURN]++;
 				break;
 			default:
-				patternCounter[UNDEFINED]++;
+				patternCounter[STRAIGHT]++;
 				break;
 		}
 	}

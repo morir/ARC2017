@@ -113,6 +113,9 @@
 #endif // LOW_SPEED_MODE
 #endif // DINAMIXEL_AX_12
 
+// Speed settings
+#define MAX_SPEED (200)
+
 // Trace pattern
 #define TRACE_UNDEFINED			(-1)// 未定義(前回の動作を継続)
 #define TRACE_STRAIGHT			0	// 直進
@@ -191,5 +194,6 @@ void GetAXS1SensorFireData(int *out_fire_data_left, int *out_fire_data_center, i
 
 int mCount;
 int BaseSpeed;
+int adjustingSpeed;
 
 #endif // MOTOR_MANAGER_H_

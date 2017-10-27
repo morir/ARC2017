@@ -13,9 +13,6 @@
 #define DBG 1
 //#define _MOTOR_OFF_
 
-// Speed settings
-#define MAX_SPEED (460)
-
 #define HIGH_RATE (0.90)
 #define SOFT_ROUND_RATE (0.80)
 #define MIDDLE_ROUND_RATE (0.70)
@@ -247,8 +244,7 @@ void RightStraightMove(void) {
 
 void LeftSoftRoundMove(void) {
 	int execBaseSpeed = (BaseSpeed < MAX_SPEED) ? BaseSpeed : MAX_SPEED;
-	float rate = (execBaseSpeed < 300) ? SOFT_ROUND_RATE : 0.95;
-	int leftSpeed = (int)((float)execBaseSpeed * rate);
+	int leftSpeed = (execBaseSpeed - 10) ;
 	int rightSpeed = (1024 + execBaseSpeed);
 
 	Move(leftSpeed, rightSpeed);
@@ -256,8 +252,7 @@ void LeftSoftRoundMove(void) {
 
 void LeftMiddleRoundMove(void) {
 	int execBaseSpeed = (BaseSpeed < MAX_SPEED) ? BaseSpeed : MAX_SPEED;
-	float rate = (execBaseSpeed < 300) ? MIDDLE_ROUND_RATE : 0.95;
-	int leftSpeed = (int)((float)execBaseSpeed * rate);
+	int leftSpeed = (execBaseSpeed - 20) ;
 	int rightSpeed = (1024 + execBaseSpeed);
 
 	Move(leftSpeed, rightSpeed);
@@ -265,8 +260,7 @@ void LeftMiddleRoundMove(void) {
 
 void LeftTightRoundMove(void) {
 	int execBaseSpeed = (BaseSpeed < MAX_SPEED) ? BaseSpeed : MAX_SPEED;
-	float rate = (execBaseSpeed < 300) ? TIGHT_ROUND_RATE : 0.95;
-	int leftSpeed = (int)((float)execBaseSpeed * rate);
+	int leftSpeed = (execBaseSpeed - 40) ;
 	int rightSpeed = (1024 + execBaseSpeed);
 
 	Move(leftSpeed, rightSpeed);
@@ -274,27 +268,24 @@ void LeftTightRoundMove(void) {
 
 void RightSoftRoundMove(void) {
 	int execBaseSpeed = (BaseSpeed < MAX_SPEED) ? BaseSpeed : MAX_SPEED;
-	float rate = (execBaseSpeed < 300) ? SOFT_ROUND_RATE : 0.95;
 	int leftSpeed = execBaseSpeed;
-	int rightSpeed = (1024 + (int)((float)execBaseSpeed * rate));
+	int rightSpeed = (1024 + (execBaseSpeed - 10));
 
 	Move(leftSpeed, rightSpeed);
 }
 
 void RightMiddleRoundMove(void) {
 	int execBaseSpeed = (BaseSpeed < MAX_SPEED) ? BaseSpeed : MAX_SPEED;
-	float rate = (execBaseSpeed < 300) ? MIDDLE_ROUND_RATE : 0.95;
 	int leftSpeed = execBaseSpeed;
-	int rightSpeed = (1024 + (int)((float)execBaseSpeed * rate));
+	int rightSpeed = (1024 + (execBaseSpeed - 20));
 
 	Move(leftSpeed, rightSpeed);
 }
 
 void RightTightRoundMove(void) {
 	int execBaseSpeed = (BaseSpeed < MAX_SPEED) ? BaseSpeed : MAX_SPEED;
-	float rate = (execBaseSpeed < 300) ? TIGHT_ROUND_RATE : 0.95;
 	int leftSpeed = execBaseSpeed;
-	int rightSpeed = (1024 + (int)((float)execBaseSpeed * rate));
+	int rightSpeed = (1024 + (execBaseSpeed - 40));
 
 	Move(leftSpeed, rightSpeed);
 }
