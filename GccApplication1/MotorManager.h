@@ -194,6 +194,5 @@ void GetAXS1SensorFireData(int *out_fire_data_left, int *out_fire_data_center, i
 
 int mCount;
 int BaseSpeed;
-int adjustingSpeed;
 
 #endif // MOTOR_MANAGER_H_
