@@ -427,6 +427,82 @@ void PrintCommStatus(int CommStatus) {
 }
 
 #ifdef ENABLE_AVRTIMER
+/**
+ * 現在の速度(右モータ)取得。
+ * @brief 現在の速度(右モータ)取得。
+ * @return 現在の速度(右モータ)
+ * @detail 現在の速度(右モータ)を取得する。
+ *         停止:0,1024
+ *         前進:1025～2047(CCW)
+ *         後進:0001～1023(CW)
+ */
+int GetCurrentSpeedR(void) {
+	return curSpeedR;
+}
+
+/**
+ * 現在の速度(左モータ)取得。
+ * @brief 現在の速度(左モータ)取得。
+ * @return 現在の速度(左モータ)
+ * @detail 現在の速度(左モータ)を取得する。
+ *         停止:0,1024
+ *         前進:0001～1023(CW)
+ *         後進:1025～2047(CCW)
+ */
+int GetCurrentSpeedL(void) {
+	return curSpeedL;
+}
+
+/**
+ * 現在の符号付の速度(右モータ)を取得。
+ * @brief 現在の符号付の速度(右モータ)を取得。
+ * @return 符号付の現在の速度(右モータ)
+ * @detail 現在の符号付の速度(右モータ)を取得する。
+ *         停止:0,1024
+ *         前進:1025～2047(CCW) ⇒ 1～1023
+ *         後進:0001～1023(CW)  ⇒ -1023～-1 
+ */
+int GetCurrentSignedSpeedR(void) {
+	int signed_speed = GetCurrentSpeedR();
+	
+	if(signed_speed == 0 || signed_speed == 1024)
+	{
+		signed_speed = 0;
+	}
+	else if(1025 <= signed_speed && signed_speed <= 2047) {
+		signed_speed = signed_speed - 1024;
+	}
+	else {
+		signed_speed = signed_speed - 1024;
+	}
+	
+	return signed_speed;
+}
+
+/**
+ * 現在の符号付の速度(左モータ)を取得。
+ * @brief 現在の符号付の速度(左モータ)を取得。
+ * @return 符号付の現在の速度(左モータ)
+ * @detail 現在の符号付の速度(左モータ)を取得する。
+ *         停止:0,1024
+ *         前進:0001～1023(CW)  ⇒ 変換しない
+ *         後進:1025～2047(CCW) ⇒ -1023～-1
+ */
+int GetCurrentSignedSpeedL(void) {
+	int signed_speed = GetCurrentSpeedL();
+	if(signed_speed == 0 || signed_speed == 1024)
+	{
+		signed_speed = 0;
+	}
+	else if(1 <= signed_speed && signed_speed <= 1023) {
+		//変換しない
+	}
+	else {
+		signed_speed = signed_speed - 1024;
+	}
+	
+	return signed_speed;
+}
 
 /**
  * パケット通信をして、現在の速度(右モータ)取得。
@@ -489,31 +565,6 @@ void GetCurrentSpeedLCalledFromTimer(void) {
 
 	return ;
 }
-
-/**
- * 現在の速度(右モータ)取得。
- * @brief 現在の速度(右モータ)取得。
- * @return 現在の速度(右モータ)
- * @detail 現在の速度(右モータ)を取得する。
- *         前進:1024～2047(CCW)
- *         後進:0000～1023(CW)
- */
-int GetCurrentSpeedR(void) {
-	return curSpeedR;
-}
-
-/**
- * 現在の速度(左モータ)取得。
- * @brief 現在の速度(左モータ)取得。
- * @return 現在の速度(左モータ)
- * @detail 現在の速度(左モータ)を取得する。
- *         前進:0000～1023(CW)
- *         後進:1024～2047(CCW)
- */
-int GetCurrentSpeedL(void) {
-	return curSpeedL;
-}
-
 #else // ENABLE_AVRTIMER
 
 /**
@@ -582,6 +633,14 @@ int GetCurrentSpeedL(void) {
 	return speed;
 }
 
+int GetCurrentSignedSpeedR(void) {
+	// ビルドエラー対応処理
+	return 0;
+}
+int GetCurrentSignedSpeedL(void) {
+	// ビルドエラー対応処理
+	return 0;
+}
 #endif // ENABLE_AVRTIMER
 
 /**

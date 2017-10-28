@@ -20,10 +20,10 @@ void AvrTimerStart();
  
 /**
  * AVRタイマ取得
- * @brief AVRタイマ取得
+ * @brief AVRタイマ取得(ミリ秒)
  */
-int32_t AvrTimeGet();
- 
+uint32_t AvrTimerGet();
+
 /**
  * AVRタイマ終了
  * @brief AVRタイマ終了
