@@ -11,6 +11,7 @@
 #include <avr/common.h>
 
 #include "AvrTimer.h"
+#include "DebugLog.h"
 #include "MotorManager.h"
 
 extern int getSensorPatternCalledFromTimer(void);
@@ -34,7 +35,7 @@ void AvrTimerStart() {
 	TCCR1A = 0x00; //タイマ関係のピンは標準ポート動作とする
  
 	//ﾀｲﾏ/ｶｳﾝﾀ1制御ﾚｼﾞｽﾀBの設定
-	TCCR1B = (1<<CS12)|(0<<CS11)|(1<<CS10);//1024分周でタイマON
+	TCCR1B = (0<<CS12)|(1<<CS11)|(0<<CS10);	// 1/8分周でタイマON
  
 	//ﾀｲﾏ/ｶｳﾝﾀ1割り込みﾏｽｸ ﾚｼﾞｽﾀ設定
 	TIMSK1 = (1<<TOIE1);//タイマ１オーバーフロー割り込み許可
