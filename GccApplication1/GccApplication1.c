@@ -37,6 +37,8 @@
 static int curSensorPattern = 0;	// 現在のセンサー値
 #endif // ENABLE_AVRTIMER
 
+int isSearchingLeftSide = 0;
+
 // ------------------ Method Definition ------------------
 void executeTraceProcess(void);
 void traceCommon(int counter, int maxSpeed);
@@ -81,7 +83,7 @@ void TraceFormation(void);
 void FindFormation(void);
 void CatchAndReleaseFormation(void);
 void executeRotate(int motorId, int speed, int angle, int targetangle);
-void TreasureFindingLineTrace(void);
+void TreasureFindingLineTrace(int isFirst);
 void execute180DegreesTurn(void);
 
 void getSensors(void);
@@ -119,6 +121,8 @@ int currentCount = 0;
 
 // 今回のトレース動作
 int currentTraceAction = TRACE_STRAIGHT;
+
+int isSearchingLeft = 0;
 
 // ------------------ Method ------------------
 
@@ -446,11 +450,13 @@ void executeTraceProcess(void) {
  */
  void treasureHunt_01(void) {
          //int sensorPattern = BIT_000000;
-         int left = 0, senter = 0, right = 0;
-         while (senter <= 180) {
-			GetAXS1SensorFireData(&left, &senter, &right);
+         int left = 0, center = 0, right = 0;
+		 int isFirst = 0;
+         while (center <= 180) {
+			 GetAXS1SensorFireData(&left, &center, &right);
              // 宝物検索用ライントレースを実行
-             TreasureFindingLineTrace();
+             TreasureFindingLineTrace(isFirst);
+			 isFirst++;
          }
          // 停止する
          StopMove();
@@ -1294,32 +1300,56 @@ void dumpTreasures(void) {
 }
 
 /************************************************************************/
-// 左右大き目にロボットを揺らしたライントレースを実行
-//
-//
-//
+// 左右大き目にロボットを揺らしたジグザグなライントレースを実行
 /************************************************************************/
-void TreasureFindingLineTrace(void) {
+void TreasureFindingLineTrace(int isFirst) {
     int sensorPattern = BIT_000000;
-    //
-    //int left, senter, right;
-    //int counter = 0;
+	BaseSpeed = 80;
+
     sensorPattern = getSensorPattern();
-    // ジグザグライントレース
-    switch (sensorPattern) {
-        case TRACE_R_ROUND_MIDDLE:
-        case TRACE_R_ROUND_TIGHT:
-            RightTightRoundMove();
-            break;
-        case TRACE_L_ROUND_MIDDLE:
-        case TRACE_L_ROUND_TIGHT:
-            LeftTightRoundMove();
-            break;
-        default:
-            break;
-    }
+
+	// 初回動作の場合
+	if (isFirst == 0) {
+		if (sensorPattern == BIT_100000 ||
+			sensorPattern == BIT_010000 ||
+			sensorPattern == BIT_110000 ||
+			sensorPattern == BIT_001000 ||
+			sensorPattern == BIT_101000 ||
+			sensorPattern == BIT_011000 ||
+			sensorPattern == BIT_111000) {
+			isSearchingLeftSide = 1;
+			Execute(TRACE_L_ROUND_TIGHT);
+		} else {
+			isSearchingLeftSide = 0;
+			Execute(TRACE_R_ROUND_TIGHT);
+		}
+
+		_delay_ms(50);
+		return;
+	}
+
+	if ((isSearchingLeftSide == 0) &&
+		(sensorPattern == BIT_010000 ||
+		 sensorPattern == BIT_001000 ||
+		 sensorPattern == BIT_011000 ||
+		 sensorPattern == BIT_011100)) {
+		// ラインの右側サーチ中に左ラインを検出したら、
+		// ラインの左側サーチに切り替える
+		isSearchingLeftSide = 1;
+		Execute(TRACE_L_ROUND_TIGHT);
+	} else if (
+		(isSearchingLeftSide > 0) &&
+		(sensorPattern == BIT_000010 ||
+		 sensorPattern == BIT_000100 ||
+		 sensorPattern == BIT_000110 ||
+		 sensorPattern == BIT_001110)) {
+		// ラインの左側サーチ中に右ラインを検出したら、
+		// ラインの右側サーチに切り替える
+		 isSearchingLeftSide = 0;
+		 Execute(TRACE_R_ROUND_TIGHT);
+	}
+		
     _delay_ms(50);
-    
 }
 
 /************************************************************************/
