@@ -146,6 +146,12 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ArmActionManager.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ArmActionManager.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="AvrTimer.c">
       <SubType>compile</SubType>
     </Compile>
@@ -195,6 +201,21 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="SerialManager.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="TracePatternManager.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="TracePatternManager.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="TraceManager.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="TraceManager.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="TurnManager.c">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>
