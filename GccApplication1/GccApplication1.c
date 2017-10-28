@@ -43,7 +43,7 @@ static int curSensorPattern = 0;	// 現在のセンサー値
 
 // ------------------ Method Definition ------------------
 void executeTraceProcess(void);
-void traceCommon(int counter);
+void traceCommon(int counter, int maxSpeed);
 void traceForwardArea_01(void);
 void traceForwardArea_02(void);
 void traceForwardArea_03(void);
@@ -347,13 +347,16 @@ void executeTraceProcess(void) {
  *   開始条件：スタートコマンドを受信する。
  *   終了条件：センサで左ターンを検出して直角旋回が完了する。
  */
- void traceCommon(int counter) {
+ void traceCommon(int counter, int maxSpeed) {
 	// センサー値を取得
 	getSensors();
 	currentTraceAction = getActionWithHistory();
 	//if (isLeftRound() || isRightRound()) {
 		//executeRound();
 	//}
+	if (currentTraceAction == TRACE_UNDEFINED) {
+		return;
+	}
 
 #ifdef LOG_INFO_ON
 	if ((counter % 1) == 0) {
@@ -366,8 +369,8 @@ void executeTraceProcess(void) {
 		counter = 0;
 	}
 #endif /* _MODE_SKIP_ */
-	if (BaseSpeed > MAX_SPEED) {
-		BaseSpeed = MAX_SPEED;
+	if (BaseSpeed > maxSpeed) {
+		BaseSpeed = maxSpeed;
 	}
 
 	Execute(currentTraceAction);
@@ -383,13 +386,14 @@ void executeTraceProcess(void) {
  */
  void traceForwardArea_01(void) {
 	static int counter = 0;
+	static int maxSpeed = MAX_SPEED;
 
 	//初期動作（少しだけ直進）
 	StraightMove();
 	_delay_ms(100);	// 10ms 間隔を空ける
 
 	while (currentTraceAction != TRACE_L_TURN) {
-		traceCommon(counter);
+		traceCommon(counter, maxSpeed);
 		counter++;
 	}
 
@@ -407,9 +411,10 @@ void executeTraceProcess(void) {
  */
  void traceForwardArea_02(void) {
 	static int counter = 0;
+	static int maxSpeed = MAX_SPEED;
 
 	while (currentTraceAction != TRACE_L_TURN) {
-		traceCommon(counter);
+		traceCommon(counter, maxSpeed);
 		counter++;
 	}
 
@@ -427,9 +432,10 @@ void executeTraceProcess(void) {
  */
  void traceForwardArea_03(void) {
 	static int counter = 0;
+	static int maxSpeed = MAX_SPEED;
 
 	while (currentTraceAction != TRACE_L_TURN) {
-		traceCommon(counter);
+		traceCommon(counter, maxSpeed);
 		counter++;
 	}
 
@@ -447,9 +453,10 @@ void executeTraceProcess(void) {
  */
  void traceForwardArea_04(void) {
 	static int counter = 0;
+	static int maxSpeed = MAX_SPEED;
 
 	while (currentTraceAction != TRACE_R_TURN) {
-		traceCommon(counter);
+		traceCommon(counter, maxSpeed);
 		counter++;
 	}
 
@@ -467,9 +474,10 @@ void executeTraceProcess(void) {
  */
  void traceForwardArea_05(void) {
 	static int counter = 0;
+	static int maxSpeed = MAX_SPEED;
 
 	while (currentTraceAction != TRACE_R_TURN) {
-		traceCommon(counter);
+		traceCommon(counter, maxSpeed);
 		counter++;
 	}
 
@@ -487,9 +495,9 @@ void executeTraceProcess(void) {
  */
  void treasureHunt_01(void) {
          //int sensorPattern = BIT_000000;
-         int left, senter, right;
-         GetAXS1SensorFireData(&left, &senter, &right);
-         while (senter >= 180) {
+         int left = 0, senter = 0, right = 0;
+         while (senter <= 180) {
+			GetAXS1SensorFireData(&left, &senter, &right);
              // 宝物検索用ライントレースを実行
              TreasureFindingLineTrace();
          }
@@ -523,9 +531,10 @@ void executeTraceProcess(void) {
  */
  void traceBackwardArea_01(void) {
 	static int counter = 0;
+	static int maxSpeed = MAX_SPEED;
 
 	while (currentTraceAction != TRACE_L_TURN) {
-		traceCommon(counter);
+		traceCommon(counter, maxSpeed);
 		counter++;
 	}
 
@@ -543,9 +552,10 @@ void executeTraceProcess(void) {
  */
  void traceBackwardArea_02(void) {
 	static int counter = 0;
+	static int maxSpeed = MAX_SPEED;
 
 	while (currentTraceAction != TRACE_L_TURN) {
-		traceCommon(counter);
+		traceCommon(counter, maxSpeed);
 		counter++;
 	}
 
@@ -563,9 +573,10 @@ void executeTraceProcess(void) {
  */
  void traceBackwardArea_03(void) {
 	static int counter = 0;
+	static int maxSpeed = MAX_SPEED;
 
 	while (currentTraceAction != TRACE_R_TURN) {
-		traceCommon(counter);
+		traceCommon(counter, maxSpeed);
 		counter++;
 	}
 
@@ -573,6 +584,7 @@ void executeTraceProcess(void) {
 	StopMove();
 	initSensorHistory();
 	currentTraceAction = TRACE_STRAIGHT;
+	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
@@ -583,6 +595,32 @@ void executeTraceProcess(void) {
  *   終了条件：
  */
  void traceBackwardArea_04(void) {
+    int sensorPattern = BIT_000000;
+	int findAnySensorCount = 0;
+
+	// センサーのいずれかが白判定するまで、直進継続
+	while (1) {
+		StraightMove();
+		sensorPattern = getSensorPattern();
+		// 3回連続して白判定したらループを抜ける
+		if (sensorPattern != BIT_000000) {
+			findAnySensorCount++;
+			if (findAnySensorCount > 2) {
+				break;
+			}
+		}
+	}
+
+	// 停止実行
+	StopMove();
+
+	// センサー値に応じて旋回を実行
+	// TODO:実装
+
+	// 旋回終了後、停止実行
+	StopMove();
+	initSensorHistory();
+	currentTraceAction = TRACE_STRAIGHT;
 }
 
 /*
@@ -604,15 +642,15 @@ void executeTraceProcess(void) {
  */
  void traceBackwardArea_06(void) {
 	static int counter = 0;
+	BaseSpeed = 50;
 
 	while (currentTraceAction != TRACE_R_TURN) {
-		traceCommon(counter);
-		counter++;
+		traceCommon(counter, BaseSpeed);
 	}
 
 	// 右旋回実行
 	currentTraceAction = executeRightTurn();
-	BaseSpeed = BASE_SPEED_INIT_VAL;
+	BaseSpeed = 50;
 }
 
 /*
@@ -626,13 +664,11 @@ void executeTraceProcess(void) {
 	static int counter = 0;
 
 	while (currentTraceAction != TRACE_R_TURN) {
-		traceCommon(counter);
-		counter++;
+		traceCommon(counter, BaseSpeed);
 	}
 
 	// 右旋回実行
 	currentTraceAction = executeRightTurn();
-	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
@@ -643,6 +679,40 @@ void executeTraceProcess(void) {
  *   終了条件：
  */
  void traceBackwardArea_08(void) {
+	static int counter = 0;
+	static int maxSpeed = BASE_SPEED_INIT_VAL;
+    int sensorPattern = BIT_111111;
+	int findAnySensorCount = 0;
+
+	// ラインが途切れるまではトレース動作
+	while (sensorPattern != BIT_000000) {
+		traceCommon(counter, BaseSpeed);
+		sensorPattern = getSensorPattern();
+	}
+
+	// 停止実行
+	StopMove();
+
+	// センサーのいずれかが白判定するまで、直進継続
+	while (1) {
+		StraightMove();
+		sensorPattern = getSensorPattern();
+
+		// 3回連続して白判定したらループを抜ける
+		if (sensorPattern != BIT_000000) {
+			findAnySensorCount++;
+			if (findAnySensorCount > 2) {
+				break;
+			}
+		}
+	}
+
+	// ちょっと進んで停止
+	adjustTurnPosition();
+
+	// 右旋回実行
+	execute180DegreesTurn();
+	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
@@ -654,9 +724,10 @@ void executeTraceProcess(void) {
  */
  void traceBackwardArea_09(void) {
 	static int counter = 0;
+	static int maxSpeed = MAX_SPEED;
 
 	while (currentTraceAction != TRACE_L_TURN) {
-		traceCommon(counter);
+		traceCommon(counter, maxSpeed);
 		counter++;
 	}
 
@@ -673,6 +744,19 @@ void executeTraceProcess(void) {
  *   終了条件：
  */
  void traceBackwardArea_10(void) {
+	static int counter = 0;
+	static int maxSpeed = MAX_SPEED;
+
+	while (currentTraceAction != TRACE_R_TURN) {
+		traceCommon(counter, maxSpeed);
+		counter++;
+	}
+
+	// 停止実行
+	StopMove();
+	initSensorHistory();
+	currentTraceAction = TRACE_STRAIGHT;
+	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
@@ -683,6 +767,33 @@ void executeTraceProcess(void) {
  *   終了条件：
  */
  void traceBackwardArea_11(void) {
+	int sensorPattern = BIT_000000;
+	int findAnySensorCount = 0;
+
+	// センサーのいずれかが白判定するまで、直進継続
+	while (1) {
+		StraightMove();
+		sensorPattern = getSensorPattern();
+		// 3回連続して白判定したらループを抜ける
+		if (sensorPattern != BIT_000000) {
+			findAnySensorCount++;
+			if (findAnySensorCount > 2) {
+				break;
+			}
+		}
+	}
+
+	// 停止実行
+	StopMove();
+
+	// センサー値に応じて旋回を実行
+	// TODO:実装
+
+	// 旋回終了後、停止実行
+	StopMove();
+	initSensorHistory();
+	currentTraceAction = TRACE_STRAIGHT;
+	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
@@ -693,6 +804,19 @@ void executeTraceProcess(void) {
  *   終了条件：
  */
  void traceBackwardArea_12(void) {
+	static int counter = 0;
+	static int maxSpeed = MAX_SPEED;
+
+	while (currentTraceAction != TRACE_R_TURN) {
+		traceCommon(counter, maxSpeed);
+		counter++;
+	}
+
+	// 停止実行
+	StopMove();
+	initSensorHistory();
+	currentTraceAction = TRACE_STRAIGHT;
+	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
@@ -703,6 +827,19 @@ void executeTraceProcess(void) {
  *   終了条件：
  */
  void traceBackwardArea_13(void) {
+	static int counter = 0;
+	static int maxSpeed = MAX_SPEED;
+
+	while (counter > 1500) {
+		traceCommon(counter, maxSpeed);
+		counter++;
+	}
+
+	// 停止実行
+	StopMove();
+	initSensorHistory();
+	currentTraceAction = TRACE_STRAIGHT;
+	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
@@ -734,9 +871,10 @@ void executeTraceProcess(void) {
  */
  void traceBackwardArea_15(void) {
 	static int counter = 0;
+	static int maxSpeed = MAX_SPEED;
 
 	while (currentTraceAction != TRACE_L_TURN) {
-		traceCommon(counter);
+		traceCommon(counter, maxSpeed);
 		counter++;
 	}
 
@@ -753,6 +891,40 @@ void executeTraceProcess(void) {
  *   終了条件：
  */
  void traceBackwardArea_16(void) {
+	static int counter = 0;
+	static int maxSpeed = BASE_SPEED_INIT_VAL;
+	int sensorPattern = BIT_111111;
+	int findAnySensorCount = 0;
+
+	// ラインが途切れるまではトレース動作
+	while (sensorPattern != BIT_000000) {
+		traceCommon(counter, maxSpeed);
+		counter++;
+	}
+
+	// 停止実行
+	StopMove();
+
+	// センサーのいずれかが白判定するまで、直進継続
+	while (1) {
+		StraightMove();
+		sensorPattern = getSensorPattern();
+
+		// 3回連続して白判定したらループを抜ける
+		if (sensorPattern != BIT_000000) {
+			findAnySensorCount++;
+			if (findAnySensorCount > 2) {
+				break;
+			}
+		}
+	}
+
+	// 停止実行
+	StopMove();
+
+	// 左旋回実行
+	currentTraceAction = executeLeftTurn();
+	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
@@ -764,16 +936,16 @@ void executeTraceProcess(void) {
  */
 void traceBackwardArea_17(void) {
 	static int counter = 0;
+	static int maxSpeed = MAX_SPEED;
 
 	while (currentTraceAction != TRACE_R_TURN) {
-		traceCommon(counter);
+		traceCommon(counter, maxSpeed);
 		counter++;
 	}
 
-	// 停止実行
-	StopMove();
-	initSensorHistory();
-	currentTraceAction = TRACE_STRAIGHT;
+	// 右旋回実行
+	currentTraceAction = executeRightTurn();
+	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
@@ -784,7 +956,6 @@ void traceBackwardArea_17(void) {
  *   終了条件：ゴールエリアを検出して終了動作が完了する。
  */
 void traceBackwardArea_18(void) {
-
 }
 
 /**
@@ -957,7 +1128,7 @@ int getActionWithHistory(void) {
 				patternCounter[R_TURN]++;
 				break;
 			default:
-				patternCounter[STRAIGHT]++;
+				patternCounter[UNDEFINED]++;
 				break;
 		}
 	}
@@ -1010,7 +1181,7 @@ int getActionWithHistory(void) {
 			break;
 		default: 
 		    LOG_DEBUG("currentTraceAction[%d]: maxCount = %d\r\n", currentTraceAction, maxCount);
-			ptn = currentTraceAction;
+			ptn = TRACE_UNDEFINED;
 			break;
 	}
 
@@ -1435,13 +1606,14 @@ int executeLeftTurn(void){
 
 		//旋回動作を抜けるための条件を判定
 		if (
-			sensorPattern == BIT_010000 || sensorPattern == BIT_011000 ||
+			//sensorPattern == BIT_010000 || sensorPattern == BIT_011000 ||
+			sensorPattern == BIT_011100 || sensorPattern == BIT_001110 ||
 			sensorPattern == BIT_001000 || sensorPattern == BIT_001100 ||
 			sensorPattern == BIT_000100 || sensorPattern == BIT_000110 ||
 			sensorPattern == BIT_000010
 			) {
 			LED_on(2);
-			//中央のセンサーが黒なら停止を実行
+			//中央のセンサーが白なら停止を実行
 			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
 			break;
 		}
@@ -1531,7 +1703,8 @@ int executeRightTurn(void){
 
 		//旋回動作を抜けるための条件を判定
 		if (
-			sensorPattern == BIT_000010 || sensorPattern == BIT_000110 ||
+			//sensorPattern == BIT_000010 || sensorPattern == BIT_000110 ||
+			sensorPattern == BIT_011100 || sensorPattern == BIT_001110 ||
 			sensorPattern == BIT_000100 || sensorPattern == BIT_001100 ||
 			sensorPattern == BIT_001000 || sensorPattern == BIT_011000 ||
 			sensorPattern == BIT_010000
@@ -1768,18 +1941,24 @@ int initRightTurnAction(int referenceVal) {
  * 2017ロボに合わせて調整必要！
  */
 void adjustTurnPosition(void) {
-	if (BaseSpeed <= 150 ) {
+	if (BaseSpeed <= 50 ) {
 		StraightLowMove();
-		_delay_ms(200);	// 10ms 間隔を空ける
-	} else if (BaseSpeed > 180 && BaseSpeed <= 200 ) {
-        StraightLowMove();
-        _delay_ms(150);	// 10ms 間隔を空ける
-	} else if (BaseSpeed > 200 && BaseSpeed <= 250 ) {
+		_delay_ms(150);	// 150ms 間隔を空ける
+	} else if (BaseSpeed <= 100 ) {
 		StraightLowMove();
-		_delay_ms(100);	// 10ms 間隔を空ける
-	} else if (BaseSpeed > 250 && BaseSpeed <= 300 ) {
+		_delay_ms(100);	// 100ms 間隔を空ける
+	} else if (BaseSpeed <= 120 ) {
 		StraightLowMove();
-		_delay_ms(60);	// 10ms 間隔を空ける
+		_delay_ms(80);	// 80ms 間隔を空ける
+	} else if (BaseSpeed <= 140 ) {
+		StraightLowMove();
+		_delay_ms(60);	// 60ms 間隔を空ける
+	} else if (BaseSpeed <= 160 ) {
+		StraightLowMove();
+		_delay_ms(40);	// 40ms 間隔を空ける
+	} else if (BaseSpeed <= 180 ) {
+		StraightLowMove();
+		_delay_ms(20);	// 20ms 間隔を空ける
 	}
     StopMove();
 }
