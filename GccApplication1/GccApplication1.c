@@ -14,17 +14,13 @@
 #include "DebugLog.h"
 #include "AvrTimer.h"
 
-#include "pid.h"
-
 // ------------------ Defined ------------------
 // Line Sensor
 #define LINE_STATE_BLACK    0//センサー値でラインが白判定
 #define LINE_STATE_WHITE    1//センサー値でラインが黒判定
 
 #define _LED_ON_
-//#define _MODE_SKIP_			// ショートカットモード
 
-#define DELAY_MAX_TIME      (100)//delay時間の最大値(ミリ秒)
 #define STOP_JUDGE_MAX_LIMIT	(10)//停止判定の上限値
 #define SLOW_TURN_RATE_BY_BASE	(50)//ベースの20%の速さ
 #define HISTORY_MAXSIZE (5)//履歴管理最大数
@@ -70,13 +66,6 @@ void traceBackwardArea_16(void);
 void traceBackwardArea_17(void);
 void traceBackwardArea_18(void);
 
-int isRightRound(void);
-int isLeftRound(void);
-int isStraightDetected(int sensor);
-int isLeftInsideDetected(int sensor);
-int isRightInsideDetected(int sensor);
-int isDetectedNothing(int sensor);
-int doesNeedToResetSpeed(void);
 #ifdef ENABLE_AVRTIMER
 int getSensorPatternCalledFromTimer(void);
 #endif // ENABLE_AVRTIMER
@@ -99,18 +88,13 @@ void getSensors(void);
 
 int executeLeftTurn(void);
 int executeRightTurn(void);
-void executeRound(void);
-int needChangedSmooth(void);
-int getSmoothAction(void);
 
 int initLeftTurnAction(int maxVal);
 int initRightTurnAction(int maxVal);
 void adjustTurnPosition(void);
-void executeDelay(void);
 void executeFinalAction(void);
 
 void initEmergencyStop(void);
-void executeSkipAction(void);
 
 void setLED(void);
 void LED_on(int i);
@@ -124,12 +108,6 @@ int serCmd[SERIAL_BUFFER_SIZE] = {0};
 // Goal Judgment counter
 int goalCounter = 0;
 
-// Move State
-//int mCurrentAction = MOVE_SELECTION_TYPE_STRAIGHT;
-//
-//// Next Move State
-//int mBeforeMoveState = MOVE_SELECTION_TYPE_STRAIGHT;
-
 // IR Sensor 
 unsigned int IR[ADC_PORT_6 + 1] = {0,0,0,0,0,0,0};
 
@@ -139,25 +117,8 @@ int IR_BitPatternHistory[HISTORY_MAXSIZE] =
  { TRACE_STRAIGHT, TRACE_STRAIGHT, TRACE_STRAIGHT, TRACE_STRAIGHT, TRACE_STRAIGHT };
 int currentCount = 0;
 
-
-int mMoveCount = 1;
-
-// 前々回のトレース動作
-int prePrevTraceAction = TRACE_STRAIGHT;
-// 前回のトレース動作
-int previousTraceAction = TRACE_STRAIGHT;
 // 今回のトレース動作
 int currentTraceAction = TRACE_STRAIGHT;
-
-// PID Param
-float pGain = 200;   //Proportional Gain
-float iGain =  0.2;  //Integral Gain
-float dGain =  120;  //Differential Gain
-int delay = 10;
-int32_t eInteg = 0;  //Integral accumulator
-int32_t ePrev  =0;   //Previous Error
-
-int PID_ctlr = 0;	//!< PID制御用変数。中心のセンサからの距離を入力することで、直進時のブレを抑制する制御を行う。
 
 // ------------------ Method ------------------
 
@@ -285,13 +246,6 @@ int main(void) {
 	getSensorPattern();
 #endif // ENABLE_AVRTIMER
 
-	// ロボ動作開始
-
-    // ショートカットモードを作る場合はここに入れる。
-#ifdef _MODE_SKIP_
-	executeSkipAction();
-#endif /* _MODE_SKIP_ */
-
 	// トレース動作開始
 	executeTraceProcess();
 
@@ -351,9 +305,6 @@ void executeTraceProcess(void) {
 	// センサー値を取得
 	getSensors();
 	currentTraceAction = getActionWithHistory();
-	//if (isLeftRound() || isRightRound()) {
-		//executeRound();
-	//}
 	if (currentTraceAction == TRACE_UNDEFINED) {
 		return;
 	}
@@ -956,72 +907,6 @@ void traceBackwardArea_17(void) {
  *   終了条件：ゴールエリアを検出して終了動作が完了する。
  */
 void traceBackwardArea_18(void) {
-}
-
-/**
- * 右カーブ動作中か判定する 
- * @return 戻り値
- */
-int isRightRound(void) {
-	return ((previousTraceAction == TRACE_R_STRAIGHT) ||
-			(previousTraceAction == TRACE_R_ROUND_SOFT) ||
-			(previousTraceAction == TRACE_R_ROUND_MIDDLE) ||
-			(previousTraceAction == TRACE_R_ROUND_TIGHT));
-}
-
-/**
- * 左カーブ動作中か判定する 
- * @return 戻り値
- */
-int isLeftRound(void) {
-	return ((previousTraceAction == TRACE_L_STRAIGHT) ||
-			(previousTraceAction == TRACE_L_ROUND_SOFT) ||
-			(previousTraceAction == TRACE_L_ROUND_MIDDLE) ||
-			(previousTraceAction == TRACE_L_ROUND_TIGHT));
-}
-
-/**
- * 中央のセンサでラインを検出したか判定する 
- * @param sensor センサの検出パターン
- * @return 戻り値
- */
-int isStraightDetected(int sensor) {
-	return ((sensor == BIT_001000) || (sensor == BIT_001001));
-}
-
-/**
- * 左内側のセンサでラインを検出したか判定する 
- * @param sensor センサの検出パターン
- * @return 戻り値
- */
-int isLeftInsideDetected(int sensor) {
-	return ((sensor == BIT_010000) || (sensor == BIT_010001));
-}
-
-/**
- * 右内側のセンサでラインを検出したか判定する 
- * @param sensor センサの検出パターン
- * @return 戻り値
- */
-int isRightInsideDetected(int sensor) {
-	return ((sensor == BIT_000100) || (sensor == BIT_000101));
-}
-
-/**
- * センサでラインが未検出か判定する 
- * @param sensor センサの検出パターン
- * @return 戻り値
- */
-int isDetectedNothing(int sensor) {
-	return ((sensor == BIT_000000) || (sensor == BIT_000001));
-}
-
-/**
- * 速度をリセットするか判定する 
- * @return 戻り値
- */
-int doesNeedToResetSpeed(void) {
-	return ((currentTraceAction == TRACE_L_TURN) || (currentTraceAction == TRACE_R_TURN));
 }
 
 #ifdef ENABLE_AVRTIMER
@@ -1779,126 +1664,6 @@ int executeRightTurn(void){
 }
 
 /**
- * カーブ実行
- */
-void executeRound(void){
-	static int sensorPattern = BIT_000000;
-	
-	while (1) {
-		// 直進または旋回検知時は処理終了
-		if ((currentTraceAction == TRACE_STRAIGHT) ||
-			(currentTraceAction == TRACE_L_TURN) ||
-			(currentTraceAction == TRACE_R_TURN)) {
-				break;
-		}
-		
-		// センサ値のビットパターンを取得する。
-		sensorPattern = getSensorPattern();
-		if (isDetectedNothing(sensorPattern)) {
-			// センサ未検知の場合はラインがセンサの狭間にある場合なので、
-			// トレースがなるべく直進に収束するようにトレース動作を調整する。
-			if (needChangedSmooth()) {
-				currentTraceAction = getSmoothAction();
-			} 
-			
-			Execute(currentTraceAction);
-			prePrevTraceAction = previousTraceAction;
-			previousTraceAction = currentTraceAction;
-		}
-		else
-		{
-			break;
-		}
-	}
-}
-
-int needChangedSmooth(void) {
-	if (prePrevTraceAction == TRACE_L_ROUND_SOFT) {
-		return ((previousTraceAction == TRACE_STRAIGHT) ||
-				(previousTraceAction == TRACE_L_STRAIGHT));
-	}
-	else if (prePrevTraceAction == TRACE_L_ROUND_MIDDLE) {
-		return ((previousTraceAction == TRACE_STRAIGHT) ||
-				(previousTraceAction == TRACE_L_STRAIGHT) ||
-				(previousTraceAction == TRACE_L_ROUND_SOFT));
-	}
-	else if (prePrevTraceAction == TRACE_L_ROUND_TIGHT) {
-		return ((previousTraceAction == TRACE_STRAIGHT) ||
-				(previousTraceAction == TRACE_L_STRAIGHT) ||
-				(previousTraceAction == TRACE_L_ROUND_SOFT) ||
-				(previousTraceAction == TRACE_L_ROUND_MIDDLE));
-	}
-	else if (prePrevTraceAction == TRACE_R_ROUND_SOFT) {
-		return ((previousTraceAction == TRACE_STRAIGHT) ||
-				(previousTraceAction == TRACE_R_STRAIGHT));
-	}
-	else if (prePrevTraceAction == TRACE_R_ROUND_MIDDLE) {
-		return ((previousTraceAction == TRACE_STRAIGHT) ||
-				(previousTraceAction == TRACE_R_STRAIGHT) ||
-				(previousTraceAction == TRACE_R_ROUND_SOFT));
-	}
-	else if (prePrevTraceAction == TRACE_R_ROUND_TIGHT) {
-		return ((previousTraceAction == TRACE_STRAIGHT) ||
-				(previousTraceAction == TRACE_R_STRAIGHT) ||
-				(previousTraceAction == TRACE_R_ROUND_SOFT) ||
-				(previousTraceAction == TRACE_R_ROUND_MIDDLE));
-	}
-	else {
-		return FALSE;
-	}
-}
-
-int getSmoothAction() {
-	
-	if (previousTraceAction == TRACE_L_STRAIGHT) {
-		return TRACE_R_STRAIGHT;
-	}
-	else if (previousTraceAction == TRACE_L_ROUND_SOFT) {
-		//return TRACE_R_STRAIGHT;
-		return TRACE_L_STRAIGHT;
-	}
-	else if (previousTraceAction == TRACE_L_ROUND_MIDDLE) {
-		//return TRACE_R_STRAIGHT;
-		return TRACE_L_ROUND_SOFT;
-	}
-	else if (previousTraceAction == TRACE_L_ROUND_TIGHT) {
-		//return TRACE_R_STRAIGHT;
-		return TRACE_L_ROUND_MIDDLE;
-	}
-	else if (previousTraceAction == TRACE_R_STRAIGHT) {
-		return TRACE_L_STRAIGHT;
-	}
-	else if (previousTraceAction == TRACE_R_ROUND_SOFT) {
-		//return TRACE_L_STRAIGHT;
-		return TRACE_R_STRAIGHT;
-	}
-	else if (previousTraceAction == TRACE_R_ROUND_MIDDLE) {
-		//return TRACE_L_STRAIGHT;
-		return TRACE_R_ROUND_SOFT;
-	}
-	else if (previousTraceAction == TRACE_R_ROUND_TIGHT) {
-		//return TRACE_L_STRAIGHT;
-		return TRACE_R_ROUND_MIDDLE;
-	}
-	else {
-		return TRACE_STRAIGHT;
-	}
-}
-
-/**
- * 右カーブ実行
- */
-void executeRightRound(void){
-	while (1) {
-		// ターン検出時は処理終了
-		if ((currentTraceAction == TRACE_L_TURN) ||
-			(currentTraceAction == TRACE_R_TURN)) {
-				break;
-		}
-	}
-}
-
-/**
  * 左旋回動作の初期化処理
  * 停止を実行して、
  * 基準以下の速度まで減速できたら、左旋回のステータスを返す
@@ -1961,136 +1726,6 @@ void adjustTurnPosition(void) {
 		_delay_ms(20);	// 20ms 間隔を空ける
 	}
     StopMove();
-}
-
-/**
- * 速度に応じた旋回復帰後のディレイ時間を取得する。
- */
-void executeDelay(void) {
-	if (BaseSpeed <= 200 ) {
-		_delay_ms(400);
-	} else if (BaseSpeed > 200 && BaseSpeed <= 250 ) {
-		_delay_ms(350);
-	} else if (BaseSpeed > 250 && BaseSpeed <= 300 ) {
-		_delay_ms(300);
-	} else if (BaseSpeed > 300 && BaseSpeed <= 350 ) {
-		_delay_ms(250);
-	} else if (BaseSpeed > 350 && BaseSpeed <= 400 ) {
-		_delay_ms(200);
-	} else {
-		_delay_ms(400);
-	}
-}
-
-/**
-* ショートカットの処理
-* @brief ショートカットの処理
-* @return なし
-*/
-void executeSkipAction(void) {
-	LOG_INFO("***** executeSkipAction START!! *****\r\n");
-
-	static int sensorPattern = BIT_000000;
-    static int counter = 0;
-
-	// 初期動作（直進）
-	StraightMove();
-	_delay_ms(100);	// 10ms 間隔を空ける
-
-	while (1) {
-		StraightMove();
-
-		// センサ値のビットパターンを取得する。
-		getSensors();
-		sensorPattern = IR_BitPattern;
-
-		// センサ値のパターンが全黒 or 直角ライン判定であればループを抜ける。
-		if (sensorPattern == BIT_111111 || sensorPattern == BIT_111110 ||
-			sensorPattern == BIT_011111 || sensorPattern == BIT_011110 ||
-			sensorPattern == BIT_001111 || sensorPattern == BIT_001110 ||
-			sensorPattern == BIT_000111 || sensorPattern == BIT_000110 ||
-			sensorPattern == BIT_111101 || sensorPattern == BIT_111100 ||
-			sensorPattern == BIT_111001 || sensorPattern == BIT_111000 ||
-			sensorPattern == BIT_110001 || sensorPattern == BIT_110000
-			) {
-			break;
-		}
-#ifdef LOG_INFO_ON
-		if ((counter % 1) == 0) {
-			BaseSpeed = BaseSpeed + 1;
-			counter = 0;
-		}
-#else
-		if ((counter % 5) == 0) {
-			BaseSpeed = BaseSpeed + 3;
-			counter = 0;
-		}
-#endif /* _MODE_SKIP_ */
-	}
-
-	//旋回判定されたら停止を実行
-	stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
-
-	//停止が確定したらベース速度に応じて、前進or後進を実行
-	adjustTurnPosition();
-
-	//ベース速度を初期化
-	BaseSpeed = BASE_SPEED_INIT_VAL;
-
-	// 左旋回
-	LeftTurnMove();
-	while(1) {
-		getSensors();
-		sensorPattern = IR_BitPattern;
-		//旋回動作を抜けるための条件を判定
-		if (
-			sensorPattern == BIT_010000 || sensorPattern == BIT_010001 ||
-			sensorPattern == BIT_011000 || sensorPattern == BIT_011001 ||
-			sensorPattern == BIT_001000 || sensorPattern == BIT_001001 ||
-			sensorPattern == BIT_001100 || sensorPattern == BIT_001101 ||
-			sensorPattern == BIT_000100 || sensorPattern == BIT_000101
-			) {
-			LED_on(2);
-			//中央のセンサーが黒なら停止を実行
-			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
-			break;
-		}
-	}
-	
-	//旋回停止判定後の止まった位置でセンサーが中央なら逆旋回終了
-	getSensors();
-	sensorPattern = IR_BitPattern;
-	if (sensorPattern == BIT_001000 || sensorPattern == BIT_001001) {
-		//中央センサーなので、直進に設定して抜ける
-		StraightMove();
-		return;
-		} else if (sensorPattern == BIT_010000 || sensorPattern == BIT_010001) {
-		//左センサーなので、左曲りに設定して抜ける
-		LeftSoftRoundMove();
-		return;
-	}
-
-	//センサーを中央に戻すため遅い旋回を実行
-	RightTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
-	while(1) {
-		//逆旋回動作を抜けるための条件を判定
-		getSensors();
-		sensorPattern = IR_BitPattern;
-		if (sensorPattern == BIT_001000 || sensorPattern == BIT_001001) {
-			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
-			StraightMove();
-			return;
-		} else if ( sensorPattern == BIT_010000 ||	sensorPattern == BIT_010001 ||
-			sensorPattern == BIT_100000 ||	sensorPattern == BIT_100001 ) {
-			//既に逆側まで旋回していたら（想定よりも早く解除できてしまった場合など）
-			LeftMiddleRoundMove();
-			return;
-		}
-	}
-
-	LOG_INFO("***** executeSkipAction END!! *****\r\n");
-
-	// 通常のライントレースに復帰
 }
 
 void initEmergencyStop(void) {

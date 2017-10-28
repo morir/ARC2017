@@ -139,61 +139,9 @@ void Execute(int type) {
     }
 }
 
-void setParamMoveAction(int right, int left) {
-	int correctionVal = 0;
-    MotorControl( RIGHT_MOTOR, right );
-    MotorControl( LEFT_MOTOR, left + correctionVal );
-    LOG_DEBUG("RIGHT_MORTOR:%d  LEFT_MORTOR:%d \r\n",right, left);
-}
-
 void StopMove(void) {
     MotorControl( RIGHT_MOTOR, 1024 );
     MotorControl( LEFT_MOTOR, 0 );
-}
-
-void StraightMoveRightShift(void) {
-    MotorControl( RIGHT_MOTOR, 1473 );//280 P_CCW_SPEED_TURN    1532
-    MotorControl( LEFT_MOTOR, 500 );//300 P_CW_SPEED_NOMAL    609
-}
-
-void StraightMoveLeftShift(void) {
-    MotorControl( RIGHT_MOTOR, 1523 );//300 P_CCW_SPEED_NOMAL   1632
-    MotorControl( LEFT_MOTOR, 450 );//280 P_CW_SPEED_TURN     509
-}
-
-void StraightMoveRightShift2(void) {
-    MotorControl( RIGHT_MOTOR, 1423 );//250 P_CCW_SPEED_TURN_2 1432
-    MotorControl( LEFT_MOTOR, 500 );//300 P_CW_SPEED_NOMAL    609
-}
-
-void StraightMoveLeftShift2(void) {
-    MotorControl( RIGHT_MOTOR, 1523 ); //300 P_CCW_SPEED_NOMAL 1632
-    MotorControl( LEFT_MOTOR, 400 ); //250 P_CW_SPEED_TURN_2 409
-}
-
-void TurnMoveRight(void) {
-    MotorControl( RIGHT_MOTOR, 400 );//250 P_CW_SPEED_TURN 509
-    MotorControl( LEFT_MOTOR, 400 );//250 P_CW_SPEED_TURN 509
-}
-
-void TurnMoveLeft(void) {
-    MotorControl( RIGHT_MOTOR, 1424 );//250 P_CCW_SPEED_TURN 1532
-    MotorControl( LEFT_MOTOR, 1424 );//250 P_CCW_SPEED_TURN 1532
-}
-
-void TurnLowMoveRight(void) {
-    MotorControl( RIGHT_MOTOR, 300 );//200 P_CW_SPEED_TURN_2   409
-    MotorControl( LEFT_MOTOR, 300 );//200 P_CW_SPEED_TURN_2 409
-}
-
-void TurnLowMoveLeft(void) {
-    MotorControl( RIGHT_MOTOR, 1324 );//200 P_CCW_SPEED_TURN_2 1432
-    MotorControl( LEFT_MOTOR, 1324 );//200 P_CCW_SPEED_TURN_2 1432
-}
-
-void BackMove(void) {
-    MotorControl( RIGHT_MOTOR, 250 ); //250 P_CW_SPEED_TURN 509
-    MotorControl( LEFT_MOTOR, 1273 ); //R250 P_CCW_SPEED_TURN 1532
 }
 
 void Move(int leftSpeed, int rightSpeed)
@@ -218,13 +166,6 @@ void StraightLowMove(void) {
 	Move(leftSpeed, rightSpeed);
 }
 
-void BackLowMove(void) {
-	int leftSpeed = (1024 + SLOW_BACK_VAL);
-	int rightSpeed = SLOW_BACK_VAL;
-
-	MotorControl( LEFT_MOTOR, leftSpeed);
-	MotorControl( RIGHT_MOTOR, rightSpeed );
-}
 
 void LeftStraightMove(void) {
 	int execBaseSpeed = (BaseSpeed < MAX_SPEED) ? BaseSpeed : MAX_SPEED;
@@ -302,30 +243,6 @@ void RightTurnMove(void) {
 	int speed = TURN_SPEED_BASE;
 	int leftSpeed = speed;
 	int rightSpeed = (speed);
-
-	Move(leftSpeed, rightSpeed);
-}
-
-void LeftTurnByBaseSpeedAdjust(void) {
-	int leftSpeed = TURN_SPEED_BASE;
-	int rightSpeed = TURN_SPEED_BASE;
-	int turnSpeedJudgeVal = (int)(TURN_SPEED_JUDGE_VAL / 10);
-	int baseSpeedVal = (int)((BaseSpeed)/ 10);
-	int turnBaseVal = TURN_SPEED_BASE /10;
-	int turnAdjustVal = (int)(TURN_SPEED_BASE - (((baseSpeedVal * baseSpeedVal * turnBaseVal) / (turnSpeedJudgeVal * turnSpeedJudgeVal)) * 10) );
-	LOG_DEBUG("BaseSpeed:[%d] turnAdjustVal:[%d]\r\n",BaseSpeed, turnAdjustVal);
-
-	if (turnAdjustVal > 0) {
-		leftSpeed = TURN_SPEED_BASE - turnAdjustVal;
-		rightSpeed = TURN_SPEED_BASE + turnAdjustVal;
-	} else if (turnAdjustVal < 0 ) {
-		leftSpeed = TURN_SPEED_BASE + (TURN_SPEED_BASE + turnAdjustVal);
-		rightSpeed = TURN_SPEED_BASE - (TURN_SPEED_BASE + turnAdjustVal);
-	}
-    LOG_DEBUG("leftSpeed:[%d] rightSpeed:[%d]\r\n",leftSpeed, rightSpeed);
-	
-	leftSpeed = (1024 + leftSpeed);
-	rightSpeed = (1024 + rightSpeed);
 
 	Move(leftSpeed, rightSpeed);
 }
