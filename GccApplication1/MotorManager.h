@@ -184,6 +184,8 @@ void PrintCommStatus(int CommStatus);
 
 int GetCurrentSpeedR(void);
 int GetCurrentSpeedL(void);
+int GetCurrentSignedSpeedR(void);
+int GetCurrentSignedSpeedL(void);
 #ifdef ENABLE_AVRTIMER
 void GetCurrentSpeedRCalledFromTimer(void);
 void GetCurrentSpeedLCalledFromTimer(void);

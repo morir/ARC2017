@@ -170,6 +170,12 @@
     <Compile Include="MotorManager.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="MovingDistance.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="MovingDistance.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="PID.c">
       <SubType>compile</SubType>
     </Compile>
