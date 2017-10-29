@@ -218,6 +218,9 @@
     <Compile Include="TurnManager.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="TurnManager.h">
+      <SubType>compile</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="include" />
