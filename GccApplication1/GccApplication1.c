@@ -450,6 +450,8 @@ void executeTraceProcess(void) {
  */
  void treasureHunt_01(void) {
          //int sensorPattern = BIT_000000;
+	LOG_INFO("treasureHunt_01() %s\r\n", "1");
+
          int left = 0, center = 0, right = 0;
 		 int isFirst = 0;
          while (center <= 180) {
@@ -463,6 +465,8 @@ void executeTraceProcess(void) {
          _delay_ms(100);
          // 前進or後進する（実動作に合わせて設定）。
          // executeXXXX();
+	// 手を開く
+	MotorControlJoint( WRIST_MOTOR, 100, 665 );//確認用
          
          // 停止する
          StopMove();
@@ -1157,7 +1161,7 @@ void executeFinalAction(void)
 void initCargoBedMotor(void) {
 	GetCurrentAngle(CARGO_BED_MOTOR);
 	//最大速度で、642の位置へ動かす
-	//MotorControlJoint( CARGO_BED_MOTOR, 0, 642 );//！要調整
+	MotorControlJoint( CARGO_BED_MOTOR, 0, 550 );//！要調整
 }
 
 /************************************************************************/
