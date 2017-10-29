@@ -13,6 +13,7 @@
 #include "MotorManager.h"
 #include "DebugLog.h"
 #include "AvrTimer.h"
+#include "ArmActionManager.h"
 
 // ------------------ Defined ------------------
 // Line Sensor
@@ -78,11 +79,6 @@ void initCargoBedMotor(void);
 void dumpTreasures(void);
 void stopMoveLessThanVal(int val);
 
-void initDumpMotor(void);
-void TraceFormation(void);
-void FindFormation(void);
-void CatchAndReleaseFormation(void);
-void executeRotate(int motorId, int speed, int angle, int targetangle);
 void TreasureFindingLineTrace(int isFirst);
 void execute180DegreesTurn(void);
 
@@ -222,22 +218,30 @@ int main(void) {
     MotorInit();
     initSerial();
 	initCargoBedMotor();
+
 #if(0)
+	// 現在のモータ角度を表示(Debug用)
+	Debug_AllMotorCurrentAngle();
+
 	LOG_DEBUG("Call initDumpMotor() %s\r\n", "");
- 	_delay_ms(5000);//1秒待つ⇒動作に合わせて変更してください
+ 	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
 	initDumpMotor();
 	
 	LOG_DEBUG("Call FindFormation() %s\r\n", "");
- 	_delay_ms(5000);//1秒待つ⇒動作に合わせて変更してください
-	FindFormation();
+//	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+//	FindFormation();
 	
 	LOG_DEBUG("Call CatchAndReleaseFormation() %s\r\n", ""); 
-	_delay_ms(5000);//1秒待つ⇒動作に合わせて変更してください
+	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
 	CatchAndReleaseFormation();
 	
-//  LOG_DEBUG("Call TraceFormation() %s\r\n", "");
-//	_delay_ms(5000);//1秒待つ⇒動作に合わせて変更してください
-//	TraceFormation();
+	LOG_DEBUG("Call FindFormation() %s\r\n", "");
+	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+	FindFormation();
+#else
+	// 現在のモータ角度を表示(Debug用)
+	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+	Debug_AllMotorCurrentAngle();
 #endif
 
 #ifdef ENABLE_AVRTIMER
@@ -1162,133 +1166,6 @@ void initCargoBedMotor(void) {
 	GetCurrentAngle(CARGO_BED_MOTOR);
 	//最大速度で、642の位置へ動かす
 	MotorControlJoint( CARGO_BED_MOTOR, 0, 550 );//！要調整
-}
-
-/************************************************************************/
-// ペットボトル掴む用モーターの初期設定
-// ペットボトル掴む用モーターをライントレース用の位置に設定
-/************************************************************************/
-void initDumpMotor(void) {
-//	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-//	MotorControlJoint( WRIST_MOTOR, 100, 512 );
-//	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-//	MotorControlJoint( SHOULDER_MOTOR, 100, 410 );
-//	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-//	MotorControlJoint( UPPER_ARM_MOTOR, 100, 820 );
-//	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-//	MotorControlJoint( FORE_ARM_MOTOR, 100, 615 );
-
-	int correctionValue = 20; // 補正値(目標角度を設定角度の-20に暫定)
-
-	executeRotate(WRIST_MOTOR, 100, 512, 512 - correctionValue);
-	executeRotate(SHOULDER_MOTOR, 100, 410, 410 - correctionValue);
-	executeRotate(UPPER_ARM_MOTOR, 100, 820, 820 - correctionValue);
-	executeRotate(FORE_ARM_MOTOR, 100, 615, 615 - correctionValue);	
-}
-
-/************************************************************************/
-// ライントレース用形態
-// ライントレース用の位置に設定する。
-/************************************************************************/
-void TraceFormation(void)
-{
-	initDumpMotor();
-}
-
-/************************************************************************/
-// お宝検索用形態
-// お宝検索用の位置に設定する。
-/************************************************************************/
-void FindFormation(void)
-{
-/*
-	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	MotorControlJoint( FORE_ARM_MOTOR, 100, 205 );
-	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	MotorControlJoint( SHOULDER_MOTOR, 100, 512 );	
-	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	MotorControlJoint( UPPER_ARM_MOTOR, 100, 666 );
-	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	MotorControlJoint( SHOULDER_MOTOR, 100, 615 );
-	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	MotorControlJoint( UPPER_ARM_MOTOR, 100, 137 );
-	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	MotorControlJoint( WRIST_MOTOR, 100, 665 );
-*/
-	int correctionValue = 20; // 補正値(目標角度を設定角度の-20に暫定)
-
-	executeRotate(FORE_ARM_MOTOR, 100, 512, 512 - correctionValue);
-	executeRotate(SHOULDER_MOTOR, 100, 410, 410 - correctionValue);
-	executeRotate(UPPER_ARM_MOTOR, 100, 820, 820 - correctionValue);
-	executeRotate(SHOULDER_MOTOR, 100, 615, 615 - correctionValue);	
-	executeRotate(UPPER_ARM_MOTOR, 100, 615, 615 - correctionValue);
-	executeRotate(WRIST_MOTOR, 100, 615, 615 - correctionValue);
-}
-
-/************************************************************************/
-// お宝回収＆搭載用形態
-// お宝回収＆搭載用の位置に設定する。
-/************************************************************************/
-void CatchAndReleaseFormation(void)
-{
-/*
-	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	MotorControlJoint( WRIST_MOTOR, 100, 768 );
-	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	MotorControlJoint( UPPER_ARM_MOTOR, 100, 205 );
-	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	MotorControlJoint( SHOULDER_MOTOR, 100, 478 );
-	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	MotorControlJoint( UPPER_ARM_MOTOR, 100, 222 );	
-	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	MotorControlJoint( SHOULDER_MOTOR, 100, 444 );
-	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	MotorControlJoint( WRIST_MOTOR, 100, 512 );
-
-	// 持ち上げる
-	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	MotorControlJoint( SHOULDER_MOTOR, 100, 546 );
-	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	MotorControlJoint( UPPER_ARM_MOTOR, 100, 768 );
-	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	MotorControlJoint( FORE_ARM_MOTOR, 100, 768 );
-	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	MotorControlJoint( WRIST_MOTOR, 100, 768 );
-*/
-	int correctionValue = 20; // 補正値(目標角度を設定角度の-20に暫定)
-
-	executeRotate(WRIST_MOTOR, 100, 768, 768 - correctionValue);
-	executeRotate(UPPER_ARM_MOTOR, 100, 205, 205 - correctionValue);
-	executeRotate(SHOULDER_MOTOR, 100, 478, 478 - correctionValue);
-	executeRotate(UPPER_ARM_MOTOR, 100, 222, 222 - correctionValue);
-	executeRotate(SHOULDER_MOTOR, 100, 444, 444 - correctionValue);
-	executeRotate(WRIST_MOTOR, 100, 512, 512 - correctionValue);
-
-	// 持ち上げる
-	executeRotate(SHOULDER_MOTOR, 100, 546, 546 - correctionValue);
-	executeRotate(UPPER_ARM_MOTOR, 100, 768, 768 - correctionValue);
-	executeRotate(FORE_ARM_MOTOR, 100, 768, 768 - correctionValue);
-	executeRotate(WRIST_MOTOR, 100, 768, 768 - correctionValue);
-}
-
-/**
- * 設定角度が目標角度(次ステップへ進んで良い角度) になるまで動作する 
- * @param motorId     モータID
- * @param speed       設定速度
- * @param angle       設定角度
- * @param targetangle 目標角度(次ステップへ進んで良い角度) 
- */
-void executeRotate(int motorId, int speed, int angle, int targetangle){
-	//設定角度への動作を実行
-	MotorControlJoint( motorId, speed, angle );
-
-	// 目標角度に達していない間は動作する
-	while( targetangle < GetCurrentAngle(motorId) )
-	{
-		// 設定角度への動作を再実行
-		MotorControlJoint( motorId, speed, angle );
-		_delay_ms(50);//適切なウェイト時間を設定
-	}
 }
 
 /************************************************************************/

@@ -561,46 +561,6 @@ int GetCurrentSignedSpeedL(void) {
 #endif // ENABLE_AVRTIMER
 
 /**
- * 現在のモータ角度取得
- * @brief  現在のモータ角度取得
- * @param  motorId モータID
- * @return 現在の角度
- * @detail 上位バイト2bit、下位8bitから現在の角度を取得する。
- *         パケット通信失敗時、前回の速度を返す。
- *         出力軸：0～300°、0～1023　※中央：150° = 512
- *         300～360°の間：不定値
- *
- *         下記のモータIDを入力パラメータとすること。
- *         SHOULDER_MOTOR       12      // Shoulder Motor address(肩モータ)
- *         UPPER_ARM_MOTOR      25      // Upper arm Motor address(上腕モータ)
- *         FORE_ARM_MOTOR       14      // ForeArm Motor address(前腕モータ)
- *         WRIST_MOTOR          23      // Wrist Motor address(手首モータ)
- */
-int GetCurrentAngle(int motorId) {
-	int readValueHigh = 0;	// 上位バイト
-	int readValueLow = 0;	// 下位バイト
-	static int angle = 0;	// 現在の位置
-	
-	// 上位バイト取得
-	readValueHigh = dxl_read_byte(motorId, CTRL_TBL_ADDR_PRESENT_POSITION_H) & 0x03;
-	if(dxl_get_result() != COMM_RXSUCCESS) {
-		// パケット通信失敗時、前回値を返す。
-		return angle;
-	}
-	// 下位バイト取得
-	readValueLow  = dxl_read_byte(motorId, CTRL_TBL_ADDR_PRESENT_POSITION_L) & 0xFF;
-	if(dxl_get_result() != COMM_RXSUCCESS) {
-		// パケット通信失敗時、前回値を返す。
-		return angle;
-	}
-	// 上位バイトと下位バイトから現在の位置を計算
-	angle = ((readValueHigh << 8) + readValueLow);
-	LOG_DEBUG("GetCurrentPositionR() is %d\n", angle);
-
-	return angle;
-}
-
-/**
  * AX-S1の赤外線センサ値を取得する。
  * @brief AX-S1の赤外線センサ値を取得する。
  * @param (int *out_fire_data_left) 左側の赤外線センサ値
