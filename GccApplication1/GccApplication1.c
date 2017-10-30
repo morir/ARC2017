@@ -103,9 +103,6 @@ void LED_off(int i);
 // Serial Message Buffer
 int serCmd[SERIAL_BUFFER_SIZE] = {0};
 
-// Goal Judgment counter
-int goalCounter = 0;
-
 // IR Sensor 
 unsigned int IR[ADC_PORT_6 + 1] = {0,0,0,0,0,0,0};
 
@@ -1199,13 +1196,13 @@ void TreasureFindingLineTrace(int isFirst) {
 			sensorPattern == BIT_011000 ||
 			sensorPattern == BIT_111000) {
 			isSearchingLeftSide = 1;
-			Execute(TRACE_L_ROUND_TIGHT);
+			Execute(TRACE_L_TRESURE_FIND);
 		} else {
 			isSearchingLeftSide = 0;
-			Execute(TRACE_R_ROUND_TIGHT);
+			Execute(TRACE_R_TRESURE_FIND);
 		}
 
-		_delay_ms(50);
+		_delay_ms(10);
 		return;
 	}
 
@@ -1217,7 +1214,7 @@ void TreasureFindingLineTrace(int isFirst) {
 		// ラインの右側サーチ中に左ラインを検出したら、
 		// ラインの左側サーチに切り替える
 		isSearchingLeftSide = 1;
-		Execute(TRACE_L_ROUND_TIGHT);
+		Execute(TRACE_L_TRESURE_FIND);
 	} else if (
 		(isSearchingLeftSide > 0) &&
 		(sensorPattern == BIT_000010 ||
@@ -1227,10 +1224,10 @@ void TreasureFindingLineTrace(int isFirst) {
 		// ラインの左側サーチ中に右ラインを検出したら、
 		// ラインの右側サーチに切り替える
 		 isSearchingLeftSide = 0;
-		 Execute(TRACE_R_ROUND_TIGHT);
+		 Execute(TRACE_R_TRESURE_FIND);
 	}
 		
-    _delay_ms(50);
+    _delay_ms(10);
 }
 
 /************************************************************************/

@@ -17,11 +17,9 @@
 // ------------------ Defined ------------------
 #define DEFAULT_BAUDNUM     1 // 1Mbps
 
-//#define DINAMIXEL_AX_12       // Dinamixel AX-12 use
-#define LOW_SPEED_MODE          // Low speed mode
-//#define HIGH_SPEED_MODE         // High speed mode
-//#define MAX_SPEED_MODE          // Max speed mode
-//#define TEST_SPEED_MODE        //TEST 20150612
+#define RIGHT_MOTOR         32      // Right Motor address
+#define LEFT_MOTOR          33      // Left Motor address
+#define CENTER_AXS1_SENSOR	100		// AX-S1 Sensor address
 
 // Motor Settings Address
 #define P_CW_ANGLE_LIMIT_L  6
@@ -33,19 +31,6 @@
 #define P_GOAL_SPEED_L      32
 #define P_GOAL_SPEED_H      33
 #define P_EEP_LOCK          47
-
-#ifdef DINAMIXEL_AX_12
-#define RIGHT_MOTOR         2       // Right Motor address
-#define LEFT_MOTOR          3       // Left Motor address
-#define DELAY_MSEC          10      // Delay time
-#define OVER_RUN_TIME       1500    // Over run time
-#else // DINAMIXEL_AX_12
-#define RIGHT_MOTOR         32      // Right Motor address
-#define LEFT_MOTOR          33      // Left Motor address
-#define CENTER_AXS1_SENSOR	100		// AX-S1 Sensor address
-#define DELAY_MSEC          1       // Delay time
-#define OVER_RUN_TIME       500     // Over run time
-#endif // DINAMIXEL_AX_12
 
 #define CARGO_BED_MOTOR	     18		 // 荷台用モータのID
 
@@ -60,51 +45,6 @@
 #define AXS1_ADDR_IR_LIGHT_LEFT_DATA	(29)	// 左側の照度センサ値
 #define AXS1_ADDR_IR_LIGHT_CENTER_DATA	(30)	// 中央の照度センサ値
 #define AXS1_ADDR_IR_LIGHT_RIGHT_DATA	(31)	// 右側の照度センサ値
-
-// Motor Speed Value
-#ifdef DINAMIXEL_AX_12
-#define P_CW_SPEED_NOMAL    1023
-#define P_CCW_SPEED_NOMAL   2047
-#define P_CW_SPEED_TURN     920
-#define P_CCW_SPEED_TURN    1943
-#define P_CW_SPEED_TURN_2   818
-#define P_CCW_SPEED_TURN_2  1841
-#else // DINAMIXEL_AX_12
-// DINAMIXEL_AX_12W
-#if defined (LOW_SPEED_MODE)
-// LOW_SPEED_MODE
-#define P_CW_SPEED_NOMAL    609
-#define P_CCW_SPEED_NOMAL   1632
-#define P_CW_SPEED_TURN     509
-#define P_CCW_SPEED_TURN    1532
-#define P_CW_SPEED_TURN_2   409
-#define P_CCW_SPEED_TURN_2  1432
-#elif defined (HIGH_SPEED_MODE)
-// HIGH_SPEED_MODE
-#define P_CW_SPEED_NOMAL    809
-#define P_CCW_SPEED_NOMAL   1832
-#define P_CW_SPEED_TURN     709
-#define P_CCW_SPEED_TURN    1732
-#define P_CW_SPEED_TURN_2   609
-#define P_CCW_SPEED_TURN_2  1632
-#elif defined (TEST_SPEED_MODE)
-// TEST_SPEED_MODE
-#define P_CW_SPEED_NOMAL    200
-#define P_CCW_SPEED_NOMAL   1223
-#define P_CW_SPEED_TURN     1203
-#define P_CCW_SPEED_TURN    180
-#define P_CW_SPEED_TURN_2   1153
-#define P_CCW_SPEED_TURN_2  150
-#else
-// MAX_SPEED_MODE
-#define P_CW_SPEED_NOMAL    1023
-#define P_CCW_SPEED_NOMAL   2047
-#define P_CW_SPEED_TURN     920
-#define P_CCW_SPEED_TURN    1943
-#define P_CW_SPEED_TURN_2   818
-#define P_CCW_SPEED_TURN_2  1841
-#endif // LOW_SPEED_MODE
-#endif // DINAMIXEL_AX_12
 
 // Speed settings
 #define MAX_SPEED (200)
@@ -127,12 +67,15 @@
 #define TRACE_R_TURN			6	// 右旋回
 #define TRACE_R_TURN_END		114	// 右旋回終了
 #define TRACE_SLOW_STRAIGHT		12	// 直進
+#define TRACE_L_TRESURE_FIND    115	// 宝物検索左前進
+#define TRACE_R_TRESURE_FIND    116	// 宝物検索右前進
 #define TRACE_FINALACTION		999	// ゴール動作
 
 #define MOTOR_MOVE_UP_VAL		(20)	//モーターが低速だった場合この値分を付加して駆動させる
 #define TURN_SPEED_BASE			(50)	//旋回のベース速度
 #define BASE_SPEED_INIT_VAL		(100)	//ベース速度の初期値
 #define TURN_SPEED_JUDGE_VAL	(400)	//定常旋回する基準速度
+#define TRESURE_FIND_INSIDEMORTER_MOVE_VAL	(20)	//内側のモータ速度を1～100を％で指定。100で直進、1で内側モータほぼ停止。
 
 #define MOTOR_MOVE_UP_VAL	(20)	//モーターが低速だった場合この値分を付加して駆動させる
 #define SLOW_STRAIGHT_VAL	(120)	//旋回位置微調整で動作する速度(前進用)
@@ -161,6 +104,8 @@ void LeftTurnSlowMove(int rate);
 void RightTurnSlowMove(int rate);
 void PrintErrorCode(void);
 void PrintCommStatus(int CommStatus);
+void LeftTresureFindMove(void);
+void RightTresureFindMove(void);
 
 int GetCurrentSpeedR(void);
 int GetCurrentSpeedL(void);

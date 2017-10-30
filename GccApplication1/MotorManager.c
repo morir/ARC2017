@@ -133,6 +133,14 @@ void Execute(int type) {
 			LOG_INFO("TRACE_SLOW_STRAIGHT\r\n");
 			StraightLowMove();
 			break;
+		case TRACE_L_TRESURE_FIND:
+		    LOG_INFO("Left Turn\r\n");
+		    LeftTresureFindMove();
+		    break;
+		case TRACE_R_TRESURE_FIND:
+		    LOG_INFO("Right Turn\r\n");
+		    RightTresureFindMove();
+		    break;
         default:
             LOG_INFO("Unknown type[%d]\r\n", type);
             break;
@@ -247,30 +255,6 @@ void RightTurnMove(void) {
 	Move(leftSpeed, rightSpeed);
 }
 
-void RightTurnByBaseSpeedAdjust(void) {
-	int leftSpeed = TURN_SPEED_BASE;
-	int rightSpeed = TURN_SPEED_BASE;
-	int turnSpeedJudgeVal = (int)(TURN_SPEED_JUDGE_VAL / 10);
-	int baseSpeedVal = (int)(BaseSpeed / 10);
-	int turnBaseVal = TURN_SPEED_BASE /10;
-	int turnAdjustVal = (int)(TURN_SPEED_BASE - (((baseSpeedVal * baseSpeedVal * turnBaseVal) / (turnSpeedJudgeVal * turnSpeedJudgeVal)) * 10) );
-    LOG_DEBUG("BaseSpeed:[%d] turnAdjustVal:[%d]\r\n",BaseSpeed, turnAdjustVal);
-
-	if (turnAdjustVal > 0) {
-		leftSpeed = TURN_SPEED_BASE + turnAdjustVal;
-		rightSpeed = TURN_SPEED_BASE - turnAdjustVal;
-	} else if (turnAdjustVal < 0 ) {
-		leftSpeed = TURN_SPEED_BASE - (TURN_SPEED_BASE + turnAdjustVal);
-		rightSpeed = TURN_SPEED_BASE + (TURN_SPEED_BASE + turnAdjustVal);
-	}
-    LOG_DEBUG("leftSpeed:[%d] rightSpeed:[%d]\r\n",leftSpeed, rightSpeed);
-	
-	leftSpeed = (leftSpeed);
-	rightSpeed = (rightSpeed);
-
-	Move(leftSpeed, rightSpeed);
-}
-
 void LeftTurnSlowMove(int rate) {
 	int speed = (TURN_SPEED_BASE * rate) / 100;
 	int leftSpeed = (1024 + speed);
@@ -285,6 +269,28 @@ void RightTurnSlowMove(int rate) {
 	int rightSpeed = speed;
 
 	Move(leftSpeed, rightSpeed);
+}
+
+/************************************************************************/
+/* 宝物検索用の左前進を実行 */
+/************************************************************************/
+void LeftTresureFindMove(void) {
+    int execBaseSpeed = (BaseSpeed < MAX_SPEED) ? BaseSpeed : MAX_SPEED;
+    int leftSpeed = ((execBaseSpeed * TRESURE_FIND_INSIDEMORTER_MOVE_VAL) / 100);
+    int rightSpeed = (1024 + execBaseSpeed);
+
+    Move(leftSpeed, rightSpeed);
+}
+
+/************************************************************************/
+/* 宝物検索用の右前進を実行 */
+/************************************************************************/
+void RightTresureFindMove(void) {
+    int execBaseSpeed = (BaseSpeed < MAX_SPEED) ? BaseSpeed : MAX_SPEED;
+    int leftSpeed = execBaseSpeed;
+    int rightSpeed = (1024 + (execBaseSpeed * TRESURE_FIND_INSIDEMORTER_MOVE_VAL) / 100);
+
+    Move(leftSpeed, rightSpeed);
 }
 
 void PrintErrorCode() {
