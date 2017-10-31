@@ -168,38 +168,38 @@ void executeTraceProcess(void) {
  *   終了条件：宝物（白）を回収、180度旋回が完了する。
  */
  void treasureHunt_01(void) {
-         //int sensorPattern = BIT_000000;
-	LOG_INFO("treasureHunt_01() %s\r\n", "1");
+    //int sensorPattern = BIT_000000;
+    LOG_INFO("treasureHunt_01() %s\r\n", "1");
 
-         int left = 0, center = 0, right = 0;
-		 int isFirst = 0;
-         while (center <= 180) {
-			 GetAXS1SensorFireData(&left, &center, &right);
-             // 宝物検索用ライントレースを実行
-             TreasureFindingLineTrace(isFirst);
-			 isFirst++;
-         }
-         // 停止する
-         StopMove();
-         _delay_ms(100);
-         // 前進or後進する（実動作に合わせて設定）。
-         // executeXXXX();
-	// 手を開く
-	MotorControlJoint( WRIST_MOTOR, 100, 665 );//確認用
+    int left = 0, center = 0, right = 0;
+    int isFirst = 0;
+    while (center <= 180) {
+	    GetAXS1SensorFireData(&left, &center, &right);
+        // 宝物検索用ライントレースを実行
+        TreasureFindingLineTrace(isFirst);
+	    isFirst++;
+    }
+    // 停止する
+    StopMove();
+    _delay_ms(100);
+    // 前進or後進する（実動作に合わせて設定）。
+    // executeXXXX();
+    // 手を開く
+    MotorControlJoint( WRIST_MOTOR, 100, 665 );//確認用
          
-         // 停止する
-         StopMove();
-         _delay_ms(100);
+    // 停止する
+    StopMove();
+    _delay_ms(100);
 
-         // 宝物を掴んで荷台に乗せる
-         CatchAndReleaseFormation();
+    // 宝物を掴んで荷台に乗せる
+    CatchAndReleaseFormation();
 
-         // ライン上からの旋回を行う
-         executeRightTurnFromOnLine();
+    // ライン上からの旋回を行う
+    executeRightTurnFromOnLine();
 
-         // 停止する
-         StopMove();
-         _delay_ms(100);
+    // 停止する
+    StopMove();
+    _delay_ms(100);
 }
 
 /*
@@ -210,6 +210,46 @@ void executeTraceProcess(void) {
  *   終了条件：
  */
  void treasureHunt_02(void) {
+    LOG_INFO("treasureHunt_02() %s\r\n", "1");
+
+    int left = 0, center = 0, right = 0;
+    int isFirst = 0;
+    while (center <= 180) {
+        GetAXS1SensorFireData(&left, &center, &right);
+        // 宝物検索用ライントレースを実行
+        TreasureFindingLineTrace(isFirst);
+        isFirst++;
+    }
+    // 停止する
+    StopMove();
+    _delay_ms(100);
+    // 前進or後進する（実動作に合わせて設定）。
+    // executeXXXX();
+    // 手を開く
+    MotorControlJoint( WRIST_MOTOR, 100, 665 );//確認用
+     	
+    // 停止する
+    StopMove();
+    _delay_ms(100);
+
+    // 宝物を掴んで荷台に乗せる
+    CatchAndReleaseFormation();
+
+	static int counter = 0;
+	BaseSpeed = 50;
+
+    // 右直角ライン検出までライントレース実行
+	while (currentTraceAction != TRACE_R_TURN) {
+    	traceCommon(counter, BaseSpeed);
+	}
+
+	// 右旋回実行
+	currentTraceAction = executeRightTurn();
+	BaseSpeed = 50;
+
+    // 停止する
+    StopMove();
+    _delay_ms(100);
 }
 
 /*
@@ -220,6 +260,37 @@ void executeTraceProcess(void) {
  *   終了条件：
  */
  void treasureHunt_03(void) {
+    LOG_INFO("treasureHunt_03() %s\r\n", "1");
+
+    int left = 0, center = 0, right = 0;
+    int isFirst = 0;
+    while (center <= 180) {
+        GetAXS1SensorFireData(&left, &center, &right);
+        // 宝物検索用ライントレースを実行
+        TreasureFindingLineTrace(isFirst);
+        isFirst++;
+    }
+    // 停止する
+    StopMove();
+    _delay_ms(100);
+    // 前進or後進する（実動作に合わせて設定）。
+    // executeXXXX();
+    // 手を開く
+    MotorControlJoint( WRIST_MOTOR, 100, 665 );//確認用
+    
+    // 停止する
+    StopMove();
+    _delay_ms(100);
+
+    // 宝物を掴んで荷台に乗せる
+    CatchAndReleaseFormation();
+
+    // ライン上からの旋回を行う
+    executeRightTurnFromOnLine();
+
+    // 停止する
+    StopMove();
+    _delay_ms(100);
 }
 
 /**
