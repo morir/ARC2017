@@ -13,6 +13,24 @@
 static int32_t movingDistance = 0;	// 移動距離
 static int velocity_0 = 0;			// 初速度
 static uint32_t lastTime = 0;		// 前回の時間(ミリ秒)
+static MEASUREMENT_STATUS measurementStatus = NOT_MEASURING;	// 移動距離の計測中状態
+
+/**
+ * 移動距離の計測を開始
+ * @brief 移動距離の計測を開始
+ */
+void StartMeasuringMovingDistance() {
+	measurementStatus = MEASURING;
+	movingDistance = 0;
+}
+
+/**
+ * 移動距離の計測を停止
+ * @brief 移動距離の計測を停止
+ */
+void StopMeasuringMovingDistance() {
+	measurementStatus = NOT_MEASURING;
+}
 
 /**
  * 移動距離を取得
@@ -24,20 +42,16 @@ int32_t GetMovingDistance() {
 }
 
 /**
- * 移動距離を取得
- * @brief 移動距離を設定
- * @param  distance 距離
- */
-void SetMovingDistance(int32_t distance) {
-	movingDistance = distance;
-}
-
-/**
  * 移動距離を更新
  * @brief 移動距離を更新
  * @param  currentTime 現在の時間
  */
 void UpdateMovingDistance(uint32_t currentTime) {
+	if(measurementStatus == NOT_MEASURING) {
+		// 未計測中の場合、移動距離の更新を行わない。
+		return;
+	}
+	
 	// 現在の速度を計算
 	int velocity = (GetCurrentSignedSpeedR() + GetCurrentSignedSpeedL()) / 2;
 	
