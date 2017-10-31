@@ -7,6 +7,7 @@
 
 #include "ArmActionManager.h"
 
+#include "MotorManager.h"
 #include "AvrTimer.h"
 #include "DebugLog.h"
 
