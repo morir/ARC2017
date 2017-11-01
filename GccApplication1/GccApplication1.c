@@ -134,31 +134,31 @@ int main(void) {
 * @detail ゴール判定条件を満たすまでライントレース動作を行う。
 */
 void executeTraceProcess(void) {
-	//traceForwardArea_01();
-	//traceForwardArea_02();
-	//traceForwardArea_03();
-	//traceForwardArea_04();
-	//traceForwardArea_05();
+	traceForwardArea_01();
+	traceForwardArea_02();
+	traceForwardArea_03();
+	traceForwardArea_04();
+	traceForwardArea_05();
 	treasureHunt_01();
-	//traceBackwardArea_01();
-	//traceBackwardArea_02();
-	//traceBackwardArea_03();
-	//traceBackwardArea_04();
-	//treasureHunt_02();
-	//traceBackwardArea_06();
-	//traceBackwardArea_07();
-	//traceBackwardArea_08();
-	//traceBackwardArea_09();
-	//traceBackwardArea_10();
-	//traceBackwardArea_11();
-	//traceBackwardArea_12();
-	//traceBackwardArea_13();
-	//treasureHunt_03();
-	//traceBackwardArea_14();
-	//traceBackwardArea_15();
-	//traceBackwardArea_16();
-	//traceBackwardArea_17();
-	//traceBackwardArea_18();
+	traceBackwardArea_01();
+	traceBackwardArea_02();
+	traceBackwardArea_03();
+	traceBackwardArea_04();
+	treasureHunt_02();
+	traceBackwardArea_06();
+	traceBackwardArea_07();
+	traceBackwardArea_08();
+	traceBackwardArea_09();
+	traceBackwardArea_10();
+	traceBackwardArea_11();
+	traceBackwardArea_12();
+	traceBackwardArea_13();
+	treasureHunt_03();
+	traceBackwardArea_14();
+	traceBackwardArea_15();
+	traceBackwardArea_16();
+	traceBackwardArea_17();
+	traceBackwardArea_18();
 }
 
 /*

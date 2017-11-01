@@ -43,18 +43,10 @@ void FindFormation(void)
 void CatchAndReleaseFormation(void)
 {
 	//-- ひらく
-	executeRotate( WRIST_MOTOR, 100, 768, 768 - CorrectionValue );
-
-	_delay_ms(500);//1秒待つ⇒動作に合わせて変更してください
-
-	executeRotate(SHOULDER_MOTOR, 100, 512, 512 - CorrectionValue);
-
-	_delay_ms(500);//1秒待つ⇒動作に合わせて変更してください
+	//executeRotate( WRIST_MOTOR, 100, 768, 768 - CorrectionValue );
 
 	//-- 掴む
 	executeRotate(WRIST_MOTOR, 200, 512, 512 - CorrectionValue );
-
-	_delay_ms(500);//1秒待つ⇒動作に合わせて変更してください
 
 	//-- 持ち上げ開始
 //	executeRotate(FORE_ARM_MOTOR, 100, 355, 355 - CorrectionValue);
