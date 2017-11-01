@@ -134,31 +134,31 @@ int main(void) {
 * @detail ゴール判定条件を満たすまでライントレース動作を行う。
 */
 void executeTraceProcess(void) {
-	traceForwardArea_01();
-	traceForwardArea_02();
-	traceForwardArea_03();
-	traceForwardArea_04();
-	traceForwardArea_05();
+	//traceForwardArea_01();
+	//traceForwardArea_02();
+	//traceForwardArea_03();
+	//traceForwardArea_04();
+	//traceForwardArea_05();
 	treasureHunt_01();
-	traceBackwardArea_01();
-	traceBackwardArea_02();
-	traceBackwardArea_03();
-	traceBackwardArea_04();
-	treasureHunt_02();
-	traceBackwardArea_06();
-	traceBackwardArea_07();
-	traceBackwardArea_08();
-	traceBackwardArea_09();
-	traceBackwardArea_10();
-	traceBackwardArea_11();
-	traceBackwardArea_12();
-	traceBackwardArea_13();
-	treasureHunt_03();
-	traceBackwardArea_14();
-	traceBackwardArea_15();
-	traceBackwardArea_16();
-	traceBackwardArea_17();
-	traceBackwardArea_18();
+	//traceBackwardArea_01();
+	//traceBackwardArea_02();
+	//traceBackwardArea_03();
+	//traceBackwardArea_04();
+	//treasureHunt_02();
+	//traceBackwardArea_06();
+	//traceBackwardArea_07();
+	//traceBackwardArea_08();
+	//traceBackwardArea_09();
+	//traceBackwardArea_10();
+	//traceBackwardArea_11();
+	//traceBackwardArea_12();
+	//traceBackwardArea_13();
+	//treasureHunt_03();
+	//traceBackwardArea_14();
+	//traceBackwardArea_15();
+	//traceBackwardArea_16();
+	//traceBackwardArea_17();
+	//traceBackwardArea_18();
 }
 
 /*
@@ -182,7 +182,7 @@ void executeTraceProcess(void) {
     }
     // 停止する
     StopMove();
-    _delay_ms(100);
+    _delay_ms(500);
     // 前進or後進する（実動作に合わせて設定）。
     // executeXXXX();
     // 手を開く
@@ -190,10 +190,10 @@ void executeTraceProcess(void) {
          
     // 停止する
     StopMove();
-    _delay_ms(100);
+    _delay_ms(1000);
 
     // 宝物を掴んで荷台に乗せる
-    CatchAndReleaseFormation();
+    //CatchAndReleaseFormation();
 
     // ライン上からの旋回を行う
     executeRightTurnFromOnLine();
@@ -374,7 +374,7 @@ void executeLeftTurnFromOnLine(void) {
     	//右センサーを検出しているか確認する
     	if (sensorPattern == BIT_000001) {
             // 旋回を継続して抜ける（できればここで確実に抜けたい）
-            _delay_ms(100);//センサーが全て通過するまで旋回
+            _delay_ms(300);//センサーが全て通過するまで旋回
             break;
         } else if (sensorPattern == BIT_000010) {
             // 旋回を継続して抜ける
@@ -396,8 +396,7 @@ void executeLeftTurnFromOnLine(void) {
     	if (
             sensorPattern == BIT_011100 || sensorPattern == BIT_001110 ||
             sensorPattern == BIT_001000 || sensorPattern == BIT_001100 ||
-            sensorPattern == BIT_000100 || sensorPattern == BIT_000110 ||
-            sensorPattern == BIT_000010
+            sensorPattern == BIT_000100 || sensorPattern == BIT_000110
     	) {
         	LED_on(2);
         	//中央のセンサーが白なら停止を実行
@@ -522,7 +521,7 @@ void executeRightTurnFromOnLine(void) {
         //右センサーを検出しているか確認する
         if (sensorPattern == BIT_100000) {
             // 旋回を継続して抜ける（できればここで確実に抜けたい）
-            _delay_ms(100);//センサーが全て通過するまで旋回
+            _delay_ms(300);//センサーが全て通過するまで旋回
             break;
         } else if (sensorPattern == BIT_010000) {
             // 旋回を継続して抜ける
@@ -543,9 +542,8 @@ void executeRightTurnFromOnLine(void) {
         //旋回動作を抜けるための条件を判定
         if (
         sensorPattern == BIT_001110 || sensorPattern == BIT_011100 ||
-        sensorPattern == BIT_000010 || sensorPattern == BIT_000110 ||
         sensorPattern == BIT_000100 || sensorPattern == BIT_001100 ||
-        sensorPattern == BIT_010000
+        sensorPattern == BIT_001000 || sensorPattern == BIT_011000
         ) {
             LED_on(2);
             //中央のセンサーが白なら停止を実行
@@ -556,7 +554,7 @@ void executeRightTurnFromOnLine(void) {
         //右センサーを検出しているか確認する
         if (sensorPattern == BIT_000001) {
             //右センサーを検出したら旋回速度を落とす
-            LeftTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
+            RightTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
         }
     }
     

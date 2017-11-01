@@ -14,7 +14,7 @@
 #define LOG_ERROR_ON	//<! エラーログの出力設定			：常時ON
 #define LOG_WARN_ON		//<! 警告の出力設定					：常時ON
 //#define LOG_INFO_ON		//<! 情報ログの出力設定				：常時ON
-#define LOG_DEBUG_ON	//<! デバッグログの出力設定			：常時OFF
+//#define LOG_DEBUG_ON	//<! デバッグログの出力設定			：常時OFF
 
 #if defined(LOG_FATAL_ON)
 #define LOG_FATAL(...)	{printf("[FATAL] "); printf(__VA_ARGS__);}	//!< 致命的なエラーログ出力
