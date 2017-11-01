@@ -73,6 +73,7 @@ int main(void) {
     initIRSensor();
 	initTraceAction();
 	initSensorHistory();
+	initActionTable();
     MotorInit();
     initSerial();
 	initCargoBedMotor();
