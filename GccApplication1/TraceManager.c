@@ -347,7 +347,7 @@ void traceCommon(int *counter, int *maxSpeed) {
 	adjustTurnPosition();
 
 	// ‰Eù‰ñÀs
-	execute180DegreesTurn();
+	executeRightTurnFromOnLine();
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 

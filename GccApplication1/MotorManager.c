@@ -293,6 +293,23 @@ void RightTresureFindMove(void) {
     Move(leftSpeed, rightSpeed);
 }
 
+/**
+ * 速度が0～入力値以下になるまで、停止動作を継続する 
+ * @param maxVal 停止判定の上限値
+ */
+void stopMoveLessThanVal(int maxVal){
+	StopMove();//停止を実行
+	int judgeSpeed = 0;
+	while(1) {
+		judgeSpeed = GetCurrentSpeedR();//モーターの速度を取得
+		if( (judgeSpeed >= 0 && judgeSpeed <= maxVal) ||
+		  (judgeSpeed >= 1024 && judgeSpeed <= (1024 + maxVal)) ) {
+			//速度がmaxVal以下ならstop()抜ける
+			break;
+		}
+	}
+}
+
 void PrintErrorCode() {
     if(dxl_get_rxpacket_error(ERRBIT_VOLTAGE) == 1)
     LOG_ERROR("Input voltage error!\n");

@@ -106,6 +106,7 @@ void PrintErrorCode(void);
 void PrintCommStatus(int CommStatus);
 void LeftTresureFindMove(void);
 void RightTresureFindMove(void);
+void stopMoveLessThanVal(int val);
 
 int GetCurrentSpeedR(void);
 int GetCurrentSpeedL(void);

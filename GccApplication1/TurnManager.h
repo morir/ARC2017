@@ -26,6 +26,8 @@ int initRightTurnAction(int maxVal);
 int executeLeftTurn(void);
 int executeRightTurn(void);
 
-void execute180DegreesTurn(void);
+void executeLeftTurnFromOnLine(void);
+void executeRightTurnFromOnLine(void);
+void adjustTurnPosition(void);
 
 #endif /* TURNMANAGER_H_ */

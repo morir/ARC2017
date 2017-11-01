@@ -245,134 +245,325 @@ int executeRightTurn(void){
 	return TRACE_STRAIGHT;
 }
 
-/*
- * 180度の旋回を行う。
- * 実行前に走行モータを停止しておくこと。
- * 旋回後、中央のセンサーがトレースラインを検出したら処理を終了する。
- */
-void execute180DegreesTurn(void) {
-	int sensorPattern = BIT_000000;
+/************************************************************************/
+// トレースライン上からの左旋回を行う。
+// 実行前に走行モータを停止しておくこと。
+// 旋回後、中央のセンサーがトレースラインを検出したら処理を終了する。
+/************************************************************************/
+void executeLeftTurnFromOnLine(void) {
+    int sensorPattern = BIT_000000;
 
-	// 左旋回実行
-	LeftTurnMove();
-	
-	// 旋回開始時にラインセンサーがラインを読み取る位置に居るはずなので
-	// センサーがライン外まで通過していることを確認する。
-	while(1) {
-		sensorPattern = getSensorPattern();
+    // 左旋回実行
+    LeftTurnMove();
+    
+    // 旋回開始時にラインセンサーがラインを読み取る位置に居るはずなので
+    // センサーがライン外まで通過していることを確認する。
+    while(1) {
+        sensorPattern = getSensorPattern();
 
-		//右センサーを検出しているか確認する
-		if (sensorPattern == BIT_000001) {
-			// 旋回を継続して抜ける（できればここで確実に抜けたい）
-			_delay_ms(100);//センサーが全て通過するまで旋回
-			break;
-			} else if (sensorPattern == BIT_000010) {
-			// 旋回を継続して抜ける
-			_delay_ms(500);//センサーが全て通過するまで旋回
-			break;
-			} else if (sensorPattern == BIT_000110) {
-			// 旋回を継続して抜ける（予備）
-			//_delay_ms(100);
-			//break;
-		}
-		//_delay_ms(10);//ループの待ち時間を必要に応じて設定
-	}
-	
-	// 旋回動作の復帰動作
-	while(1) {
-		sensorPattern = getSensorPattern();
+        //右センサーを検出しているか確認する
+        if (sensorPattern == BIT_000001) {
+            // 旋回を継続して抜ける（できればここで確実に抜けたい）
+            _delay_ms(300);//センサーが全て通過するまで旋回
+            break;
+            } else if (sensorPattern == BIT_000010) {
+            // 旋回を継続して抜ける
+            _delay_ms(500);//センサーが全て通過するまで旋回
+            break;
+            } else if (sensorPattern == BIT_000110) {
+            // 旋回を継続して抜ける（予備）
+            //_delay_ms(100);
+            //break;
+        }
+        //_delay_ms(10);//ループの待ち時間を必要に応じて設定
+    }
+    
+    // 旋回動作の復帰動作
+    while(1) {
+        sensorPattern = getSensorPattern();
 
-		//旋回動作を抜けるための条件を判定
-		if (
-		sensorPattern == BIT_010000 || sensorPattern == BIT_011000 ||
-		sensorPattern == BIT_001000 || sensorPattern == BIT_001100 ||
-		sensorPattern == BIT_000100 || sensorPattern == BIT_000110 ||
-		sensorPattern == BIT_000010
-		) {
-			LED_on(2);
-			//中央のセンサーが黒なら停止を実行
-			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
-			break;
-		}
+        //旋回動作を抜けるための条件を判定
+        if (
+        sensorPattern == BIT_011100 || sensorPattern == BIT_001110 ||
+        sensorPattern == BIT_001000 || sensorPattern == BIT_001100 ||
+        sensorPattern == BIT_000100 || sensorPattern == BIT_000110
+        ) {
+            LED_on(2);
+            //中央のセンサーが白なら停止を実行
+            stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
+            break;
+        }
 
-		//左センサーを検出しているか確認する
-		if (sensorPattern == BIT_100000) {
-			//左センサーを検出したら旋回速度を落とす
-			LeftTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
-		}
-	}
-	
-	//旋回停止判定後の止まった位置でセンサーが中央４個のいずれかなら逆旋回終了
-	sensorPattern = getSensorPattern();
-	if (sensorPattern == BIT_010000) {
-		//左センサーなので、左曲りに設定して抜ける
-		Execute(TRACE_L_ROUND_MIDDLE);
-		return;
-		} else if (sensorPattern == BIT_011000) {
-		//左センサーなので、左曲りに設定して抜ける
-		Execute(TRACE_L_ROUND_SOFT);
-		return;
-		} else if (sensorPattern == BIT_001000) {
-		//中央センサーなので、直進に設定して抜ける
-		Execute(TRACE_STRAIGHT);
-		return;
-		} else if (sensorPattern == BIT_001100) {
-		//中央センサーなので、直進に設定して抜ける
-		Execute(TRACE_STRAIGHT);
-		return;
-		} else if (sensorPattern == BIT_000100) {
-		//中央センサーなので、直進に設定して抜ける
-		Execute(TRACE_STRAIGHT);
-		return;
-		} else if (sensorPattern == BIT_000110) {
-		//右センサーなので、右曲りに設定して抜ける
-		Execute(TRACE_R_ROUND_SOFT);
-		return;
-		} else if (sensorPattern == BIT_000010) {
-		//右センサーなので、右曲りに設定して抜ける
-		Execute(TRACE_R_ROUND_MIDDLE);
-		return;
-	}
-	
-	// 旋回停止判定中にセンサーがラインを通り越した想定
-	//センサーを中央に戻すため遅い旋回を実行
-	RightTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
-	while(1) {
-		sensorPattern = getSensorPattern();
+        //左センサーを検出しているか確認する
+        if (sensorPattern == BIT_100000) {
+            //左センサーを検出したら旋回速度を落とす
+            LeftTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
+        }
+    }
+    
+    //旋回停止判定後の止まった位置でセンサーが中央４個のいずれかなら逆旋回終了
+    sensorPattern = getSensorPattern();
+    if (sensorPattern == BIT_010000) {
+        //左センサーなので、左曲りに設定して抜ける
+        Execute(TRACE_L_ROUND_MIDDLE);
+        _delay_ms(50);
+        return;
+        } else if (sensorPattern == BIT_011000) {
+        //左センサーなので、左曲りに設定して抜ける
+        Execute(TRACE_L_ROUND_SOFT);
+        _delay_ms(50);
+        return;
+        } else if (sensorPattern == BIT_001000) {
+        //中央センサーなので、直進に設定して抜ける
+        Execute(TRACE_STRAIGHT);
+        _delay_ms(50);
+        return;
+        } else if (sensorPattern == BIT_001100) {
+        //中央センサーなので、直進に設定して抜ける
+        Execute(TRACE_STRAIGHT);
+        _delay_ms(50);
+        return;
+        } else if (sensorPattern == BIT_000100) {
+        //中央センサーなので、直進に設定して抜ける
+        Execute(TRACE_STRAIGHT);
+        _delay_ms(50);
+        return;
+        } else if (sensorPattern == BIT_000110) {
+        //右センサーなので、右曲りに設定して抜ける
+        Execute(TRACE_R_ROUND_SOFT);
+        _delay_ms(50);
+        return;
+        } else if (sensorPattern == BIT_000010) {
+        //右センサーなので、右曲りに設定して抜ける
+        Execute(TRACE_R_ROUND_MIDDLE);
+        _delay_ms(50);
+        return;
+    }
+    
+    // 旋回停止判定中にセンサーがラインを通り越した想定
+    //センサーを中央に戻すため遅い旋回を実行
+    RightTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
+    while(1) {
+        sensorPattern = getSensorPattern();
 
-		//旋回動作を抜けるための条件を判定
-		// 精度は落ちるが、とりあえず旋回を抜ける
-		if (sensorPattern == BIT_000010) {
-			//右センサーなので、右曲りに設定して抜ける
-			Execute(TRACE_R_ROUND_MIDDLE);
-			return;
-			} else if (sensorPattern == BIT_000110) {
-			//右センサーなので、右曲りに設定して抜ける
-			Execute(TRACE_R_ROUND_SOFT);
-			return;
-			} else if (sensorPattern == BIT_000100) {
-			//中央センサーなので、直進に設定して抜ける
-			Execute(TRACE_STRAIGHT);
-			return;
-			} else if (sensorPattern == BIT_001100) {
-			//中央センサーなので、直進に設定して抜ける
-			Execute(TRACE_STRAIGHT);
-			return;
-			} else if (sensorPattern == BIT_001000) {
-			//中央センサーなので、直進に設定して抜ける
-			Execute(TRACE_STRAIGHT);
-			return;
-			} else if (sensorPattern == BIT_011000) {
-			//左センサーなので、左曲りに設定して抜ける
-			Execute(TRACE_L_ROUND_SOFT);
-			return;
-			} else if (sensorPattern == BIT_010000) {
-			//左センサーなので、左曲りに設定して抜ける
-			Execute(TRACE_L_ROUND_MIDDLE);
-			return;
-		}
-	}
-	Execute(TRACE_STRAIGHT);
-	return;
+        //旋回動作を抜けるための条件を判定
+        // 精度は落ちるが、とりあえず旋回を抜ける
+        if (sensorPattern == BIT_000010) {
+            //右センサーなので、右曲りに設定して抜ける
+            Execute(TRACE_R_ROUND_MIDDLE);
+            _delay_ms(50);
+            return;
+            } else if (sensorPattern == BIT_000110) {
+            //右センサーなので、右曲りに設定して抜ける
+            Execute(TRACE_R_ROUND_SOFT);
+            _delay_ms(50);
+            return;
+            } else if (sensorPattern == BIT_000100) {
+            //中央センサーなので、直進に設定して抜ける
+            Execute(TRACE_STRAIGHT);
+            _delay_ms(50);
+            return;
+            } else if (sensorPattern == BIT_001100) {
+            //中央センサーなので、直進に設定して抜ける
+            Execute(TRACE_STRAIGHT);
+            _delay_ms(50);
+            return;
+            } else if (sensorPattern == BIT_001000) {
+            //中央センサーなので、直進に設定して抜ける
+            Execute(TRACE_STRAIGHT);
+            _delay_ms(50);
+            return;
+            } else if (sensorPattern == BIT_011000) {
+            //左センサーなので、左曲りに設定して抜ける
+            Execute(TRACE_L_ROUND_SOFT);
+            _delay_ms(50);
+            return;
+            } else if (sensorPattern == BIT_010000) {
+            //左センサーなので、左曲りに設定して抜ける
+            Execute(TRACE_L_ROUND_MIDDLE);
+            _delay_ms(50);
+            return;
+        }
+    }
+
+    // あきらめて直進で抜ける
+    Execute(TRACE_STRAIGHT);
+    _delay_ms(20);
+    return;
 }
+
+/************************************************************************/
+// トレースライン上からの右旋回を行う。
+// 実行前に走行モータを停止しておくこと。
+// 旋回後、中央のセンサーがトレースラインを検出したら処理を終了する。
+/************************************************************************/
+void executeRightTurnFromOnLine(void) {
+    int sensorPattern = BIT_000000;
+
+    // 左旋回実行
+    RightTurnMove();
+    
+    // 旋回開始時にラインセンサーがラインを読み取る位置に居るはずなので
+    // センサーがライン外まで通過していることを確認する。
+    while(1) {
+        sensorPattern = getSensorPattern();
+
+        //右センサーを検出しているか確認する
+        if (sensorPattern == BIT_100000) {
+            // 旋回を継続して抜ける（できればここで確実に抜けたい）
+            _delay_ms(300);//センサーが全て通過するまで旋回
+            break;
+            } else if (sensorPattern == BIT_010000) {
+            // 旋回を継続して抜ける
+            _delay_ms(500);//センサーが全て通過するまで旋回
+            break;
+            } else if (sensorPattern == BIT_011000) {
+            // 旋回を継続して抜ける（予備）
+            //_delay_ms(100);
+            //break;
+        }
+        //_delay_ms(10);//ループの待ち時間を必要に応じて設定
+    }
+    
+    // 旋回動作の復帰動作
+    while(1) {
+        sensorPattern = getSensorPattern();
+
+        //旋回動作を抜けるための条件を判定
+        if (
+        sensorPattern == BIT_001110 || sensorPattern == BIT_011100 ||
+        sensorPattern == BIT_000100 || sensorPattern == BIT_001100 ||
+        sensorPattern == BIT_001000 || sensorPattern == BIT_011000
+        ) {
+            LED_on(2);
+            //中央のセンサーが白なら停止を実行
+            stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
+            break;
+        }
+
+        //右センサーを検出しているか確認する
+        if (sensorPattern == BIT_000001) {
+            //右センサーを検出したら旋回速度を落とす
+            RightTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
+        }
+    }
+    
+    //旋回停止判定後の止まった位置でセンサーが中央４個のいずれかなら逆旋回終了
+    sensorPattern = getSensorPattern();
+    if (sensorPattern == BIT_000010) {
+        //左センサーなので、左曲りに設定して抜ける
+        Execute(TRACE_L_ROUND_MIDDLE);
+        _delay_ms(50);
+        return;
+        } else if (sensorPattern == BIT_011000) {
+        //左センサーなので、左曲りに設定して抜ける
+        Execute(TRACE_L_ROUND_SOFT);
+        _delay_ms(50);
+        return;
+        } else if (sensorPattern == BIT_001000) {
+        //中央センサーなので、直進に設定して抜ける
+        Execute(TRACE_STRAIGHT);
+        _delay_ms(50);
+        return;
+        } else if (sensorPattern == BIT_001100) {
+        //中央センサーなので、直進に設定して抜ける
+        Execute(TRACE_STRAIGHT);
+        _delay_ms(50);
+        return;
+        } else if (sensorPattern == BIT_000100) {
+        //中央センサーなので、直進に設定して抜ける
+        Execute(TRACE_STRAIGHT);
+        _delay_ms(50);
+        return;
+        } else if (sensorPattern == BIT_000110) {
+        //右センサーなので、右曲りに設定して抜ける
+        Execute(TRACE_R_ROUND_SOFT);
+        _delay_ms(50);
+        return;
+        } else if (sensorPattern == BIT_000010) {
+        //右センサーなので、右曲りに設定して抜ける
+        Execute(TRACE_R_ROUND_MIDDLE);
+        _delay_ms(50);
+        return;
+    }
+    
+    // 旋回停止判定中にセンサーがラインを通り越した想定
+    //センサーを中央に戻すため遅い旋回を実行
+    RightTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
+    while(1) {
+        sensorPattern = getSensorPattern();
+
+        //旋回動作を抜けるための条件を判定
+        // 精度は落ちるが、とりあえず旋回を抜ける
+        if (sensorPattern == BIT_000010) {
+            //右センサーなので、右曲りに設定して抜ける
+            Execute(TRACE_R_ROUND_MIDDLE);
+            _delay_ms(50);
+            return;
+            } else if (sensorPattern == BIT_000110) {
+            //右センサーなので、右曲りに設定して抜ける
+            Execute(TRACE_R_ROUND_SOFT);
+            _delay_ms(50);
+            return;
+            } else if (sensorPattern == BIT_000100) {
+            //中央センサーなので、直進に設定して抜ける
+            Execute(TRACE_STRAIGHT);
+            _delay_ms(50);
+            return;
+            } else if (sensorPattern == BIT_001100) {
+            //中央センサーなので、直進に設定して抜ける
+            Execute(TRACE_STRAIGHT);
+            _delay_ms(50);
+            return;
+            } else if (sensorPattern == BIT_001000) {
+            //中央センサーなので、直進に設定して抜ける
+            Execute(TRACE_STRAIGHT);
+            _delay_ms(50);
+            return;
+            } else if (sensorPattern == BIT_011000) {
+            //左センサーなので、左曲りに設定して抜ける
+            Execute(TRACE_L_ROUND_SOFT);
+            _delay_ms(50);
+            return;
+            } else if (sensorPattern == BIT_010000) {
+            //左センサーなので、左曲りに設定して抜ける
+            Execute(TRACE_L_ROUND_MIDDLE);
+            _delay_ms(50);
+            return;
+        }
+    }
+
+    // あきらめて直進で抜ける
+    Execute(TRACE_STRAIGHT);
+    _delay_ms(20);
+    return;
+}
+
+/**
+ * 旋回に入ったベース速度に応じて、位置を調整する。
+ * 2017ロボに合わせて調整必要！
+ */
+void adjustTurnPosition(void) {
+	if (BaseSpeed <= 50 ) {
+		StraightLowMove();
+		_delay_ms(150);	// 150ms 間隔を空ける
+	} else if (BaseSpeed <= 100 ) {
+		StraightLowMove();
+		_delay_ms(100);	// 100ms 間隔を空ける
+	} else if (BaseSpeed <= 120 ) {
+		StraightLowMove();
+		_delay_ms(80);	// 80ms 間隔を空ける
+	} else if (BaseSpeed <= 140 ) {
+		StraightLowMove();
+		_delay_ms(60);	// 60ms 間隔を空ける
+	} else if (BaseSpeed <= 160 ) {
+		StraightLowMove();
+		_delay_ms(40);	// 40ms 間隔を空ける
+	} else if (BaseSpeed <= 180 ) {
+		StraightLowMove();
+		_delay_ms(20);	// 20ms 間隔を空ける
+	}
+    StopMove();
+}
+
 
