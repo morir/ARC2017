@@ -236,12 +236,15 @@ void executeTraceProcess(void) {
     // 宝物を掴んで荷台に乗せる
     CatchAndReleaseFormation();
 
-	static int counter = 0;
-	BaseSpeed = 50;
+	int counter = 0;
+	int maxSpeed = 50;
 
     // 右直角ライン検出までライントレース実行
 	while (currentTraceAction != TRACE_R_TURN) {
-    	traceCommon(counter, BaseSpeed);
+
+    	traceCommon(&counter, &maxSpeed);
+		// 加速しない
+		maxSpeed = 50;
 	}
 
 	// 右旋回実行

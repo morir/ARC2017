@@ -25,7 +25,7 @@ void initTraceAction() {
  *   開始条件：スタートコマンドを受信する。
  *   終了条件：センサで左ターンを検出して直角旋回が完了する。
  */
-void traceCommon(int counter, int maxSpeed) {
+void traceCommon(int *counter, int *maxSpeed) {
 	// センサー値を取得
 	getSensors();
 	currentTraceAction = getActionWithHistory();
@@ -34,18 +34,18 @@ void traceCommon(int counter, int maxSpeed) {
 	}
 
 #ifdef LOG_INFO_ON
-	if ((counter % 1) == 0) {
+	if ((*counter % 1) == 0) {
 		BaseSpeed = BaseSpeed + 1;
-		counter = 0;
+		*counter = 0;
 	}
 #else
-	if ((counter % 5) == 0) {
+	if ((*counter % 5) == 0) {
 		BaseSpeed = BaseSpeed + 2;
-		counter = 0;
+		*counter = 0;
 	}
 #endif /* _MODE_SKIP_ */
-	if (BaseSpeed > maxSpeed) {
-		BaseSpeed = maxSpeed;
+	if (BaseSpeed > *maxSpeed) {
+		BaseSpeed = *maxSpeed;
 	}
 
 	Execute(currentTraceAction);
@@ -60,15 +60,15 @@ void traceCommon(int counter, int maxSpeed) {
  *   終了条件：センサで左ターンを検出して直角旋回が完了する。
  */
  void traceForwardArea_01(void) {
-	static int counter = 0;
-	static int maxSpeed = MAX_SPEED;
+	int counter = 0;
+	int maxSpeed = MAX_SPEED;
 
 	//初期動作（少しだけ直進）
 	StraightMove();
 	_delay_ms(100);	// 10ms 間隔を空ける
 
 	while (currentTraceAction != TRACE_L_TURN) {
-		traceCommon(counter, maxSpeed);
+		traceCommon(&counter, &maxSpeed);
 		counter++;
 	}
 
@@ -85,11 +85,11 @@ void traceCommon(int counter, int maxSpeed) {
  *   終了条件：センサで左ターンを検出して直角旋回が完了する。
  */
  void traceForwardArea_02(void) {
-	static int counter = 0;
-	static int maxSpeed = MAX_SPEED;
+	int counter = 0;
+	int maxSpeed = MAX_SPEED;
 
 	while (currentTraceAction != TRACE_L_TURN) {
-		traceCommon(counter, maxSpeed);
+		traceCommon(&counter, &maxSpeed);
 		counter++;
 	}
 
@@ -106,11 +106,11 @@ void traceCommon(int counter, int maxSpeed) {
  *   終了条件：センサで左ターンを検出して直角旋回が完了する。
  */
  void traceForwardArea_03(void) {
-	static int counter = 0;
-	static int maxSpeed = MAX_SPEED;
+	int counter = 0;
+	int maxSpeed = MAX_SPEED;
 
 	while (currentTraceAction != TRACE_L_TURN) {
-		traceCommon(counter, maxSpeed);
+		traceCommon(&counter, &maxSpeed);
 		counter++;
 	}
 
@@ -127,11 +127,11 @@ void traceCommon(int counter, int maxSpeed) {
  *   終了条件：センサで右ターンを検出して直角旋回が完了する。
  */
  void traceForwardArea_04(void) {
-	static int counter = 0;
-	static int maxSpeed = MAX_SPEED;
+	int counter = 0;
+	int maxSpeed = MAX_SPEED;
 
 	while (currentTraceAction != TRACE_R_TURN) {
-		traceCommon(counter, maxSpeed);
+		traceCommon(&counter, &maxSpeed);
 		counter++;
 	}
 
@@ -148,11 +148,11 @@ void traceCommon(int counter, int maxSpeed) {
  *   終了条件：センサで右ターンを検出して直角旋回が完了する。
  */
  void traceForwardArea_05(void) {
-	static int counter = 0;
-	static int maxSpeed = MAX_SPEED;
+	int counter = 0;
+	int maxSpeed = MAX_SPEED;
 
 	while (currentTraceAction != TRACE_R_TURN) {
-		traceCommon(counter, maxSpeed);
+		traceCommon(&counter, &maxSpeed);
 		counter++;
 	}
 
@@ -169,11 +169,11 @@ void traceCommon(int counter, int maxSpeed) {
  *   終了条件：センサで左ターンを検出して直角旋回が完了する。
  */
  void traceBackwardArea_01(void) {
-	static int counter = 0;
-	static int maxSpeed = MAX_SPEED;
+	int counter = 0;
+	int maxSpeed = MAX_SPEED;
 
 	while (currentTraceAction != TRACE_L_TURN) {
-		traceCommon(counter, maxSpeed);
+		traceCommon(&counter, &maxSpeed);
 		counter++;
 	}
 
@@ -190,11 +190,11 @@ void traceCommon(int counter, int maxSpeed) {
  *   終了条件：センサで左ターンを検出して直角旋回が完了する。
  */
  void traceBackwardArea_02(void) {
-	static int counter = 0;
-	static int maxSpeed = MAX_SPEED;
+	int counter = 0;
+	int maxSpeed = MAX_SPEED;
 
 	while (currentTraceAction != TRACE_L_TURN) {
-		traceCommon(counter, maxSpeed);
+		traceCommon(&counter, &maxSpeed);
 		counter++;
 	}
 
@@ -211,11 +211,11 @@ void traceCommon(int counter, int maxSpeed) {
  *   終了条件：センサで右ターンを検出して直角旋回が完了する。
  */
  void traceBackwardArea_03(void) {
-	static int counter = 0;
-	static int maxSpeed = MAX_SPEED;
+	int counter = 0;
+	int maxSpeed = MAX_SPEED;
 
 	while (currentTraceAction != TRACE_R_TURN) {
-		traceCommon(counter, maxSpeed);
+		traceCommon(&counter, &maxSpeed);
 		counter++;
 	}
 
@@ -270,11 +270,13 @@ void traceCommon(int counter, int maxSpeed) {
  *   終了条件：
  */
  void traceBackwardArea_06(void) {
-	static int counter = 0;
-	BaseSpeed = 50;
+	int counter = 0;
+	int maxSpeed = 50;
 
 	while (currentTraceAction != TRACE_R_TURN) {
-		traceCommon(counter, BaseSpeed);
+		traceCommon(&counter, &maxSpeed);
+		// 加速しない
+		maxSpeed = 50;
 	}
 
 	// 右旋回実行
@@ -290,10 +292,13 @@ void traceCommon(int counter, int maxSpeed) {
  *   終了条件：
  */
  void traceBackwardArea_07(void) {
-	static int counter = 0;
+	int counter = 0;
+	int maxSpeed = BaseSpeed;
 
 	while (currentTraceAction != TRACE_R_TURN) {
-		traceCommon(counter, BaseSpeed);
+		traceCommon(&counter, &maxSpeed);
+		// 加速しない
+		maxSpeed = BaseSpeed;
 	}
 
 	// 右旋回実行
@@ -308,14 +313,17 @@ void traceCommon(int counter, int maxSpeed) {
  *   終了条件：
  */
  void traceBackwardArea_08(void) {
-	static int counter = 0;
+	int counter = 0;
+	int maxSpeed = BaseSpeed;
     int sensorPattern = BIT_111111;
 	int findAnySensorCount = 0;
 
 	// ラインが途切れるまではトレース動作
 	while (sensorPattern != BIT_000000) {
-		traceCommon(counter, BaseSpeed);
+		traceCommon(&counter, &maxSpeed);
 		sensorPattern = getSensorPattern();
+		// 加速しない
+		maxSpeed = BaseSpeed;
 	}
 
 	// 停止実行
@@ -351,11 +359,11 @@ void traceCommon(int counter, int maxSpeed) {
  *   終了条件：
  */
  void traceBackwardArea_09(void) {
-	static int counter = 0;
-	static int maxSpeed = MAX_SPEED;
+	int counter = 0;
+	int maxSpeed = MAX_SPEED;
 
 	while (currentTraceAction != TRACE_L_TURN) {
-		traceCommon(counter, maxSpeed);
+		traceCommon(&counter, &maxSpeed);
 		counter++;
 	}
 
@@ -372,11 +380,11 @@ void traceCommon(int counter, int maxSpeed) {
  *   終了条件：
  */
  void traceBackwardArea_10(void) {
-	static int counter = 0;
-	static int maxSpeed = MAX_SPEED;
+	int counter = 0;
+	int maxSpeed = MAX_SPEED;
 
 	while (currentTraceAction != TRACE_R_TURN) {
-		traceCommon(counter, maxSpeed);
+		traceCommon(&counter, &maxSpeed);
 		counter++;
 	}
 
@@ -432,11 +440,11 @@ void traceCommon(int counter, int maxSpeed) {
  *   終了条件：
  */
  void traceBackwardArea_12(void) {
-	static int counter = 0;
-	static int maxSpeed = MAX_SPEED;
+	int counter = 0;
+	int maxSpeed = MAX_SPEED;
 
 	while (currentTraceAction != TRACE_R_TURN) {
-		traceCommon(counter, maxSpeed);
+		traceCommon(&counter, &maxSpeed);
 		counter++;
 	}
 
@@ -455,11 +463,11 @@ void traceCommon(int counter, int maxSpeed) {
  *   終了条件：
  */
  void traceBackwardArea_13(void) {
-	static int counter = 0;
-	static int maxSpeed = MAX_SPEED;
+	int counter = 0;
+	int maxSpeed = MAX_SPEED;
 
 	while (counter > 1500) {
-		traceCommon(counter, maxSpeed);
+		traceCommon(&counter, &maxSpeed);
 		counter++;
 	}
 
@@ -488,11 +496,11 @@ void traceCommon(int counter, int maxSpeed) {
  *   終了条件：
  */
  void traceBackwardArea_15(void) {
-	static int counter = 0;
-	static int maxSpeed = MAX_SPEED;
+	int counter = 0;
+	int maxSpeed = MAX_SPEED;
 
 	while (currentTraceAction != TRACE_L_TURN) {
-		traceCommon(counter, maxSpeed);
+		traceCommon(&counter, &maxSpeed);
 		counter++;
 	}
 
@@ -509,14 +517,14 @@ void traceCommon(int counter, int maxSpeed) {
  *   終了条件：
  */
  void traceBackwardArea_16(void) {
-	static int counter = 0;
-	static int maxSpeed = BASE_SPEED_INIT_VAL;
+	int counter = 0;
+	int maxSpeed = BASE_SPEED_INIT_VAL;
 	int sensorPattern = BIT_111111;
 	int findAnySensorCount = 0;
 
 	// ラインが途切れるまではトレース動作
 	while (sensorPattern != BIT_000000) {
-		traceCommon(counter, maxSpeed);
+		traceCommon(&counter, &maxSpeed);
 		counter++;
 	}
 
@@ -553,11 +561,11 @@ void traceCommon(int counter, int maxSpeed) {
  *   終了条件：
  */
 void traceBackwardArea_17(void) {
-	static int counter = 0;
-	static int maxSpeed = MAX_SPEED;
+	int counter = 0;
+	int maxSpeed = MAX_SPEED;
 
 	while (currentTraceAction != TRACE_R_TURN) {
-		traceCommon(counter, maxSpeed);
+		traceCommon(&counter, &maxSpeed);
 		counter++;
 	}
 

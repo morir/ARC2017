@@ -23,7 +23,7 @@ int isSearchingLeftSide;
 // ------------------ Method Definition ------------------
 void initTraceAction(void);
 
-void traceCommon(int counter, int maxSpeed);
+void traceCommon(int *counter, int *maxSpeed);
 
 void traceForwardArea_01(void);
 void traceForwardArea_02(void);
