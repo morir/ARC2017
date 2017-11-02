@@ -671,5 +671,44 @@ void TreasureFindingLineTrace(int isFirst) {
 	_delay_ms(10);
 }
 
+/*
+ * 宝物1個の場合の左旋回検出用トレース動作
+ * @return なし
+ * @condition
+ *   開始条件：前回のトレース動作から継続。
+ *   終了条件：センサで左ターンを検出して直角旋回が完了する。
+ */
+ void shortTraceToLeftTurn(void) {
+	int counter = 0;
+	int maxSpeed = MAX_SPEED;
 
+	while (currentTraceAction != TRACE_L_TURN) {
+		traceCommon(&counter, &maxSpeed);
+		counter++;
+	}
 
+	// 右旋回実行
+	currentTraceAction = executeLeftTurn();
+	BaseSpeed = BASE_SPEED_INIT_VAL;
+}
+
+/*
+ * 宝物1個の場合の右旋回検出用トレース動作
+ * @return なし
+ * @condition
+ *   開始条件：前回のトレース動作から継続。
+ *   終了条件：センサで右ターンを検出して直角旋回が完了する。
+ */
+ void shortTraceToRightTurn(void) {
+	int counter = 0;
+	int maxSpeed = MAX_SPEED;
+
+	while (currentTraceAction != TRACE_R_TURN) {
+		traceCommon(&counter, &maxSpeed);
+		counter++;
+	}
+
+	// 右旋回実行
+	currentTraceAction = executeRightTurn();
+	BaseSpeed = BASE_SPEED_INIT_VAL;
+}
