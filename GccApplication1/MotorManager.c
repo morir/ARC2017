@@ -20,11 +20,6 @@
 #define TURN_INSIDE_RATE (0.50)
 #define HALF_RATE (0.50)
 
-#ifdef ENABLE_AVRTIMER
-static int curSpeedR = 0;	// 現在の速度(右モータ)
-static int curSpeedL = 0;	// 現在の速度(左モータ)
-#endif // ENABLE_AVRTIMER
-
 void MotorInit(void) {
     dxl_initialize( 0, DEFAULT_BAUDNUM ); // Not using device index
     //Wheel Mode
@@ -366,31 +361,72 @@ void PrintCommStatus(int CommStatus) {
     }
 }
 
-#ifdef ENABLE_AVRTIMER
 /**
  * 現在の速度(右モータ)取得。
  * @brief 現在の速度(右モータ)取得。
  * @return 現在の速度(右モータ)
- * @detail 現在の速度(右モータ)を取得する。
+ * @detail 上位バイト3bit、下位8bitから現在の速度(右モータ)を取得する。
+ *         パケット通信失敗時、前回の速度を返す。
  *         停止:0,1024
  *         前進:1025～2047(CCW)
  *         後進:0001～1023(CW)
  */
 int GetCurrentSpeedR(void) {
-	return curSpeedR;
+	int readValueHigh = 0;	// 上位バイト
+	int readValueLow = 0;	// 下位バイト
+	static int speed = 0;	// 現在の速度
+	
+	// 上位バイト取得
+	readValueHigh = dxl_read_byte(RIGHT_MOTOR, CTRL_TBL_ADDR_PRESENT_SPEED_H) & 0x07;
+	if(dxl_get_result() != COMM_RXSUCCESS) {
+		// パケット通信失敗時、前回値を返す。
+		return speed;
+	}
+	// 下位バイト取得
+	readValueLow  = dxl_read_byte(RIGHT_MOTOR, CTRL_TBL_ADDR_PRESENT_SPEED_L) & 0xFF;
+	if(dxl_get_result() != COMM_RXSUCCESS) {
+		// パケット通信失敗時、前回値を返す。
+		return speed;
+	}
+	// 上位バイトと下位バイトから現在の速度を計算
+	speed = ((readValueHigh << 8) + readValueLow);
+	LOG_DEBUG("GetCurrentSpeedR() is %d\n", speed);
+
+	return speed;
 }
 
 /**
  * 現在の速度(左モータ)取得。
  * @brief 現在の速度(左モータ)取得。
  * @return 現在の速度(左モータ)
- * @detail 現在の速度(左モータ)を取得する。
+ * @detail 上位バイト3bit、下位8bitから現在の速度(左モータ)を取得する。
+ *         パケット通信失敗時、前回の速度を返す。
  *         停止:0,1024
  *         前進:0001～1023(CW)
  *         後進:1025～2047(CCW)
  */
 int GetCurrentSpeedL(void) {
-	return curSpeedL;
+	int readValueHigh = 0;	// 上位バイト
+	int readValueLow = 0;	// 下位バイト
+	static int speed = 0;	// 現在の速度
+	
+	// 上位バイト取得
+	readValueHigh = dxl_read_byte(LEFT_MOTOR, CTRL_TBL_ADDR_PRESENT_SPEED_H) & 0x07;
+	if(dxl_get_result() != COMM_RXSUCCESS) {
+		// パケット通信失敗時、前回値を返す。
+		return speed;
+	}
+	// 下位バイト取得
+	readValueLow  = dxl_read_byte(LEFT_MOTOR, CTRL_TBL_ADDR_PRESENT_SPEED_L) & 0xFF;
+	if(dxl_get_result() != COMM_RXSUCCESS) {
+		// パケット通信失敗時、前回値を返す。
+		return speed;
+	}
+	// 上位バイトと下位バイトから現在の速度を計算
+	speed = ((readValueHigh << 8) + readValueLow);
+	LOG_DEBUG("GetCurrentSpeedL() is %d\n", speed);
+
+	return speed;
 }
 
 /**
@@ -443,145 +479,6 @@ int GetCurrentSignedSpeedL(void) {
 	
 	return signed_speed;
 }
-
-/**
- * パケット通信をして、現在の速度(右モータ)取得。
- * @brief パケット通信をして、現在の速度(右モータ)取得。
- * @detail パケット（上位バイト3bit、下位8bit）から現在の速度(右モータ)を取得する。
- *         パケット通信失敗時、前回の速度を返す。
- *         前進:1024～2047(CCW)
- *         後進:0000～1023(CW)
- */
-void GetCurrentSpeedRCalledFromTimer(void) {
-	int readValueHigh = 0;	// 上位バイト
-	int readValueLow = 0;	// 下位バイト
-	
-	// 上位バイト取得
-	readValueHigh = dxl_read_byte(RIGHT_MOTOR, CTRL_TBL_ADDR_PRESENT_SPEED_H) & 0x07;
-	if(dxl_get_result() != COMM_RXSUCCESS) {
-		// パケット通信失敗時、前回値を返す。
-		return ;
-	}
-	// 下位バイト取得
-	readValueLow  = dxl_read_byte(RIGHT_MOTOR, CTRL_TBL_ADDR_PRESENT_SPEED_L) & 0xFF;
-	if(dxl_get_result() != COMM_RXSUCCESS) {
-		// パケット通信失敗時、前回値を返す。
-		return ;
-	}
-	// 上位バイトと下位バイトから現在の速度を計算
-	curSpeedR = ((readValueHigh << 8) + readValueLow);
-	LOG_DEBUG("GetCurrentSpeedR() is %d\n", curSpeedR);
-
-	return ;
-}
-
-/**
- * パケット通信をして、現在の速度(左モータ)取得。
- * @brief パケット通信をして、現在の速度(左モータ)取得。
- * @detail パケット（上位バイト3bit、下位8bit）から現在の速度(左モータ)を取得する。
- *         パケット通信失敗時、前回の速度を返す。
- *         前進:0000～1023(CW)
- *         後進:1024～2047(CCW)
- */
-void GetCurrentSpeedLCalledFromTimer(void) {
-	int readValueHigh = 0;	// 上位バイト
-	int readValueLow = 0;	// 下位バイト
-	
-	// 上位バイト取得
-	readValueHigh = dxl_read_byte(LEFT_MOTOR, CTRL_TBL_ADDR_PRESENT_SPEED_H) & 0x07;
-	if(dxl_get_result() != COMM_RXSUCCESS) {
-		// パケット通信失敗時、前回値を返す。
-		return ;
-	}
-	// 下位バイト取得
-	readValueLow  = dxl_read_byte(LEFT_MOTOR, CTRL_TBL_ADDR_PRESENT_SPEED_L) & 0xFF;
-	if(dxl_get_result() != COMM_RXSUCCESS) {
-		// パケット通信失敗時、前回値を返す。
-		return ;
-	}
-	// 上位バイトと下位バイトから現在の速度を計算
-	curSpeedL = ((readValueHigh << 8) + readValueLow);
-	LOG_DEBUG("GetCurrentSpeedL() is %d\n", curSpeedL);
-
-	return ;
-}
-#else // ENABLE_AVRTIMER
-
-/**
- * 現在の速度(右モータ)取得。
- * @brief 現在の速度(右モータ)取得。
- * @return 現在の速度(右モータ)
- * @detail 上位バイト3bit、下位8bitから現在の速度(右モータ)を取得する。
- *         パケット通信失敗時、前回の速度を返す。
- *         前進:1024～2047(CCW)
- *         後進:0000～1023(CW)
- */
-int GetCurrentSpeedR(void) {
-	int readValueHigh = 0;	// 上位バイト
-	int readValueLow = 0;	// 下位バイト
-	static int speed = 0;	// 現在の速度
-	
-	// 上位バイト取得
-	readValueHigh = dxl_read_byte(RIGHT_MOTOR, CTRL_TBL_ADDR_PRESENT_SPEED_H) & 0x07;
-	if(dxl_get_result() != COMM_RXSUCCESS) {
-		// パケット通信失敗時、前回値を返す。
-		return speed;
-	}
-	// 下位バイト取得
-	readValueLow  = dxl_read_byte(RIGHT_MOTOR, CTRL_TBL_ADDR_PRESENT_SPEED_L) & 0xFF;
-	if(dxl_get_result() != COMM_RXSUCCESS) {
-		// パケット通信失敗時、前回値を返す。
-		return speed;
-	}
-	// 上位バイトと下位バイトから現在の速度を計算
-	speed = ((readValueHigh << 8) + readValueLow);
-	LOG_DEBUG("GetCurrentSpeedR() is %d\n", speed);
-
-	return speed;
-}
-
-/**
- * 現在の速度(左モータ)取得。
- * @brief 現在の速度(左モータ)取得。
- * @return 現在の速度(左モータ)
- * @detail 上位バイト3bit、下位8bitから現在の速度(左モータ)を取得する。
- *         パケット通信失敗時、前回の速度を返す。
- *         前進:0000～1023(CW)
- *         後進:1024～2047(CCW)
- */
-int GetCurrentSpeedL(void) {
-	int readValueHigh = 0;	// 上位バイト
-	int readValueLow = 0;	// 下位バイト
-	static int speed = 0;	// 現在の速度
-	
-	// 上位バイト取得
-	readValueHigh = dxl_read_byte(LEFT_MOTOR, CTRL_TBL_ADDR_PRESENT_SPEED_H) & 0x07;
-	if(dxl_get_result() != COMM_RXSUCCESS) {
-		// パケット通信失敗時、前回値を返す。
-		return speed;
-	}
-	// 下位バイト取得
-	readValueLow  = dxl_read_byte(LEFT_MOTOR, CTRL_TBL_ADDR_PRESENT_SPEED_L) & 0xFF;
-	if(dxl_get_result() != COMM_RXSUCCESS) {
-		// パケット通信失敗時、前回値を返す。
-		return speed;
-	}
-	// 上位バイトと下位バイトから現在の速度を計算
-	speed = ((readValueHigh << 8) + readValueLow);
-	LOG_DEBUG("GetCurrentSpeedL() is %d\n", speed);
-
-	return speed;
-}
-
-int GetCurrentSignedSpeedR(void) {
-	// ビルドエラー対応処理
-	return 0;
-}
-int GetCurrentSignedSpeedL(void) {
-	// ビルドエラー対応処理
-	return 0;
-}
-#endif // ENABLE_AVRTIMER
 
 /**
  * AX-S1の赤外線センサ値を取得する。

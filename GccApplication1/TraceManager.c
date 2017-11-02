@@ -7,6 +7,7 @@
  
 #include "SensorManager.h"
 #include "MotorManager.h"
+#include "MovingDistance.h"
 #include "TraceManager.h"
 #include "TracePatternManager.h"
 #include "TurnManager.h"
@@ -582,6 +583,36 @@ void traceBackwardArea_17(void) {
  *   終了条件：ゴールエリアを検出して終了動作が完了する。
  */
 void traceBackwardArea_18(void) {
+	int counter = 0;
+	int maxSpeed = MAX_SPEED;
+
+	// AVRタイマ開始
+	AvrTimerStart();
+	//_delay_ms(10);
+
+	// 移動距離の計測を開始
+	StartMeasuringMovingDistance();
+	//_delay_ms(10);
+
+	// 目標の距離まで前進
+	//currentTraceAction = TRACE_STRAIGHT;
+	int32_t targetDistance = 165;	//目標距離 = 165cm
+	while (targetDistance > GetMovingDistance()) {
+		// 移動距離を更新
+		UpdateMovingDistance();
+
+		// 共通トレース動作
+		traceCommon(&counter, &maxSpeed);
+		counter++;
+	}
+
+	// 移動距離の計測を停止
+	StopMeasuringMovingDistance();
+	_delay_ms(10);
+
+	// AVRタイマ停止
+	AvrTimerEnd();
+	AvrTimerReset();
 }
 
 /*

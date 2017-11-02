@@ -48,9 +48,6 @@ enum patternIndex {
 
 void initActionTable(void);
 void initSensorHistory(void);
-#ifdef ENABLE_AVRTIMER
-int getSensorPatternCalledFromTimer(void);
-#endif // ENABLE_AVRTIMER
 void getSensors(void);
 int getSensorPattern(void);
 int getActionWithHistory(void);

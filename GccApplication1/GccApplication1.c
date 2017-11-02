@@ -25,11 +25,6 @@
 
 #define _LED_ON_
 
-#ifdef ENABLE_AVRTIMER
-// ------------------ Global variables ------------------
-static int curSensorPattern = 0;	// 現在のセンサー値
-#endif // ENABLE_AVRTIMER
-
 // ------------------ Method Definition ------------------
 void executeTraceProcess(void);
 void treasureHunt_01(void);
@@ -99,15 +94,7 @@ int main(void) {
 	Debug_AllMotorCurrentAngle();
 #endif
 
-#ifdef ENABLE_AVRTIMER
-	getSensorPatternCalledFromTimer();
-
-	// AVRタイマ開始
-	AvrTimerStart();
-
-#else // ENABLE_AVRTIMER
 	getSensorPattern();
-#endif // ENABLE_AVRTIMER
 
 	// トレース動作開始
 	executeTraceProcess();
@@ -115,12 +102,6 @@ int main(void) {
     // ゴール判定後の動作実質ここから開始？
 	//executeFinalAction();
 	StopMove();
-
-#ifdef ENABLE_AVRTIMER
-	// AVRタイマ停止
-	AvrTimerEnd();
-	AvrTimerReset();
-#endif // ENABLE_AVRTIMER
 }
 
 /**

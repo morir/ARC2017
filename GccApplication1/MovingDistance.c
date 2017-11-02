@@ -10,6 +10,8 @@
 #include "MotorManager.h"
 #include "MovingDistance.h"
 
+#define MOVING_DISTANCE_K (0.4)		// movingDistanceを計算するときの係数
+
 static int32_t movingDistance = 0;	// 移動距離
 static int velocity_0 = 0;			// 初速度
 static uint32_t lastTime = 0;		// 前回の時間(ミリ秒)
@@ -44,18 +46,24 @@ int32_t GetMovingDistance() {
 /**
  * 移動距離を更新
  * @brief 移動距離を更新
- * @param  currentTime 現在の時間
  */
-void UpdateMovingDistance(uint32_t currentTime) {
+void UpdateMovingDistance() {
 	if(measurementStatus == NOT_MEASURING) {
 		// 未計測中の場合、移動距離の更新を行わない。
 		return;
 	}
 	
+	// 現在の符号付の速度(右モータ)取得
+	int signedSpeedR = GetCurrentSignedSpeedR();
+
+	// 現在の符号付の速度(左モータ)取得
+	int signedSpeedL = GetCurrentSignedSpeedL();
+
 	// 現在の速度を計算
-	int velocity = (GetCurrentSignedSpeedR() + GetCurrentSignedSpeedL()) / 2;
+	int velocity = (signedSpeedR + signedSpeedL) / 2;
 	
 	// 経過時間(msec)を計算
+	uint32_t currentTime = AvrTimerGet();
 	uint32_t elapsedTime = currentTime - lastTime;
 	
 	// 加速度を計算
@@ -68,7 +76,7 @@ void UpdateMovingDistance(uint32_t currentTime) {
 	int32_t currentMovingDistance = velocity_0 * (int32_t)elapsedTime + acceleration *(int32_t)(elapsedTime * elapsedTime) / 2;
 	
 	// 「ｃｍ／ミリ秒」から「ｃｍ／秒」に変換し、移動距離に反映
-	movingDistance = movingDistance + currentMovingDistance / 1000;
+	movingDistance = movingDistance + (currentMovingDistance / 1000 * MOVING_DISTANCE_K);
 	
 	// 初速度および前回の時間を更新
 	velocity_0 = velocity;

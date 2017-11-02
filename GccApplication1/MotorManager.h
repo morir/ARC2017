@@ -112,10 +112,6 @@ int GetCurrentSpeedR(void);
 int GetCurrentSpeedL(void);
 int GetCurrentSignedSpeedR(void);
 int GetCurrentSignedSpeedL(void);
-#ifdef ENABLE_AVRTIMER
-void GetCurrentSpeedRCalledFromTimer(void);
-void GetCurrentSpeedLCalledFromTimer(void);
-#endif // ENABLE_AVRTIMER
 int GetCurrentAngle(int motorId);
 
 void GetAXS1SensorFireData(int *out_fire_data_left, int *out_fire_data_center, int *out_fire_data_right);

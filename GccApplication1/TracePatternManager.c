@@ -78,30 +78,6 @@ void initActionTable() {
 	ActionTable[63] = TRACE_SLOW_STRAIGHT;	/* 63:BIT_111111 */
 }
 
-#ifdef ENABLE_AVRTIMER
-/**
- * センサー値のBitパターンを取得する。
- * @brief センサー値を参照し、対応するアクションを取得する。
- * @return 戻り値の説明
- */
-int getSensorPatternCalledFromTimer(void) {
-	// センサー値を取得
-	getSensors();
-	curSensorPattern = IR_BitPattern;
-	return curSensorPattern;
-}
-
-/**
- * センサー値のBitパターンを取得する。
- * @brief センサー値を参照し、対応するアクションを取得する。
- * @return 戻り値の説明
- */
-int getSensorPattern(void) {
-	return curSensorPattern;
-}
-
-#else // ENABLE_AVRTIMER
-
 /**
 * センサー値のBitパターンを取得する。
 * @brief センサー値を参照し、対応するアクションを取得する。
@@ -115,8 +91,6 @@ int getSensorPattern(void) {
 	getSensors();
 	return IR_BitPattern;
 }
-
-#endif // ENABLE_AVRTIMER
 
 /**
 * Bitパターンの履歴を初期化する。

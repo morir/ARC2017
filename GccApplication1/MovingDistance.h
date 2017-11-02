@@ -16,6 +16,6 @@ typedef enum _MEASUREMENT_STATUS {
 void StartMeasuringMovingDistance();
 void StopMeasuringMovingDistance();
 int32_t GetMovingDistance();
-void UpdateMovingDistance(uint32_t currentTime);
+void UpdateMovingDistance();
 
 #endif /* MOVINGDISTANCE_H_ */

@@ -57,24 +57,7 @@ uint32_t AvrTimerGet() {
 	//16ビットレジスタの読み書きの際には、テンポラリレジスタを使用する。
 	//このため、割り込み禁止操作が必要。
  
-	//ステータスレジスタを一時保存する変数
-	uint8_t sreg;
- 
-	//ステータスレジスタを保存
-	sreg = SREG;
- 
-	//割り込み禁止
-	cli();
- 
-	//現在のタイマ値を取得
-	uint16_t t = TCNT1;
- 
-	//SREGを戻す。これによって割り込み禁止状態が戻る。（SREGのIビットを戻すから）
-	SREG = sreg;
- 
-	int32_t tw = (int32_t)t;
- 
-	return avr16bitMTimer + (tw * DIVIDE) / F_CPU_DIV1000;
+	return avr16bitMTimer;
 }
  
 /**
@@ -105,19 +88,11 @@ void AvrTimerReset() {
 /**
  * TIMER1_OVF_vectのタイマ割り込み
  * @brief TIMER1_OVF_vectのタイマ割り込み
- * @attention 本メソッド配下内におけるログ出力は要注意。
- * main()でログを出力するまで、出力した内容が反映されない。
+ * @attention 本メソッド書き処理を行うのは禁止。処理が止まります。
+ * ・stdio (printf, putc, getc, etc),
+ * ・malloc
+ * ・new
  */
 ISR(TIMER1_OVF_vect) {
 	avr16bitMTimer += (65536L * DIVIDE)/ F_CPU_DIV1000;
-#ifdef ENABLE_AVRTIMER
-	// センサー値のBitパターンを取得
-	getSensorPatternCalledFromTimer();
-	// 現在の速度(右モータ)取得
-	GetCurrentSpeedRCalledFromTimer();
-	// 現在の速度(左モータ)取得
-	GetCurrentSpeedLCalledFromTimer();
-	// 移動距離を更新
-	UpdateMovingDistance(avr16bitMTimer);
-#endif // ENABLE_AVRTIMER
 }

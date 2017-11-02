@@ -10,8 +10,6 @@
 
 #include "stdint.h"
 
-//#define ENABLE_AVRTIMER	// AVRタイマーを有効にする（お試し版）
-
 /**
  * AVRタイマ開始
  * @brief AVRタイマ開始
