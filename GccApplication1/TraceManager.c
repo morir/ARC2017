@@ -272,17 +272,17 @@ void traceCommon(int *counter, int *maxSpeed) {
  */
  void traceBackwardArea_06(void) {
 	int counter = 0;
-	int maxSpeed = 50;
+	int maxSpeed = BASE_SPEED_BY_TURF_AREA;
 
 	while (currentTraceAction != TRACE_R_TURN) {
 		traceCommon(&counter, &maxSpeed);
 		// 加速しない
-		maxSpeed = 50;
+		maxSpeed = BASE_SPEED_BY_TURF_AREA;
 	}
 
 	// 右旋回実行
 	currentTraceAction = executeRightTurn();
-	BaseSpeed = 50;
+	BaseSpeed = BASE_SPEED_BY_TURF_AREA;
 }
 
 /*
@@ -294,12 +294,12 @@ void traceCommon(int *counter, int *maxSpeed) {
  */
  void traceBackwardArea_07(void) {
 	int counter = 0;
-	int maxSpeed = BaseSpeed;
+	int maxSpeed = BASE_SPEED_BY_TURF_AREA;
 
 	while (currentTraceAction != TRACE_R_TURN) {
 		traceCommon(&counter, &maxSpeed);
 		// 加速しない
-		maxSpeed = BaseSpeed;
+		maxSpeed = BASE_SPEED_BY_TURF_AREA;
 	}
 
 	// 右旋回実行
@@ -315,7 +315,7 @@ void traceCommon(int *counter, int *maxSpeed) {
  */
  void traceBackwardArea_08(void) {
 	int counter = 0;
-	int maxSpeed = BaseSpeed;
+	int maxSpeed = BASE_SPEED_BY_TURF_AREA;
     int sensorPattern = BIT_111111;
 	int findAnySensorCount = 0;
 
@@ -324,11 +324,12 @@ void traceCommon(int *counter, int *maxSpeed) {
 		traceCommon(&counter, &maxSpeed);
 		sensorPattern = getSensorPattern();
 		// 加速しない
-		maxSpeed = BaseSpeed;
+		maxSpeed = BASE_SPEED_BY_TURF_AREA;
 	}
 
 	// 停止実行
 	StopMove();
+    _delay_ms(100);//不要かもしれないがおまじない
 
 	// センサーのいずれかが白判定するまで、直進継続
 	while (1) {
@@ -633,35 +634,35 @@ void TreasureFindingLineTrace(int isFirst) {
 		sensorPattern == BIT_101000 ||
 		sensorPattern == BIT_011000 ||
 		sensorPattern == BIT_111000) {
-			isSearchingLeftSide = 1;
-			Execute(TRACE_L_TRESURE_FIND);
-		} else {
-			isSearchingLeftSide = 0;
-			Execute(TRACE_R_TRESURE_FIND);
-		}
+		isSearchingLeftSide = 1;
+		Execute(TRACE_L_TRESURE_FIND);
+	} else {
+	    isSearchingLeftSide = 0;
+	    Execute(TRACE_R_TRESURE_FIND);
+	}
 		_delay_ms(10);
 		return;
 	}
 
 	if ((isSearchingLeftSide == 0) &&
-	(sensorPattern == BIT_010000 ||
-	sensorPattern == BIT_001000 ||
-	sensorPattern == BIT_011000 ||
-	sensorPattern == BIT_011100 ||
-	sensorPattern == BIT_001100
-	)) {
+	    (sensorPattern == BIT_010000 ||
+	    sensorPattern == BIT_001000 ||
+	    sensorPattern == BIT_011000 ||
+	    sensorPattern == BIT_011100 ||
+	    sensorPattern == BIT_001100
+	    )) {
 		// ラインの右側サーチ中に左ラインを検出したら、
 		// ラインの左側サーチに切り替える
 		isSearchingLeftSide = 1;
 		Execute(TRACE_L_TRESURE_FIND);
 	} else if (
-	(isSearchingLeftSide > 0) &&
-	(sensorPattern == BIT_000010 ||
-	sensorPattern == BIT_000100 ||
-	sensorPattern == BIT_000110 ||
-	sensorPattern == BIT_001110 ||
-	sensorPattern == BIT_001100
-	)) {
+	    (isSearchingLeftSide > 0) &&
+	    (sensorPattern == BIT_000010 ||
+	    sensorPattern == BIT_000100 ||
+	    sensorPattern == BIT_000110 ||
+	    sensorPattern == BIT_001110 ||
+	    sensorPattern == BIT_001100
+	    )) {
 		// ラインの左側サーチ中に右ラインを検出したら、
 		// ラインの右側サーチに切り替える
 		isSearchingLeftSide = 0;
