@@ -28,6 +28,8 @@
 // ------------------ Method Definition ------------------
 void executeTraceProcess(void);
 void executeShortTraceProcess(void);
+void executeFinalRoundTraceProcess(void);
+
 void treasureHunt_01(void);
 void treasureHunt_02(void);
 void treasureHunt_03(void);
@@ -109,6 +111,7 @@ int main(void) {
 	// トレース動作開始
 	executeTraceProcess();
 	//executeShortTraceProcess();
+    //executeFinalRoundTraceProcess();
 
     // ゴール判定後の動作実質ここから開始？
 	//executeFinalAction();
@@ -174,6 +177,39 @@ void executeShortTraceProcess(void) {
 	traceBackwardArea_18();
 }
 
+/************************************************************************/
+/* 決勝ラウンド用のライントレース */
+/************************************************************************/
+void executeFinalRoundTraceProcess(void) {
+	traceForwardArea_01();
+	traceForwardArea_02();
+	traceForwardArea_03();
+	traceForwardArea_04();
+	traceForwardArea_05();
+	treasureHunt_01();//宝物白
+	traceBackwardArea_01();
+	traceBackwardArea_02();
+	traceBackwardArea_03();
+	traceBackwardArea_04();
+	treasureHunt_02();//宝物銀１個目（予選と同じ）
+	traceBackwardArea_06();
+	treasureHunt_02();//宝物銀２個目（決勝で追加）
+	traceBackwardArea_07();
+	traceBackwardArea_08();    
+	traceBackwardArea_09();
+	traceBackwardArea_10();
+	traceBackwardArea_11();
+	treasureHunt_02();//宝物金１個目（決勝で追加）
+	traceBackwardArea_12();
+	treasureHunt_02();//宝物金２個目（決勝で追加）
+	treasureHunt_03();//宝物金３個目（予選と同じ）
+	traceBackwardArea_14();
+	traceBackwardArea_15();
+	traceBackwardArea_16();
+	traceBackwardArea_17();
+	traceBackwardArea_18();
+}
+
 /*
  * 宝物 1 のトレース動作
  * @return なし
@@ -227,7 +263,7 @@ void executeShortTraceProcess(void) {
  * @return なし
  * @condition
  *   開始条件：
- *   終了条件：
+ *   終了条件：宝物を発見して回収処理実行
  */
  void treasureHunt_02(void) {
     LOG_INFO("treasureHunt_02() %s\r\n", "1");
@@ -246,29 +282,18 @@ void executeShortTraceProcess(void) {
     // 前進or後進する（実動作に合わせて設定）。
     // executeXXXX();
     // 手を開く
-    MotorControlJoint( WRIST_MOTOR, 100, 665 );//確認用
+    ArmOpenFormation();
      	
+    // 前進or後進する（実動作に合わせて設定）。
+    StraightLowMove2();
+    _delay_ms(500);
+
     // 停止する
     StopMove();
-    _delay_ms(100);
+    _delay_ms(1000);
 
     // 宝物を掴んで荷台に乗せる
     CatchAndReleaseFormation();
-
-	int counter = 0;
-	int maxSpeed = 50;
-
-    // 右直角ライン検出までライントレース実行
-	while (currentTraceAction != TRACE_R_TURN) {
-
-    	traceCommon(&counter, &maxSpeed);
-		// 加速しない
-		maxSpeed = 50;
-	}
-
-	// 右旋回実行
-	currentTraceAction = executeRightTurn();
-	BaseSpeed = 50;
 
     // 停止する
     StopMove();
