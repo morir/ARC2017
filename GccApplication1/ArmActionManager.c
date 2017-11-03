@@ -26,13 +26,30 @@ void initDumpMotor(void) {
 /************************************************************************/
 void FindFormation(void)
 {
-	executeRotate(UPPER_ARM_MOTOR, 100, 80, 80 - CorrectionValue);
-	executeRotate(FORE_ARM_MOTOR, 100, 310, 310 - CorrectionValue);
-	executeRotate(WRIST_MOTOR, 200, 512, 512 - CorrectionValue);
-	executeRotate(SHOULDER_MOTOR, 100, 680, 680 - CorrectionValue);
+	executeRotate(WRIST_MOTOR, 200, 512, 512);
+	executeRotate(SHOULDER_MOTOR, 100, 512, 512);
+	executeRotate(FORE_ARM_MOTOR, 100, 350, 350);
+	executeRotate(UPPER_ARM_MOTOR, 100, 120, 120);
 
-	executeRotate(UPPER_ARM_MOTOR, 100, 70, 70 - CorrectionValue);
-	executeRotate(FORE_ARM_MOTOR, 100, 290, 290 - CorrectionValue);
+	executeRotate(SHOULDER_MOTOR, 100, 680, 680);
+	executeRotate(UPPER_ARM_MOTOR, 100, 80, 80);
+
+//	executeRotate(UPPER_ARM_MOTOR, 100, 70, 70);
+	executeRotate(FORE_ARM_MOTOR, 100, 300, 300);
+}
+
+
+/************************************************************************/
+// 宝物回収形態(下げてひらいた状態)
+// 宝物を回収するための準備形態にする
+/************************************************************************/
+void ArmOpenFormation(void)
+{
+	//-- 下げてひらく
+	executeRotate(WRIST_MOTOR, 100, 720, 720);
+	executeRotate(FORE_ARM_MOTOR, 100, 350, 350);
+	executeRotate(UPPER_ARM_MOTOR, 100, 70, 70);
+	executeRotate(SHOULDER_MOTOR, 100, 512, 512);
 }
 
 /************************************************************************/
@@ -42,38 +59,38 @@ void FindFormation(void)
 /************************************************************************/
 void CatchAndReleaseFormation(void)
 {
-	//-- ひらく
-	//executeRotate( WRIST_MOTOR, 100, 768, 768 - CorrectionValue );
-
 	//-- 掴む
-	executeRotate(WRIST_MOTOR, 200, 512, 512 - CorrectionValue );
+	executeRotate(WRIST_MOTOR, 200, 512, 512 );
 
-	//-- 持ち上げ開始
-//	executeRotate(FORE_ARM_MOTOR, 100, 355, 355 - CorrectionValue);
-	executeRotate(SHOULDER_MOTOR, 100, 650, 650 - CorrectionValue);
-	
-	//-- 持ち上げ途中	
-	executeRotate(SHOULDER_MOTOR, 100,	512, 512 - CorrectionValue);
-	executeRotate(UPPER_ARM_MOTOR, 100, 512, 512 - CorrectionValue);
+	//-- 持ち上げ開始	
+	executeRotate(SHOULDER_MOTOR, 100, 512, 512);
+//	executeRotate(UPPER_ARM_MOTOR, 100, 70, 70);
+//	executeRotate(FORE_ARM_MOTOR, 100, 720, 720);
+	MotorControlJoint(UPPER_ARM_MOTOR, 100, 70);
+	MotorControlJoint(FORE_ARM_MOTOR, 100, 720);
 
-	executeRotate(UPPER_ARM_MOTOR, 100, 705, 705 - CorrectionValue);
-	executeRotate(SHOULDER_MOTOR, 100, 345, 345 - CorrectionValue);
+	//-- 持ち上げ途中
+	executeRotate(SHOULDER_MOTOR, 100,	512, 512);
+	executeRotate(UPPER_ARM_MOTOR, 100, 512, 512);
+	executeRotate(FORE_ARM_MOTOR, 100, 770, 770);
 
 	//-- 落とす直前
-	executeRotate(SHOULDER_MOTOR, 100, 345, 345 - CorrectionValue);
-	executeRotate(UPPER_ARM_MOTOR, 100, 705, 705 - CorrectionValue);
-	executeRotate(FORE_ARM_MOTOR, 100, 730, 730 - CorrectionValue);
+	executeRotate(FORE_ARM_MOTOR, 100, 680, 680);
+	MotorControlJoint( UPPER_ARM_MOTOR, 100, 680 );
+	executeRotate( SHOULDER_MOTOR, 100, 430, 430 );
 
 	//-- 落とす
-	executeRotate( WRIST_MOTOR, 200, 640, 640 - CorrectionValue );
+	executeRotate( WRIST_MOTOR, 200, 620, 620 );
 	
 	_delay_ms(1000);//1秒待つ⇒動作に合わせて変更してください
 
 	//-- 宝物検索用形態に移行するための準備
-	executeRotate(FORE_ARM_MOTOR, 100, 155, 155 - CorrectionValue);
-	executeRotate(UPPER_ARM_MOTOR, 100, 200, 200 - CorrectionValue);
-	executeRotate(SHOULDER_MOTOR, 100, 512, 512 - CorrectionValue);
-	_delay_ms(1000);//1秒待つ⇒動作に合わせて変更してください
+	MotorControlJoint(SHOULDER_MOTOR, 100, 540);
+	MotorControlJoint(FORE_ARM_MOTOR, 100, 512);	
+	MotorControlJoint(UPPER_ARM_MOTOR, 100, 512);
+	executeRotate(SHOULDER_MOTOR, 100, 580, 580);
+	executeRotate(UPPER_ARM_MOTOR, 100, 240, 240);
+	executeRotate(FORE_ARM_MOTOR, 100, 170, 170);
 }
 
 
@@ -101,13 +118,22 @@ void Debug_AllMotorCurrentAngle(void)
 void executeRotate(int motorId, int speed, int angle, int targetangle){
 	//設定角度への動作を実行
 	MotorControlJoint( motorId, speed, angle );
-
-	// 目標角度に達していない間は動作する
-	while( targetangle > GetCurrentAngle(motorId) )
+	
+	if((angle - GetCurrentAngle(motorId)) > 0) 
 	{
-		// 設定角度への動作を再実行
-//		MotorControlJoint( motorId, speed, angle );
-		_delay_ms(100);//適切なウェイト時間を設定
+		// 目標角度に達していない間は動作する
+		while( (targetangle - CorrectionValue) > GetCurrentAngle(motorId))
+		{
+			_delay_ms(50);//適切なウェイト時間を設定
+		}
+	}
+	else
+	{
+		// 目標角度に達していない間は動作する
+		while( GetCurrentAngle(motorId) > (targetangle + CorrectionValue))
+		{
+			_delay_ms(50);//適切なウェイト時間を設定
+		}		
 	}
 }
 
@@ -146,7 +172,7 @@ int GetCurrentAngle(int motorId) {
 	}
 	// 上位バイトと下位バイトから現在の位置を計算
 	angle = ((readValueHigh << 8) + readValueLow);
-	LOG_DEBUG("GetCurrentAngle() is %d\n", angle);
+	LOG_DEBUG("GetCurrentAngle(%d) is %d\n", motorId, angle);
 
 	return angle;
 }

@@ -23,12 +23,13 @@
 #define CTRL_TBL_ADDR_PRESENT_POSITION_H	(37)	// Highest byte of Current Position
 
 
-#define CorrectionValue		(50) // 補正値(目標角度を設定角度の-50に暫定)
+#define CorrectionValue		(10) // 補正値
 
 // ------------------ Method Definition ------------------
 void initDumpMotor(void);
 void FindFormation(void);
 void CatchAndReleaseFormation(void);
+void ArmOpenFormation(void);
 
 void Debug_AllMotorCurrentAngle(void);
 void executeRotate(int motorId, int speed, int angle, int targetangle);

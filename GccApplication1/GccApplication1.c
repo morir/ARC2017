@@ -78,9 +78,14 @@ int main(void) {
  	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
 	initDumpMotor();
 	
-	LOG_DEBUG("Call FindFormation() %s\r\n", "");
+	
+//	LOG_DEBUG("Call FindFormation() %s\r\n", "");
 //	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
 //	FindFormation();
+
+	LOG_DEBUG("Call ArmOpenFormation() %s\r\n", "");
+	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+	ArmOpenFormation();
 	
 	LOG_DEBUG("Call CatchAndReleaseFormation() %s\r\n", ""); 
 	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
@@ -93,10 +98,14 @@ int main(void) {
 	// 現在のモータ角度を表示(Debug用)
 	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
 	Debug_AllMotorCurrentAngle();
+	
+	// 検出し、載せるまでテスト
+//	initDumpMotor();
+//	treasureHunt_01();
 #endif
 
 	getSensorPattern();
-
+		
 	// トレース動作開始
 	executeTraceProcess();
 	//executeShortTraceProcess();
@@ -187,18 +196,24 @@ void executeShortTraceProcess(void) {
     // 停止する
     StopMove();
     _delay_ms(500);
-    // 前進or後進する（実動作に合わせて設定）。
-    // executeXXXX();
+
     // 手を開く
-    MotorControlJoint( WRIST_MOTOR, 100, 665 );//確認用
-         
+    ArmOpenFormation();
+
+    // 前進or後進する（実動作に合わせて設定）。
+    StraightLowMove2();
+	_delay_ms(500);
+	
     // 停止する
     StopMove();
     _delay_ms(1000);
 
     // 宝物を掴んで荷台に乗せる
-    //CatchAndReleaseFormation();
+    CatchAndReleaseFormation();
 
+	// 宝物検索用ライントレース形態に戻す
+	FindFormation();
+	
     // ライン上からの旋回を行う
     executeRightTurnFromOnLine();
 
