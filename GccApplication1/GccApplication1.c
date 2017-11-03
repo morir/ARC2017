@@ -99,6 +99,7 @@ int main(void) {
 
 	// トレース動作開始
 	executeTraceProcess();
+	//executeShortTraceProcess();
 
     // ゴール判定後の動作実質ここから開始？
 	//executeFinalAction();
@@ -158,6 +159,7 @@ void executeShortTraceProcess(void) {
 	treasureHunt_01();
 	shortTraceToLeftTurn();
 	shortTraceToLeftTurn();
+	shortTraceToRightTurn();
 	shortTraceToRightTurn();
 	shortTraceToRightTurn();
 	traceBackwardArea_18();

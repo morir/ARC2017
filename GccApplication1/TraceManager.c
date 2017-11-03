@@ -31,6 +31,7 @@ void traceCommon(int *counter, int *maxSpeed) {
 	getSensors();
 	currentTraceAction = getActionWithHistory();
 	if (currentTraceAction == TRACE_UNDEFINED) {
+		_delay_ms(1);// delayTime‚ÌŠÔŠu‚ğ‹ó‚¯‚é
 		return;
 	}
 
@@ -688,7 +689,7 @@ void TreasureFindingLineTrace(int isFirst) {
 		counter++;
 	}
 
-	// ‰Eù‰ñÀs
+	// ¶ù‰ñÀs
 	currentTraceAction = executeLeftTurn();
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }

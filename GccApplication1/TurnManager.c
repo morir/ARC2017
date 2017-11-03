@@ -544,18 +544,18 @@ void executeRightTurnFromOnLine(void) {
  * 2017ƒƒ{‚É‡‚í‚¹‚Ä’²®•K—vI
  */
 void adjustTurnPosition(void) {
-	if (BaseSpeed <= 50 ) {
+	if (BaseSpeed <= 80 ) {
 		StraightLowMove();
-		_delay_ms(150);	// 150ms ŠÔŠu‚ğ‹ó‚¯‚é
+		_delay_ms(180);	// 180ms ŠÔŠu‚ğ‹ó‚¯‚é
 	} else if (BaseSpeed <= 100 ) {
 		StraightLowMove();
-		_delay_ms(100);	// 100ms ŠÔŠu‚ğ‹ó‚¯‚é
+		_delay_ms(150);	// 150ms ŠÔŠu‚ğ‹ó‚¯‚é
 	} else if (BaseSpeed <= 120 ) {
 		StraightLowMove();
-		_delay_ms(80);	// 80ms ŠÔŠu‚ğ‹ó‚¯‚é
+		_delay_ms(120);	// 120ms ŠÔŠu‚ğ‹ó‚¯‚é
 	} else if (BaseSpeed <= 140 ) {
 		StraightLowMove();
-		_delay_ms(60);	// 60ms ŠÔŠu‚ğ‹ó‚¯‚é
+		_delay_ms(70);	// 70ms ŠÔŠu‚ğ‹ó‚¯‚é
 	} else if (BaseSpeed <= 160 ) {
 		StraightLowMove();
 		_delay_ms(40);	// 40ms ŠÔŠu‚ğ‹ó‚¯‚é

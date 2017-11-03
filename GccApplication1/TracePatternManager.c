@@ -13,7 +13,7 @@
 
 void initActionTable() {
 	ActionTable[0]  = TRACE_STRAIGHT;		/* 00:BIT_000000 */
-	ActionTable[1]  = TRACE_R_ROUND_TIGHT;	/* 01:BIT_000001 */
+	ActionTable[1]  = TRACE_R_ROUND_MIDDLE;	/* 01:BIT_000001 */
 	ActionTable[2]  = TRACE_R_ROUND_SOFT;	/* 02:BIT_000010 */
 	ActionTable[3]  = TRACE_R_TURN;			/* 03:BIT_000011 */
 	ActionTable[4]  = TRACE_R_ROUND_SOFT;	/* 04:BIT_000100 */
@@ -44,7 +44,7 @@ void initActionTable() {
 	ActionTable[29] = TRACE_UNDEFINED;		/* 29:BIT_011101 */
 	ActionTable[30] = TRACE_STRAIGHT;		/* 30:BIT_011110 */
 	ActionTable[31] = TRACE_R_TURN;			/* 31:BIT_011111 */
-	ActionTable[32] = TRACE_L_ROUND_TIGHT;	/* 32:BIT_100000 */
+	ActionTable[32] = TRACE_L_ROUND_MIDDLE;	/* 32:BIT_100000 */
 	ActionTable[33] = TRACE_UNDEFINED;		/* 33:BIT_100001 */
 	ActionTable[34] = TRACE_UNDEFINED;		/* 34:BIT_100010 */
 	ActionTable[35] = TRACE_UNDEFINED;		/* 35:BIT_100011 */

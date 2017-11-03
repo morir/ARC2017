@@ -13,7 +13,7 @@
 
 // ------------------ Defined ------------------
 
-#define HISTORY_MAXSIZE (5)//—š—ğŠÇ—Å‘å”
+#define HISTORY_MAXSIZE (3)//—š—ğŠÇ—Å‘å”
 
 
 // ------------------ Global variables ------------------
