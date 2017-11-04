@@ -208,7 +208,9 @@ int executeRightTurn(void){
     } else if (sensorPattern == BIT_011000) {
         //‰EƒZƒ“ƒT[‚È‚Ì‚ÅA‰E‹È‚è‚Éİ’è‚µ‚Ä”²‚¯‚é
         return TRACE_L_ROUND_SOFT;
-    } else if (sensorPattern == BIT_010000) {
+    } else if (sensorPattern == BIT_010000
+               || sensorPattern == BIT_011100
+               || sensorPattern == BIT_001110) {
         //‰EƒZƒ“ƒT[‚È‚Ì‚ÅA‰E‹È‚è‚Éİ’è‚µ‚Ä”²‚¯‚é
         return TRACE_L_ROUND_MIDDLE;
     }
@@ -236,7 +238,7 @@ int executeRightTurn(void){
 	while(1) {
 		//‹tù‰ñ“®ì‚ğ”²‚¯‚é‚½‚ß‚ÌğŒ‚ğ”»’è
 		getSensors();
-		sensorPattern = IR_BitPattern;
+		sensorPattern = getSensorPattern();
 		if (sensorPattern == BIT_001000 || sensorPattern == BIT_001100 || sensorPattern == BIT_000100) {
 			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
 			break;
@@ -546,23 +548,27 @@ void executeRightTurnFromOnLine(void) {
 void adjustTurnPosition(void) {
 	if (BaseSpeed <= 80 ) {
 		StraightLowMove();
-		_delay_ms(180);	// 180ms ŠÔŠu‚ğ‹ó‚¯‚é
+		_delay_ms(300);	// 300ms ŠÔŠu‚ğ‹ó‚¯‚é
 	} else if (BaseSpeed <= 100 ) {
 		StraightLowMove();
-		_delay_ms(150);	// 150ms ŠÔŠu‚ğ‹ó‚¯‚é
+		_delay_ms(270);	// 270ms ŠÔŠu‚ğ‹ó‚¯‚é
 	} else if (BaseSpeed <= 120 ) {
 		StraightLowMove();
-		_delay_ms(120);	// 120ms ŠÔŠu‚ğ‹ó‚¯‚é
+		_delay_ms(240);	// 240ms ŠÔŠu‚ğ‹ó‚¯‚é
 	} else if (BaseSpeed <= 140 ) {
 		StraightLowMove();
-		_delay_ms(70);	// 70ms ŠÔŠu‚ğ‹ó‚¯‚é
+		_delay_ms(190);	// 190ms ŠÔŠu‚ğ‹ó‚¯‚é
 	} else if (BaseSpeed <= 160 ) {
 		StraightLowMove();
-		_delay_ms(40);	// 40ms ŠÔŠu‚ğ‹ó‚¯‚é
+		_delay_ms(160);	// 160ms ŠÔŠu‚ğ‹ó‚¯‚é
 	} else if (BaseSpeed <= 180 ) {
 		StraightLowMove();
-		_delay_ms(20);	// 20ms ŠÔŠu‚ğ‹ó‚¯‚é
+		_delay_ms(140);	// 140ms ŠÔŠu‚ğ‹ó‚¯‚é
+	} else {
+		StraightLowMove();
+		_delay_ms(120);	// 120ms ŠÔŠu‚ğ‹ó‚¯‚é
 	}
+
     StopMove();
 }
 

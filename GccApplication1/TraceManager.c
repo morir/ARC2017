@@ -588,17 +588,19 @@ void traceBackwardArea_18(void) {
 	int counter = 0;
 	int maxSpeed = MAX_SPEED;
 
+	// 直進
+	currentTraceAction = TRACE_STRAIGHT;
+	BaseSpeed = BASE_SPEED_INIT_VAL;
+
 	// AVRタイマ開始
 	AvrTimerStart();
-	//_delay_ms(10);
 
 	// 移動距離の計測を開始
 	StartMeasuringMovingDistance();
-	//_delay_ms(10);
 
 	// 目標の距離まで前進
 	//currentTraceAction = TRACE_STRAIGHT;
-	int32_t targetDistance = 165;	//目標距離 = 165cm
+	int32_t targetDistance = 130;	//目標距離 = 130cm
 	while (targetDistance > GetMovingDistance()) {
 		// 移動距離を更新
 		UpdateMovingDistance();
@@ -615,6 +617,9 @@ void traceBackwardArea_18(void) {
 	// AVRタイマ停止
 	AvrTimerEnd();
 	AvrTimerReset();
+
+	// 停止実行
+	StopMove();
 }
 
 /*
