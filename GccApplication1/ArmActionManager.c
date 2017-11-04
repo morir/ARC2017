@@ -17,7 +17,10 @@
 // Arm用モータを宝物検索用形態(ライントレース用)の位置に設定
 /************************************************************************/
 void initDumpMotor(void) {
-	FindFormation();
+	MotorControlJoint(WRIST_MOTOR, 200, 512);
+	executeRotate(SHOULDER_MOTOR, 100, 680, 680);
+	executeRotate(UPPER_ARM_MOTOR, 100, 70, 70);
+	executeRotate(FORE_ARM_MOTOR, 100, 300, 300);
 }
 
 /************************************************************************/
@@ -27,16 +30,7 @@ void initDumpMotor(void) {
 void FindFormation(void)
 {
 	MotorControlJoint(WRIST_MOTOR, 200, 512);
-	MotorControlJoint(FORE_ARM_MOTOR, 100, 350);
-	MotorControlJoint(UPPER_ARM_MOTOR, 100, 250);
-//	executeRotate(WRIST_MOTOR, 200, 512, 512);
-	executeRotate(SHOULDER_MOTOR, 100, 512, 512);
-//	executeRotate(FORE_ARM_MOTOR, 100, 350, 350);
-//	executeRotate(UPPER_ARM_MOTOR, 100, 250, 250);
-
 	executeRotate(SHOULDER_MOTOR, 100, 680, 680);
-//	executeRotate(UPPER_ARM_MOTOR, 100, 80, 80);
-
 	executeRotate(UPPER_ARM_MOTOR, 100, 70, 70);
 	executeRotate(FORE_ARM_MOTOR, 100, 300, 300);
 }
@@ -49,9 +43,9 @@ void FindFormation(void)
 void ArmOpenFormation(void)
 {
 	//-- 下げてひらく
-	executeRotate(WRIST_MOTOR, 200, 760, 760);
+	executeRotate(WRIST_MOTOR, 200, 770, 770);
 	executeRotate(FORE_ARM_MOTOR, 150, 360, 360);
-	executeRotate(UPPER_ARM_MOTOR, 150, 110, 110);
+	executeRotate(UPPER_ARM_MOTOR, 150, 120, 120);
 	executeRotate(SHOULDER_MOTOR, 150, 500, 500);
 }
 
@@ -66,13 +60,12 @@ void CatchAndReleaseFormation(void)
 	executeRotate(WRIST_MOTOR, 200, 512, 512 );
 
 	//-- 持ち上げ開始	
-	executeRotate(UPPER_ARM_MOTOR, 200, 250, 250);
-	MotorControlJoint(SHOULDER_MOTOR, 100, 512);
-	MotorControlJoint(FORE_ARM_MOTOR, 100, 720);
+	executeRotate(UPPER_ARM_MOTOR, 100, 250, 250);
+	MotorControlJoint(SHOULDER_MOTOR, 100, 500);
+	MotorControlJoint(FORE_ARM_MOTOR, 100, 680);
 
 	//-- 持ち上げ途中
-	executeRotate(UPPER_ARM_MOTOR, 100, 512, 512);
-	executeRotate(FORE_ARM_MOTOR, 100, 770, 770);
+	executeRotate(UPPER_ARM_MOTOR, 100, 500, 500);
 
 	//-- 落とす直前
 	executeRotate(FORE_ARM_MOTOR, 100, 680, 680);
@@ -82,18 +75,19 @@ void CatchAndReleaseFormation(void)
 	//-- 落とす
 	executeRotate( WRIST_MOTOR, 200, 620, 620 );
 	
-	_delay_ms(1000);//1秒待つ⇒動作に合わせて変更してください
+	_delay_ms(700);//1秒待つ⇒動作に合わせて変更してください
 
 	//-- 宝物検索用形態に移行するための準備
-	MotorControlJoint(SHOULDER_MOTOR, 100, 540);
-	MotorControlJoint(FORE_ARM_MOTOR, 100, 512);	
-	MotorControlJoint(UPPER_ARM_MOTOR, 100, 512);
-	executeRotate(SHOULDER_MOTOR, 100, 580, 580);
-	executeRotate(UPPER_ARM_MOTOR, 100, 240, 240);
-	executeRotate(FORE_ARM_MOTOR, 100, 170, 170);
+	MotorControlJoint(UPPER_ARM_MOTOR, 100, 280);
+	executeRotate(SHOULDER_MOTOR, 40, 580, 580);
+	MotorControlJoint(WRIST_MOTOR, 200, 512);
+	MotorControlJoint(FORE_ARM_MOTOR, 100, 400);	
+	MotorControlJoint(SHOULDER_MOTOR, 100, 630);
+	executeRotate(UPPER_ARM_MOTOR, 100, 120, 120);
+	
+	// 宝物検索用ライントレース形態に戻す
+	FindFormation();
 }
-
-
 
 
 /************************************************************************/

@@ -61,9 +61,7 @@ int isSearchingLeft = 0;
 * @return 1：メイン処理の終了
 */
 int main(void) {
- 	// 現在のモータ角度を表示(Debug用)
- 	Debug_AllMotorCurrentAngle();
-   
+
     initEmergencyStop();
     setLED();
     initIRSensor();
@@ -95,23 +93,20 @@ int main(void) {
 	LOG_DEBUG("Call CatchAndReleaseFormation() %s\r\n", ""); 
 	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
 	CatchAndReleaseFormation();
-	
-	LOG_DEBUG("Call FindFormation() %s\r\n", "");
-	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	FindFormation();
+
 #else
 	// 現在のモータ角度を表示(Debug用)
-	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	Debug_AllMotorCurrentAngle();
+//	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+//	Debug_AllMotorCurrentAngle();
 	
 	// 検出し、載せるまでテスト
-	treasureHunt_01();
+//	treasureHunt_01();
 #endif
 
 	getSensorPattern();
 		
 	// トレース動作開始
-//	executeTraceProcess();
+	executeTraceProcess();
 	//executeShortTraceProcess();
     //executeFinalRoundTraceProcess();
 
@@ -240,7 +235,8 @@ void executeFinalRoundTraceProcess(void) {
 
     // 前進or後進する（実動作に合わせて設定）。
     StraightLowMove2();
-	_delay_ms(300);
+	/* 長すぎると、ペットボトルを倒すかも */
+	_delay_ms(350);
 	
     // 停止する
     StopMove();
@@ -249,9 +245,6 @@ void executeFinalRoundTraceProcess(void) {
     // 宝物を掴んで荷台に乗せる
     CatchAndReleaseFormation();
 
-	// 宝物検索用ライントレース形態に戻す
-	FindFormation();
-	
     // ライン上からの旋回を行う
     executeRightTurnFromOnLine();
 
@@ -280,15 +273,15 @@ void executeFinalRoundTraceProcess(void) {
     }
     // 停止する
     StopMove();
-    _delay_ms(100);
-    // 前進or後進する（実動作に合わせて設定）。
-    // executeXXXX();
+    _delay_ms(500);
+ 
     // 手を開く
     ArmOpenFormation();
      	
     // 前進or後進する（実動作に合わせて設定）。
     StraightLowMove2();
-    _delay_ms(500);
+    /* 長すぎると、ペットボトルを倒すかも */
+    _delay_ms(350);
 
     // 停止する
     StopMove();
@@ -322,15 +315,19 @@ void executeFinalRoundTraceProcess(void) {
     }
     // 停止する
     StopMove();
-    _delay_ms(100);
-    // 前進or後進する（実動作に合わせて設定）。
-    // executeXXXX();
+    _delay_ms(500);
+
     // 手を開く
-    MotorControlJoint( WRIST_MOTOR, 100, 665 );//確認用
+    ArmOpenFormation();
+	
+	// 前進or後進する（実動作に合わせて設定）。
+	StraightLowMove2();
+	/* 長すぎると、ペットボトルを倒すかも */
+	_delay_ms(350);
     
     // 停止する
     StopMove();
-    _delay_ms(100);
+    _delay_ms(1000);
 
     // 宝物を掴んで荷台に乗せる
     CatchAndReleaseFormation();
