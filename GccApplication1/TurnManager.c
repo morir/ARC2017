@@ -548,16 +548,16 @@ void executeRightTurnFromOnLine(void) {
 void adjustTurnPosition(void) {
 	if (BaseSpeed <= 80 ) {
 		StraightLowMove();
-		_delay_ms(300);	// 300ms ŠÔŠu‚ð‹ó‚¯‚é
+		_delay_ms(250);	// 300ms ŠÔŠu‚ð‹ó‚¯‚é
 	} else if (BaseSpeed <= 100 ) {
 		StraightLowMove();
-		_delay_ms(270);	// 270ms ŠÔŠu‚ð‹ó‚¯‚é
+		_delay_ms(220);	// 270ms ŠÔŠu‚ð‹ó‚¯‚é
 	} else if (BaseSpeed <= 120 ) {
 		StraightLowMove();
-		_delay_ms(240);	// 240ms ŠÔŠu‚ð‹ó‚¯‚é
+		_delay_ms(190);	// 240ms ŠÔŠu‚ð‹ó‚¯‚é
 	} else if (BaseSpeed <= 140 ) {
 		StraightLowMove();
-		_delay_ms(190);	// 190ms ŠÔŠu‚ð‹ó‚¯‚é
+		_delay_ms(170);	// 190ms ŠÔŠu‚ð‹ó‚¯‚é
 	} else if (BaseSpeed <= 160 ) {
 		StraightLowMove();
 		_delay_ms(160);	// 160ms ŠÔŠu‚ð‹ó‚¯‚é

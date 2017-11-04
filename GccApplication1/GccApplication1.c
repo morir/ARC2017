@@ -263,14 +263,14 @@ void executeFinalRoundTraceProcess(void) {
  void treasureHunt_02(void) {
     LOG_INFO("treasureHunt_02() %s\r\n", "1");
 
-    int left = 0, center = 0, right = 0;
-    int isFirst = 0;
-    while (center <= 180) {
-        GetAXS1SensorFireData(&left, &center, &right);
-        // 宝物検索用ライントレースを実行
-        TreasureFindingLineTrace(isFirst);
-        isFirst++;
-    }
+    //int left = 0, center = 0, right = 0;
+    //int isFirst = 0;
+    //while (center <= 180) {
+        //GetAXS1SensorFireData(&left, &center, &right);
+        //// 宝物検索用ライントレースを実行
+        //TreasureFindingLineTrace(isFirst);
+        //isFirst++;
+    //}
     // 停止する
     StopMove();
     _delay_ms(500);

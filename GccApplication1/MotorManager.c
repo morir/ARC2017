@@ -308,6 +308,7 @@ void stopMoveLessThanVal(int maxVal){
 			//速度がmaxVal以下ならstop()抜ける
 			break;
 		}
+		_delay_ms(1);
 	}
 }
 

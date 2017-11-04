@@ -13,6 +13,7 @@
 #include "TurnManager.h"
 
 extern void adjustTurnPosition(void);
+extern void LED_on(int i);
 
 void initTraceAction() {
 	currentTraceAction = TRACE_STRAIGHT;
@@ -216,13 +217,15 @@ void traceCommon(int *counter, int *maxSpeed) {
 	int counter = 0;
 	int maxSpeed = MAX_SPEED;
 
+	
 	while (currentTraceAction != TRACE_R_TURN) {
 		traceCommon(&counter, &maxSpeed);
 		counter++;
 	}
 
 	// 停止実行
-	StopMove();
+	stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
+	LED_on(1);
 	initSensorHistory();
 	currentTraceAction = TRACE_STRAIGHT;
 	BaseSpeed = BASE_SPEED_INIT_VAL;
@@ -239,6 +242,9 @@ void traceCommon(int *counter, int *maxSpeed) {
     int sensorPattern = BIT_000000;
 	int findAnySensorCount = 0;
 
+	StraightMove();
+	_delay_ms(10);
+
 	// センサーのいずれかが白判定するまで、直進継続
 	while (1) {
 		StraightMove();
@@ -250,10 +256,11 @@ void traceCommon(int *counter, int *maxSpeed) {
 				break;
 			}
 		}
+		_delay_ms(1);
 	}
 
 	// 停止実行
-	StopMove();
+	stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
 
 	// センサー値に応じて旋回を実行
 	// TODO:実装
@@ -271,19 +278,42 @@ void traceCommon(int *counter, int *maxSpeed) {
  *   開始条件：なし（復路エリア 5 のトレース動作から継続）。
  *   終了条件：
  */
- void traceBackwardArea_06(void) {
-	int counter = 0;
-	int maxSpeed = BASE_SPEED_BY_TURF_AREA;
+ //void traceBackwardArea_06(void) {
+	//int counter = 0;
+	//int maxSpeed = BASE_SPEED_BY_TURF_AREA;
+//
+	//while (currentTraceAction != TRACE_R_TURN) {
+		//traceCommon(&counter, &maxSpeed);
+		//// 加速しない
+		//maxSpeed = BASE_SPEED_BY_TURF_AREA;
+	//}
+//
+	//// 右旋回実行
+	//executeRightTurn();
+	//BaseSpeed = BASE_SPEED_BY_TURF_AREA;
+//}
 
-	while (currentTraceAction != TRACE_R_TURN) {
-		traceCommon(&counter, &maxSpeed);
-		// 加速しない
-		maxSpeed = BASE_SPEED_BY_TURF_AREA;
-	}
+/*
+ * 復路エリア 6 のトレース動作（宝物２からのバック）
+ * @return なし
+ * @condition
+ *   開始条件：なし（復路エリア 5 のトレース動作から継続）。
+ *   終了条件：
+ */
+void traceBackwardArea_06(void) {
+	 int counter = 0;
+	 int maxSpeed = BASE_SPEED_BY_TURF_AREA;
 
-	// 右旋回実行
-	currentTraceAction = executeRightTurn();
-	BaseSpeed = BASE_SPEED_BY_TURF_AREA;
+	 while (currentTraceAction != TRACE_R_TURN) {
+		//バックする。
+		// 未実装
+	 }
+
+	 //必要に応じて位置を調整
+
+	 // 右旋回実行
+	 executeRightTurn();
+	 BaseSpeed = BASE_SPEED_BY_TURF_AREA;
 }
 
 /*
@@ -301,10 +331,11 @@ void traceCommon(int *counter, int *maxSpeed) {
 		traceCommon(&counter, &maxSpeed);
 		// 加速しない
 		maxSpeed = BASE_SPEED_BY_TURF_AREA;
+		_delay_ms(1);
 	}
 
 	// 右旋回実行
-	currentTraceAction = executeRightTurn();
+	executeRightTurn();
 }
 
 /*
@@ -326,11 +357,14 @@ void traceCommon(int *counter, int *maxSpeed) {
 		sensorPattern = getSensorPattern();
 		// 加速しない
 		maxSpeed = BASE_SPEED_BY_TURF_AREA;
+		_delay_ms(1);
 	}
 
 	// 停止実行
-	StopMove();
-    _delay_ms(100);//不要かもしれないがおまじない
+	//stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
+
+	StraightMove();
+    _delay_ms(10);
 
 	// センサーのいずれかが白判定するまで、直進継続
 	while (1) {
@@ -344,6 +378,7 @@ void traceCommon(int *counter, int *maxSpeed) {
 				break;
 			}
 		}
+		_delay_ms(1);
 	}
 
 	// ちょっと進んで停止
@@ -352,6 +387,8 @@ void traceCommon(int *counter, int *maxSpeed) {
 	// 右旋回実行
 	executeRightTurnFromOnLine();
 	BaseSpeed = BASE_SPEED_INIT_VAL;
+	initSensorHistory();
+	currentTraceAction = TRACE_STRAIGHT;
 }
 
 /*
@@ -368,11 +405,15 @@ void traceCommon(int *counter, int *maxSpeed) {
 	while (currentTraceAction != TRACE_L_TURN) {
 		traceCommon(&counter, &maxSpeed);
 		counter++;
+		_delay_ms(1);
 	}
 
 	// 右旋回実行
-	currentTraceAction = executeRightTurn();
+	executeRightTurn();
 	BaseSpeed = BASE_SPEED_INIT_VAL;
+	initSensorHistory();
+	currentTraceAction = TRACE_STRAIGHT;
+	StopMove();//DBG
 }
 
 /*
@@ -392,7 +433,7 @@ void traceCommon(int *counter, int *maxSpeed) {
 	}
 
 	// 停止実行
-	StopMove();
+	stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
 	initSensorHistory();
 	currentTraceAction = TRACE_STRAIGHT;
 	BaseSpeed = BASE_SPEED_INIT_VAL;
@@ -420,6 +461,7 @@ void traceCommon(int *counter, int *maxSpeed) {
 				break;
 			}
 		}
+		_delay_ms(1);
 	}
 
 	// 停止実行
@@ -429,7 +471,7 @@ void traceCommon(int *counter, int *maxSpeed) {
 	// TODO:実装
 
 	// 旋回終了後、停止実行
-	StopMove();
+	stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
 	initSensorHistory();
 	currentTraceAction = TRACE_STRAIGHT;
 	BaseSpeed = BASE_SPEED_INIT_VAL;
