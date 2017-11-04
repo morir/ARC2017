@@ -103,9 +103,15 @@ int executeLeftTurn(void){
 	} else if (sensorPattern == BIT_001000) {
 		//中央センサーなので、直進に設定して抜ける
 	    return TRACE_STRAIGHT;
+	} else if (sensorPattern == BIT_011100) {
+		//中央センサーなので、直進に設定して抜ける
+		return TRACE_STRAIGHT;
 	} else if (sensorPattern == BIT_001100) {
 		//中央センサーなので、直進に設定して抜ける
 	    return TRACE_STRAIGHT;
+	} else if (sensorPattern == BIT_001110) {
+		//中央センサーなので、直進に設定して抜ける
+		return TRACE_STRAIGHT;
 	} else if (sensorPattern == BIT_000100) {
 		//中央センサーなので、直進に設定して抜ける
 	    return TRACE_STRAIGHT;
@@ -199,7 +205,13 @@ int executeRightTurn(void){
     } else if (sensorPattern == BIT_000100) {
         //中央センサーなので、直進に設定して抜ける
         return TRACE_STRAIGHT;
+    } else if (sensorPattern == BIT_001110) {
+        //左センサーなので、左曲りに設定して抜ける
+        return TRACE_R_ROUND_SOFT;
     } else if (sensorPattern == BIT_001100) {
+        //中央センサーなので、直進に設定して抜ける
+        return TRACE_STRAIGHT;
+    } else if (sensorPattern == BIT_011100) {
         //中央センサーなので、直進に設定して抜ける
         return TRACE_STRAIGHT;
     } else if (sensorPattern == BIT_001000) {
@@ -208,9 +220,7 @@ int executeRightTurn(void){
     } else if (sensorPattern == BIT_011000) {
         //右センサーなので、右曲りに設定して抜ける
         return TRACE_L_ROUND_SOFT;
-    } else if (sensorPattern == BIT_010000
-               || sensorPattern == BIT_011100
-               || sensorPattern == BIT_001110) {
+    } else if (sensorPattern == BIT_010000) {
         //右センサーなので、右曲りに設定して抜ける
         return TRACE_L_ROUND_MIDDLE;
     }
