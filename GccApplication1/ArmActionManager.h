@@ -23,7 +23,7 @@
 #define CTRL_TBL_ADDR_PRESENT_POSITION_H	(37)	// Highest byte of Current Position
 
 
-#define CorrectionValue		(10) // ï‚ê≥íl
+#define CorrectionValue		(20) // ï‚ê≥íl
 
 // ------------------ Method Definition ------------------
 void initDumpMotor(void);

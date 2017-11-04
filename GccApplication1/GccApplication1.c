@@ -61,7 +61,9 @@ int isSearchingLeft = 0;
 * @return 1：メイン処理の終了
 */
 int main(void) {
-    
+ 	// 現在のモータ角度を表示(Debug用)
+ 	Debug_AllMotorCurrentAngle();
+   
     initEmergencyStop();
     setLED();
     initIRSensor();
@@ -71,6 +73,7 @@ int main(void) {
     MotorInit();
     initSerial();
 	initCargoBedMotor();
+	initDumpMotor();
 
 #if(0)
 	// 現在のモータ角度を表示(Debug用)
@@ -102,14 +105,13 @@ int main(void) {
 	Debug_AllMotorCurrentAngle();
 	
 	// 検出し、載せるまでテスト
-//	initDumpMotor();
-//	treasureHunt_01();
+	treasureHunt_01();
 #endif
 
 	getSensorPattern();
 		
 	// トレース動作開始
-	executeTraceProcess();
+//	executeTraceProcess();
 	//executeShortTraceProcess();
     //executeFinalRoundTraceProcess();
 
@@ -238,7 +240,7 @@ void executeFinalRoundTraceProcess(void) {
 
     // 前進or後進する（実動作に合わせて設定）。
     StraightLowMove2();
-	_delay_ms(500);
+	_delay_ms(300);
 	
     // 停止する
     StopMove();

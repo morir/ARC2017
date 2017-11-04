@@ -26,15 +26,18 @@ void initDumpMotor(void) {
 /************************************************************************/
 void FindFormation(void)
 {
-	executeRotate(WRIST_MOTOR, 200, 512, 512);
+	MotorControlJoint(WRIST_MOTOR, 200, 512);
+	MotorControlJoint(FORE_ARM_MOTOR, 100, 350);
+	MotorControlJoint(UPPER_ARM_MOTOR, 100, 250);
+//	executeRotate(WRIST_MOTOR, 200, 512, 512);
 	executeRotate(SHOULDER_MOTOR, 100, 512, 512);
-	executeRotate(FORE_ARM_MOTOR, 100, 350, 350);
-	executeRotate(UPPER_ARM_MOTOR, 100, 120, 120);
+//	executeRotate(FORE_ARM_MOTOR, 100, 350, 350);
+//	executeRotate(UPPER_ARM_MOTOR, 100, 250, 250);
 
 	executeRotate(SHOULDER_MOTOR, 100, 680, 680);
-	executeRotate(UPPER_ARM_MOTOR, 100, 80, 80);
+//	executeRotate(UPPER_ARM_MOTOR, 100, 80, 80);
 
-//	executeRotate(UPPER_ARM_MOTOR, 100, 70, 70);
+	executeRotate(UPPER_ARM_MOTOR, 100, 70, 70);
 	executeRotate(FORE_ARM_MOTOR, 100, 300, 300);
 }
 
@@ -46,10 +49,10 @@ void FindFormation(void)
 void ArmOpenFormation(void)
 {
 	//-- â∫Ç∞ÇƒÇ–ÇÁÇ≠
-	executeRotate(WRIST_MOTOR, 100, 720, 720);
-	executeRotate(FORE_ARM_MOTOR, 100, 350, 350);
-	executeRotate(UPPER_ARM_MOTOR, 100, 70, 70);
-	executeRotate(SHOULDER_MOTOR, 100, 512, 512);
+	executeRotate(WRIST_MOTOR, 200, 760, 760);
+	executeRotate(FORE_ARM_MOTOR, 150, 360, 360);
+	executeRotate(UPPER_ARM_MOTOR, 150, 110, 110);
+	executeRotate(SHOULDER_MOTOR, 150, 500, 500);
 }
 
 /************************************************************************/
@@ -63,14 +66,11 @@ void CatchAndReleaseFormation(void)
 	executeRotate(WRIST_MOTOR, 200, 512, 512 );
 
 	//-- éùÇøè„Ç∞äJén	
-	executeRotate(SHOULDER_MOTOR, 100, 512, 512);
-//	executeRotate(UPPER_ARM_MOTOR, 100, 70, 70);
-//	executeRotate(FORE_ARM_MOTOR, 100, 720, 720);
-	MotorControlJoint(UPPER_ARM_MOTOR, 100, 70);
+	executeRotate(UPPER_ARM_MOTOR, 200, 250, 250);
+	MotorControlJoint(SHOULDER_MOTOR, 100, 512);
 	MotorControlJoint(FORE_ARM_MOTOR, 100, 720);
 
 	//-- éùÇøè„Ç∞ìríÜ
-	executeRotate(SHOULDER_MOTOR, 100,	512, 512);
 	executeRotate(UPPER_ARM_MOTOR, 100, 512, 512);
 	executeRotate(FORE_ARM_MOTOR, 100, 770, 770);
 
@@ -102,10 +102,10 @@ void CatchAndReleaseFormation(void)
 /************************************************************************/
 void Debug_AllMotorCurrentAngle(void)
 {
-	LOG_DEBUG("GetCurrentAngle(SHOULDER_MOTOR) %d\r\n", GetCurrentAngle(SHOULDER_MOTOR));
-	LOG_DEBUG("GetCurrentAngle(UPPER_ARM_MOTOR) %d\r\n", GetCurrentAngle(UPPER_ARM_MOTOR));
-	LOG_DEBUG("GetCurrentAngle(FORE_ARM_MOTOR) %d\r\n", GetCurrentAngle(FORE_ARM_MOTOR));
-	LOG_DEBUG("GetCurrentAngle(WRIST_MOTOR) %d\r\n", GetCurrentAngle(WRIST_MOTOR));
+	LOG_ERROR("GetCurrentAngle(SHOULDER_MOTOR) %d\r\n", GetCurrentAngle(SHOULDER_MOTOR));
+	LOG_ERROR("GetCurrentAngle(UPPER_ARM_MOTOR) %d\r\n", GetCurrentAngle(UPPER_ARM_MOTOR));
+	LOG_ERROR("GetCurrentAngle(FORE_ARM_MOTOR) %d\r\n", GetCurrentAngle(FORE_ARM_MOTOR));
+	LOG_ERROR("GetCurrentAngle(WRIST_MOTOR) %d\r\n", GetCurrentAngle(WRIST_MOTOR));
 }
 
 /**
