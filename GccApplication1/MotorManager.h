@@ -91,6 +91,7 @@ void StopMove(void);
 void StraightMove(void);
 void StraightLowMove(void);
 void StraightLowMove2(void);
+void BackLowMove(void);
 void Move(int leftSpeed, int rightSpeed);
 void LeftStraightMove(void);
 void RightStraightMove(void);

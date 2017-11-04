@@ -27,6 +27,7 @@
 
 // ------------------ Method Definition ------------------
 void executeTraceProcess(void);
+void executeHunt1And2TraceProcess(void);
 void executeShortTraceProcess(void);
 void executeFinalRoundTraceProcess(void);
 
@@ -146,6 +147,31 @@ void executeTraceProcess(void) {
 	traceBackwardArea_15();
 	traceBackwardArea_16();
 	traceBackwardArea_17();
+	traceBackwardArea_18();
+}
+
+/**
+* 宝物1と宝物2を取るライントレース動作
+* @brief ライントレース動作
+* @return なし
+* @detail ゴール判定条件を満たすまでライントレース動作を行う。
+*/
+void executeHunt1And2TraceProcess(void) {
+	traceForwardArea_01();
+	traceForwardArea_02();
+	traceForwardArea_03();
+	traceForwardArea_04();
+	traceForwardArea_05();
+	treasureHunt_01();
+	traceBackwardArea_01();
+	traceBackwardArea_02();
+	traceBackwardArea_03();
+	traceBackwardArea_04();
+	treasureHunt_02();
+	traceBackLowMoveArea_01();
+	shortTraceToRightTurn();
+	shortTraceToRightTurn();
+	shortTraceToRightTurn();
 	traceBackwardArea_18();
 }
 

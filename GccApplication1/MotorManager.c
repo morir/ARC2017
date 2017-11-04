@@ -176,6 +176,14 @@ void StraightLowMove2(void) {
 	Move(leftSpeed, rightSpeed);
 }
 
+void BackLowMove(void)
+{
+	int leftSpeed = SLOW_BACK_VAL;
+	int rightSpeed = (1024 + SLOW_BACK_VAL);
+
+	Move(leftSpeed, rightSpeed);
+}
+
 void LeftStraightMove(void) {
 	int execBaseSpeed = (BaseSpeed < MAX_SPEED) ? BaseSpeed : MAX_SPEED;
 	int leftSpeed = (int)((float)execBaseSpeed * HIGH_RATE);

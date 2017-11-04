@@ -56,4 +56,6 @@ void TreasureFindingLineTrace(int isFirst);
 void shortTraceToLeftTurn(void);
 void shortTraceToRightTurn(void);
 
+void traceBackLowMoveArea_01(void);
+
 #endif /* TRACEMANAGER_H_ */

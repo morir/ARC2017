@@ -761,3 +761,37 @@ void TreasureFindingLineTrace(int isFirst) {
 	currentTraceAction = executeRightTurn();
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
+
+/*
+ * 宝物2個を取得後の後退用トレース動作
+ * @return なし
+ * @condition
+ *   開始条件：前回のトレース動作から継続。
+ *   終了条件：センサで右ターンを検出して停止が完了する。
+ */
+void traceBackLowMoveArea_01(void) {
+	 BaseSpeed = BASE_SPEED_BY_TURF_AREA;
+	int sensorPattern = BIT_111111;
+
+	// (芝上のバック）センサーが前黒判定するまで、後退継続
+	while (sensorPattern != BIT_000000) {
+		BackLowMove();
+		sensorPattern = getSensorPattern();
+		_delay_ms(1);
+	}
+
+	BaseSpeed = SLOW_BACK_VAL;
+	// （プラダン上のバック）センサーのいずれかが白判定するまで、後退継続
+	while (sensorPattern == BIT_000000) {
+		BackLowMove();
+		sensorPattern = getSensorPattern();
+		_delay_ms(1);
+	}
+
+	// 前進開始したの距離を確保するため少しだけディレイをかけて停止
+	_delay_ms(1000);
+	StopMove();
+
+	currentTraceAction = TRACE_STRAIGHT;
+	BaseSpeed = BASE_SPEED_INIT_VAL;
+}
