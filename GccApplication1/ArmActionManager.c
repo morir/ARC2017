@@ -68,9 +68,10 @@ void CatchAndReleaseFormation(void)
 	executeRotate(UPPER_ARM_MOTOR, 100, 500, 500);
 
 	//-- 落とす直前
-	executeRotate(FORE_ARM_MOTOR, 100, 680, 680);
-	MotorControlJoint( UPPER_ARM_MOTOR, 100, 680 );
-	executeRotate( SHOULDER_MOTOR, 100, 430, 430 );
+	executeRotate(FORE_ARM_MOTOR, 100, 700, 700);
+	MotorControlJoint( UPPER_ARM_MOTOR, 100, 700 );
+	executeRotate( SHOULDER_MOTOR, 100, 410, 410 );
+	_delay_ms(500);//適切なウェイト時間を設定
 
 	//-- 落とす
 	executeRotate( WRIST_MOTOR, 200, 620, 620 );
