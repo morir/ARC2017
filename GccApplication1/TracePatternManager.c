@@ -26,7 +26,7 @@ void initActionTable() {
 	ActionTable[11] = TRACE_UNDEFINED;		/* 11:BIT_001011 */
 	ActionTable[12] = TRACE_STRAIGHT;		/* 12:BIT_001100 */
 	ActionTable[13] = TRACE_UNDEFINED;		/* 13:BIT_001101 */
-	ActionTable[14] = TRACE_R_ROUND_SOFT;	/* 14:BIT_001110 */
+	ActionTable[14] = TRACE_R_ROUND_MIDDLE;	/* 14:BIT_001110 */
 	ActionTable[15] = TRACE_R_TURN;			/* 15:BIT_001111 */
 	ActionTable[16] = TRACE_L_ROUND_MIDDLE;	/* 16:BIT_010000 */
 	ActionTable[17] = TRACE_UNDEFINED;		/* 17:BIT_010001 */
@@ -40,7 +40,7 @@ void initActionTable() {
 	ActionTable[25] = TRACE_UNDEFINED;		/* 25:BIT_011001 */
 	ActionTable[26] = TRACE_UNDEFINED;		/* 26:BIT_011010 */
 	ActionTable[27] = TRACE_UNDEFINED;		/* 27:BIT_011011 */
-	ActionTable[28] = TRACE_L_ROUND_SOFT;	/* 28:BIT_011100 */
+	ActionTable[28] = TRACE_L_ROUND_MIDDLE;	/* 28:BIT_011100 */
 	ActionTable[29] = TRACE_UNDEFINED;		/* 29:BIT_011101 */
 	ActionTable[30] = TRACE_STRAIGHT;		/* 30:BIT_011110 */
 	ActionTable[31] = TRACE_R_TURN;			/* 31:BIT_011111 */
@@ -233,12 +233,12 @@ void getSensors(void) {
 	
 	/* IRèÛë‘ÇBITÉpÉ^Å[ÉìÇ…ïœä∑ */
 	IR_BitPattern = 0;
-	if (IR[RIGHT_OUTSIDE] <= COMPARE_VALUE)	IR_BitPattern |= BIT_RIGHT_OUTSIDE_ON;
+	if (IR[RIGHT_OUTSIDE] <= COMPARE_VALUE_RIGHTSIDE)	IR_BitPattern |= BIT_RIGHT_OUTSIDE_ON;
 	if (IR[RIGHT_CENTER]  <= COMPARE_VALUE)	IR_BitPattern |= BIT_RIGHT_CENTER_ON;
 	if (IR[RIGHT_INSIDE]  <= COMPARE_VALUE)	IR_BitPattern |= BIT_RIGHT_INSIDE_ON;
 	if (IR[LEFT_INSIDE]   <= COMPARE_VALUE)	IR_BitPattern |= BIT_LEFT_INSIDE_ON;
 	if (IR[LEFT_CENTER]   <= COMPARE_VALUE)	IR_BitPattern |= BIT_LEFT_CENTER_ON;
-	if (IR[LEFT_OUTSIDE]  <= COMPARE_VALUE)	IR_BitPattern |= BIT_LEFT_OUTSIDE_ON;
+	if (IR[LEFT_OUTSIDE]  <= COMPARE_VALUE_LEFTSIDE)	IR_BitPattern |= BIT_LEFT_OUTSIDE_ON;
 
 	IR_BitPatternHistory[currentCount] = IR_BitPattern;
 	
@@ -246,11 +246,11 @@ void getSensors(void) {
 			 IR[LEFT_OUTSIDE], IR[LEFT_CENTER], IR[LEFT_INSIDE],
 			 IR[RIGHT_INSIDE], IR[RIGHT_CENTER], IR[RIGHT_OUTSIDE]);
     LOG_DEBUG("IR[L %1d%1d%1d%1d%1d%1d R]\r\n",
-			  ((IR[LEFT_OUTSIDE]  <= COMPARE_VALUE) ? 1 : 0),
+			  ((IR[LEFT_OUTSIDE]  <= COMPARE_VALUE_RIGHTSIDE) ? 1 : 0),
 			  ((IR[LEFT_CENTER]   <= COMPARE_VALUE) ? 1 : 0),
 			  ((IR[LEFT_INSIDE]   <= COMPARE_VALUE) ? 1 : 0),
 			  ((IR[RIGHT_INSIDE]  <= COMPARE_VALUE) ? 1 : 0),
 			  ((IR[RIGHT_CENTER]  <= COMPARE_VALUE) ? 1 : 0),
-			  ((IR[RIGHT_OUTSIDE] <= COMPARE_VALUE) ? 1 : 0));
+			  ((IR[RIGHT_OUTSIDE] <= COMPARE_VALUE_LEFTSIDE) ? 1 : 0));
 }
 

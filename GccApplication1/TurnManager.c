@@ -556,27 +556,30 @@ void executeRightTurnFromOnLine(void) {
  * 2017ƒƒ{‚É‡‚í‚¹‚Ä’²®•K—vI
  */
 void adjustTurnPosition(void) {
-	if (BaseSpeed <= 80 ) {
+	if (BaseSpeed <= 45 ) {
 		StraightLowMove();
-		_delay_ms(250);	// 300ms ŠÔŠu‚ğ‹ó‚¯‚é
+		_delay_ms(220);	// 300ms ŠÔŠu‚ğ‹ó‚¯‚é
+	} else if (BaseSpeed <= 80 ) {
+		StraightLowMove();
+		_delay_ms(230);	// 270ms ŠÔŠu‚ğ‹ó‚¯‚é
 	} else if (BaseSpeed <= 100 ) {
 		StraightLowMove();
-		_delay_ms(220);	// 270ms ŠÔŠu‚ğ‹ó‚¯‚é
+		_delay_ms(200);	// 270ms ŠÔŠu‚ğ‹ó‚¯‚é
 	} else if (BaseSpeed <= 120 ) {
 		StraightLowMove();
-		_delay_ms(190);	// 240ms ŠÔŠu‚ğ‹ó‚¯‚é
+		_delay_ms(150);	// 240ms ŠÔŠu‚ğ‹ó‚¯‚é
 	} else if (BaseSpeed <= 140 ) {
 		StraightLowMove();
-		_delay_ms(170);	// 190ms ŠÔŠu‚ğ‹ó‚¯‚é
+		_delay_ms(130);	// 190ms ŠÔŠu‚ğ‹ó‚¯‚é
 	} else if (BaseSpeed <= 160 ) {
 		StraightLowMove();
-		_delay_ms(160);	// 160ms ŠÔŠu‚ğ‹ó‚¯‚é
+		_delay_ms(110);	// 160ms ŠÔŠu‚ğ‹ó‚¯‚é
 	} else if (BaseSpeed <= 180 ) {
 		StraightLowMove();
-		_delay_ms(140);	// 140ms ŠÔŠu‚ğ‹ó‚¯‚é
+		_delay_ms(100);	// 140ms ŠÔŠu‚ğ‹ó‚¯‚é
 	} else {
 		StraightLowMove();
-		_delay_ms(120);	// 120ms ŠÔŠu‚ğ‹ó‚¯‚é
+		_delay_ms(80);	// 120ms ŠÔŠu‚ğ‹ó‚¯‚é
 	}
 
     StopMove();

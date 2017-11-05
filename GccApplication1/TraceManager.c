@@ -32,7 +32,7 @@ void traceCommon(int *counter, int *maxSpeed) {
 	getSensors();
 	currentTraceAction = getActionWithHistory();
 	if (currentTraceAction == TRACE_UNDEFINED) {
-		_delay_ms(1);// delayTimeの間隔を空ける
+		_delay_ms(2);// delayTimeの間隔を空ける
 		return;
 	}
 
@@ -42,7 +42,7 @@ void traceCommon(int *counter, int *maxSpeed) {
 		*counter = 0;
 	}
 #else
-	if ((*counter % 5) == 0) {
+	if ((*counter % 6) == 0) {
 		BaseSpeed = BaseSpeed + 2;
 		*counter = 0;
 	}
@@ -194,7 +194,7 @@ void traceCommon(int *counter, int *maxSpeed) {
  */
  void traceBackwardArea_02(void) {
 	int counter = 0;
-	int maxSpeed = MAX_SPEED;
+	int maxSpeed = BASE_SPEED_BY_SLOWMOVE;
 
 	while (currentTraceAction != TRACE_L_TURN) {
 		traceCommon(&counter, &maxSpeed);
@@ -215,7 +215,7 @@ void traceCommon(int *counter, int *maxSpeed) {
  */
  void traceBackwardArea_03(void) {
 	int counter = 0;
-	int maxSpeed = MAX_SPEED;
+	int maxSpeed = BASE_SPEED_BY_SLOWMOVE;
 
 	
 	while (currentTraceAction != TRACE_R_TURN) {
@@ -243,7 +243,7 @@ void traceCommon(int *counter, int *maxSpeed) {
 	int findAnySensorCount = 0;
 
 	StraightMove();
-	_delay_ms(10);
+	_delay_ms(200);
 
 	// センサーのいずれかが白判定するまで、直進継続
 	while (1) {
@@ -642,7 +642,7 @@ void traceBackwardArea_18(void) {
 
 	// 目標の距離まで前進
 	//currentTraceAction = TRACE_STRAIGHT;
-	int32_t targetDistance = 130;	//目標距離 = 130cm
+	int32_t targetDistance = 110;	//目標距離 = 130cm
 	while (targetDistance > GetMovingDistance()) {
 		// 移動距離を更新
 		UpdateMovingDistance();
@@ -780,6 +780,10 @@ void traceBackLowMoveArea_01(void) {
 		_delay_ms(1);
 	}
 
+	// 確実に線から離れるため、強制で後進する
+	BackLowMove();
+	_delay_ms(300);
+
 	BaseSpeed = SLOW_BACK_VAL;
 	// （プラダン上のバック）センサーのいずれかが白判定するまで、後退継続
 	while (sensorPattern == BIT_000000) {
@@ -788,9 +792,14 @@ void traceBackLowMoveArea_01(void) {
 		_delay_ms(1);
 	}
 
-	// 前進開始したの距離を確保するため少しだけディレイをかけて停止
-	_delay_ms(1000);
-	StopMove();
+	// 停止実行
+    stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
+
+	// ベース速度を0に設定
+	BaseSpeed = 0;
+
+	//右旋回実行
+	executeRightTurn();
 
 	currentTraceAction = TRACE_STRAIGHT;
 	BaseSpeed = BASE_SPEED_INIT_VAL;

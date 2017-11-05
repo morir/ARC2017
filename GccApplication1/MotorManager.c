@@ -178,8 +178,8 @@ void StraightLowMove2(void) {
 
 void BackLowMove(void)
 {
-	int leftSpeed = SLOW_BACK_VAL;
-	int rightSpeed = (1024 + SLOW_BACK_VAL);
+	int leftSpeed = (1024 + SLOW_BACK_VAL);
+	int rightSpeed = SLOW_BACK_VAL;
 
 	Move(leftSpeed, rightSpeed);
 }
@@ -202,7 +202,7 @@ void RightStraightMove(void) {
 
 void LeftSoftRoundMove(void) {
 	int execBaseSpeed = (BaseSpeed < MAX_SPEED) ? BaseSpeed : MAX_SPEED;
-	int leftSpeed = (execBaseSpeed - 5) ;
+	int leftSpeed = (execBaseSpeed - 15) ;
 	int rightSpeed = (1024 + execBaseSpeed);
 
 	Move(leftSpeed, rightSpeed);
@@ -210,7 +210,7 @@ void LeftSoftRoundMove(void) {
 
 void LeftMiddleRoundMove(void) {
 	int execBaseSpeed = (BaseSpeed < MAX_SPEED) ? BaseSpeed : MAX_SPEED;
-	int leftSpeed = (execBaseSpeed - 10) ;
+	int leftSpeed = (execBaseSpeed - 30) ;
 	int rightSpeed = (1024 + execBaseSpeed);
 
 	Move(leftSpeed, rightSpeed);
@@ -218,7 +218,7 @@ void LeftMiddleRoundMove(void) {
 
 void LeftTightRoundMove(void) {
 	int execBaseSpeed = (BaseSpeed < MAX_SPEED) ? BaseSpeed : MAX_SPEED;
-	int leftSpeed = (execBaseSpeed - 20) ;
+	int leftSpeed = (execBaseSpeed - 60) ;
 	int rightSpeed = (1024 + execBaseSpeed);
 
 	Move(leftSpeed, rightSpeed);
@@ -227,7 +227,7 @@ void LeftTightRoundMove(void) {
 void RightSoftRoundMove(void) {
 	int execBaseSpeed = (BaseSpeed < MAX_SPEED) ? BaseSpeed : MAX_SPEED;
 	int leftSpeed = execBaseSpeed;
-	int rightSpeed = (1024 + (execBaseSpeed - 5));
+	int rightSpeed = (1024 + (execBaseSpeed - 15));
 
 	Move(leftSpeed, rightSpeed);
 }
@@ -235,7 +235,7 @@ void RightSoftRoundMove(void) {
 void RightMiddleRoundMove(void) {
 	int execBaseSpeed = (BaseSpeed < MAX_SPEED) ? BaseSpeed : MAX_SPEED;
 	int leftSpeed = execBaseSpeed;
-	int rightSpeed = (1024 + (execBaseSpeed - 10));
+	int rightSpeed = (1024 + (execBaseSpeed - 30));
 
 	Move(leftSpeed, rightSpeed);
 }
@@ -243,7 +243,7 @@ void RightMiddleRoundMove(void) {
 void RightTightRoundMove(void) {
 	int execBaseSpeed = (BaseSpeed < MAX_SPEED) ? BaseSpeed : MAX_SPEED;
 	int leftSpeed = execBaseSpeed;
-	int rightSpeed = (1024 + (execBaseSpeed - 20));
+	int rightSpeed = (1024 + (execBaseSpeed - 60));
 
 	Move(leftSpeed, rightSpeed);
 }

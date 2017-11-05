@@ -42,6 +42,8 @@ void executeFinalAction(void);
 
 void initEmergencyStop(void);
 
+void sensorDebug(void);
+
 void setLED(void);
 void LED_on(int i);
 void LED_off(int i);
@@ -71,6 +73,7 @@ int main(void) {
 	initActionTable();
     MotorInit();
     initSerial();
+	//sensorDebug();//センサー値の確認だけをしたい場合、コメントアウトを解除
 	initCargoBedMotor();
 	initDumpMotor();
 
@@ -107,12 +110,13 @@ int main(void) {
 	getSensorPattern();
 		
 	// トレース動作開始
-	executeTraceProcess();
+	//executeTraceProcess();
 	//executeShortTraceProcess();
+	executeHunt1And2TraceProcess();
     //executeFinalRoundTraceProcess();
 
     // ゴール判定後の動作実質ここから開始？
-	//executeFinalAction();
+	executeFinalAction();
 	StopMove();
 }
 
@@ -169,7 +173,6 @@ void executeHunt1And2TraceProcess(void) {
 	traceBackwardArea_04();
 	treasureHunt_02();
 	traceBackLowMoveArea_01();
-	shortTraceToRightTurn();
 	shortTraceToRightTurn();
 	shortTraceToRightTurn();
 	traceBackwardArea_18();
@@ -232,6 +235,26 @@ void executeFinalRoundTraceProcess(void) {
 	traceBackwardArea_17();
 	traceBackwardArea_18();
 }
+
+void sensorDebug(void) {
+	while(1) {
+		getSensors();
+		LOG_WARN("sensor %3d: %3d: %3d: %3d: %3d: %3d \r\n",
+		IR[LEFT_OUTSIDE], IR[LEFT_CENTER], IR[LEFT_INSIDE],
+		IR[RIGHT_INSIDE], IR[RIGHT_CENTER], IR[RIGHT_OUTSIDE]);
+		LOG_WARN("IR[L %1d%1d%1d%1d%1d%1d R]\r\n",
+		((IR[LEFT_OUTSIDE]  <= COMPARE_VALUE) ? 1 : 0),
+		((IR[LEFT_CENTER]   <= COMPARE_VALUE) ? 1 : 0),
+		((IR[LEFT_INSIDE]   <= COMPARE_VALUE) ? 1 : 0),
+		((IR[RIGHT_INSIDE]  <= COMPARE_VALUE) ? 1 : 0),
+		((IR[RIGHT_CENTER]  <= COMPARE_VALUE) ? 1 : 0),
+		((IR[RIGHT_OUTSIDE] <= COMPARE_VALUE) ? 1 : 0));
+		currentTraceAction = getActionWithHistory();
+		LOG_WARN("currentTraceAction %d\r\n", currentTraceAction);
+		_delay_ms(500);
+	}
+}
+
 
 /*
  * 宝物 1 のトレース動作
