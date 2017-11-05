@@ -313,13 +313,14 @@ void sensorDebug(void) {
     LOG_INFO("treasureHunt_02() %s\r\n", "1");
 
     //int left = 0, center = 0, right = 0;
-    //int isFirst = 0;
-    //while (center <= 180) {
+    //GetAXS1SensorFireData(&left, &center, &right);
+    //while (center <= 130) {
+        //// 宝物検索用ライントレースを実行(旋回)
+        //LeftTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
+		//_delay_ms(1);
         //GetAXS1SensorFireData(&left, &center, &right);
-        //// 宝物検索用ライントレースを実行
-        //TreasureFindingLineTrace(isFirst);
-        //isFirst++;
     //}
+
     // 停止する
     StopMove();
     _delay_ms(500);
@@ -414,9 +415,13 @@ void executeFinalAction(void)
 	StopMove();
 	_delay_ms(10);
 
+	// 肩を前に出す
+	MotorControlJoint(SHOULDER_MOTOR, 100, 600);
+	_delay_ms(1000);//！要調整
+
 	/* 荷台を傾けて宝物を落とす */
 	dumpTreasures();
-	_delay_ms(10);
+	_delay_ms(500);
 	
 	/* ゆっくり前進 */
 	MotorControl(RIGHT_MOTOR, 1063);

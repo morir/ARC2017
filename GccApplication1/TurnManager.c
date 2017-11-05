@@ -561,13 +561,13 @@ void adjustTurnPosition(void) {
 		_delay_ms(220);	// 300ms ŠÔŠu‚ð‹ó‚¯‚é
 	} else if (BaseSpeed <= 80 ) {
 		StraightLowMove();
-		_delay_ms(230);	// 270ms ŠÔŠu‚ð‹ó‚¯‚é
+		_delay_ms(200);	// 270ms ŠÔŠu‚ð‹ó‚¯‚é
 	} else if (BaseSpeed <= 100 ) {
 		StraightLowMove();
-		_delay_ms(200);	// 270ms ŠÔŠu‚ð‹ó‚¯‚é
+		_delay_ms(170);	// 270ms ŠÔŠu‚ð‹ó‚¯‚é
 	} else if (BaseSpeed <= 120 ) {
 		StraightLowMove();
-		_delay_ms(150);	// 240ms ŠÔŠu‚ð‹ó‚¯‚é
+		_delay_ms(140);	// 240ms ŠÔŠu‚ð‹ó‚¯‚é
 	} else if (BaseSpeed <= 140 ) {
 		StraightLowMove();
 		_delay_ms(130);	// 190ms ŠÔŠu‚ð‹ó‚¯‚é

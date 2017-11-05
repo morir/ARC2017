@@ -215,7 +215,7 @@ void traceCommon(int *counter, int *maxSpeed) {
  */
  void traceBackwardArea_03(void) {
 	int counter = 0;
-	int maxSpeed = BASE_SPEED_BY_SLOWMOVE;
+	int maxSpeed = MAX_SPEED;
 
 	
 	while (currentTraceAction != TRACE_R_TURN) {
@@ -241,7 +241,7 @@ void traceCommon(int *counter, int *maxSpeed) {
  void traceBackwardArea_04(void) {
     int sensorPattern = BIT_000000;
 	int findAnySensorCount = 0;
-
+	int loopCount = 0;
 	StraightMove();
 	_delay_ms(200);
 
@@ -256,6 +256,10 @@ void traceCommon(int *counter, int *maxSpeed) {
 				break;
 			}
 		}
+		if (loopCount > 700) {
+			break;
+		}
+		loopCount++;
 		_delay_ms(1);
 	}
 
@@ -696,8 +700,7 @@ void TreasureFindingLineTrace(int isFirst) {
 	    (sensorPattern == BIT_010000 ||
 	    sensorPattern == BIT_001000 ||
 	    sensorPattern == BIT_011000 ||
-	    sensorPattern == BIT_011100 ||
-	    sensorPattern == BIT_001100
+	    sensorPattern == BIT_011100
 	    )) {
 		// ラインの右側サーチ中に左ラインを検出したら、
 		// ラインの左側サーチに切り替える
@@ -708,8 +711,7 @@ void TreasureFindingLineTrace(int isFirst) {
 	    (sensorPattern == BIT_000010 ||
 	    sensorPattern == BIT_000100 ||
 	    sensorPattern == BIT_000110 ||
-	    sensorPattern == BIT_001110 ||
-	    sensorPattern == BIT_001100
+	    sensorPattern == BIT_001110
 	    )) {
 		// ラインの左側サーチ中に右ラインを検出したら、
 		// ラインの右側サーチに切り替える
