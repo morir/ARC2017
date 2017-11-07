@@ -77,6 +77,7 @@ void traceCommon(int *counter, int *maxSpeed) {
 
 	// 左旋回実行
 	currentTraceAction = executeLeftTurn();
+	//setSensorHistory(executeLeftTurn());
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
@@ -98,6 +99,7 @@ void traceCommon(int *counter, int *maxSpeed) {
 
 	// 左旋回実行
 	currentTraceAction = executeLeftTurn();
+	//setSensorHistory(executeLeftTurn());
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
@@ -119,6 +121,7 @@ void traceCommon(int *counter, int *maxSpeed) {
 
 	// 左旋回実行
 	currentTraceAction = executeLeftTurn();
+	//setSensorHistory(executeLeftTurn());
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
@@ -140,6 +143,7 @@ void traceCommon(int *counter, int *maxSpeed) {
 
 	// 右旋回実行
 	currentTraceAction = executeRightTurn();
+	//setSensorHistory(executeRightTurn());
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
@@ -161,6 +165,7 @@ void traceCommon(int *counter, int *maxSpeed) {
 
 	// 右旋回実行
 	currentTraceAction = executeRightTurn();
+	//setSensorHistory(executeRightTurn());
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
@@ -182,6 +187,7 @@ void traceCommon(int *counter, int *maxSpeed) {
 
 	// 左旋回実行
 	currentTraceAction = executeLeftTurn();
+	//setSensorHistory(executeLeftTurn());
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
@@ -203,6 +209,7 @@ void traceCommon(int *counter, int *maxSpeed) {
 
 	// 左旋回実行
 	currentTraceAction = executeLeftTurn();
+	//setSensorHistory(executeLeftTurn());
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
@@ -555,6 +562,7 @@ void traceBackwardArea_06(void) {
 
 	// 左旋回実行
 	currentTraceAction = executeLeftTurn();
+	//setSensorHistory(executeLeftTurn());
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
@@ -599,6 +607,7 @@ void traceBackwardArea_06(void) {
 
 	// 左旋回実行
 	currentTraceAction = executeLeftTurn();
+	//setSensorHistory(executeLeftTurn());
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
@@ -620,6 +629,7 @@ void traceBackwardArea_17(void) {
 
 	// 右旋回実行
 	currentTraceAction = executeRightTurn();
+	//setSensorHistory(executeRightTurn());
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
@@ -740,6 +750,7 @@ void TreasureFindingLineTrace(int isFirst) {
 
 	// 左旋回実行
 	currentTraceAction = executeLeftTurn();
+	//setSensorHistory(executeLeftTurn());
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
@@ -761,6 +772,7 @@ void TreasureFindingLineTrace(int isFirst) {
 
 	// 右旋回実行
 	currentTraceAction = executeRightTurn();
+	//setSensorHistory(executeRightTurn());
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
@@ -772,7 +784,7 @@ void TreasureFindingLineTrace(int isFirst) {
  *   終了条件：センサで右ターンを検出して停止が完了する。
  */
 void traceBackLowMoveArea_01(void) {
-	 BaseSpeed = BASE_SPEED_BY_TURF_AREA;
+	BaseSpeed = BASE_SPEED_BY_TURF_AREA;
 	int sensorPattern = BIT_111111;
 
 	// (芝上のバック）センサーが前黒判定するまで、後退継続

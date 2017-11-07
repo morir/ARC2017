@@ -99,9 +99,9 @@ int getSensorPattern(void) {
 */
 void initSensorHistory(void) {
 	memset(IR, 0, sizeof(IR));
-	IR_BitPattern = 0;
+	IR_BitPattern = BIT_000000;
 	currentCount = 0;
-	memset(IR_BitPatternHistory, TRACE_STRAIGHT, sizeof(IR_BitPatternHistory));
+	memset(IR_BitPatternHistory, IR_BitPattern, sizeof(IR_BitPatternHistory));
 }
 
 /**
@@ -252,5 +252,9 @@ void getSensors(void) {
 			  ((IR[RIGHT_INSIDE]  <= COMPARE_VALUE) ? 1 : 0),
 			  ((IR[RIGHT_CENTER]  <= COMPARE_VALUE) ? 1 : 0),
 			  ((IR[RIGHT_OUTSIDE] <= COMPARE_VALUE_LEFTSIDE) ? 1 : 0));
+}
+
+void setSensorHistory(int sensorPattern) {
+	memset(IR_BitPatternHistory, sensorPattern, sizeof(IR_BitPatternHistory));
 }
 

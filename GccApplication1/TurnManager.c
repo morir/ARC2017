@@ -94,33 +94,44 @@ int executeLeftTurn(void){
 
 	//旋回停止判定後の止まった位置でセンサーが中央４個のいずれかなら逆旋回終了
 	sensorPattern = getSensorPattern();
-	if (sensorPattern == BIT_010000) {
-	    //左センサーなので、左曲りに設定して抜ける
-	    return TRACE_L_ROUND_MIDDLE;
-	} else if (sensorPattern == BIT_011000) {
-	    //左センサーなので、左曲りに設定して抜ける
-	    return TRACE_L_ROUND_SOFT;
-	} else if (sensorPattern == BIT_001000) {
-		//中央センサーなので、直進に設定して抜ける
-	    return TRACE_STRAIGHT;
-	} else if (sensorPattern == BIT_011100) {
-		//中央センサーなので、直進に設定して抜ける
-		return TRACE_STRAIGHT;
-	} else if (sensorPattern == BIT_001100) {
-		//中央センサーなので、直進に設定して抜ける
-	    return TRACE_STRAIGHT;
-	} else if (sensorPattern == BIT_001110) {
-		//中央センサーなので、直進に設定して抜ける
-		return TRACE_STRAIGHT;
-	} else if (sensorPattern == BIT_000100) {
-		//中央センサーなので、直進に設定して抜ける
-	    return TRACE_STRAIGHT;
-	} else if (sensorPattern == BIT_000110) {
-	    //右センサーなので、右曲りに設定して抜ける
-	    return TRACE_R_ROUND_SOFT;
-	} else if (sensorPattern == BIT_000010) {
-	    //右センサーなので、右曲りに設定して抜ける
-	    return TRACE_R_ROUND_MIDDLE;
+	//if (sensorPattern == BIT_010000) {
+	    ////左センサーなので、左曲りに設定して抜ける
+	    //return TRACE_L_ROUND_MIDDLE;
+	//} else if (sensorPattern == BIT_011000) {
+	    ////左センサーなので、左曲りに設定して抜ける
+	    //return TRACE_L_ROUND_SOFT;
+	//} else if (sensorPattern == BIT_001000) {
+		////中央センサーなので、直進に設定して抜ける
+	    //return TRACE_STRAIGHT;
+	//} else if (sensorPattern == BIT_011100) {
+		////中央センサーなので、直進に設定して抜ける
+		//return TRACE_STRAIGHT;
+	//} else if (sensorPattern == BIT_001100) {
+		////中央センサーなので、直進に設定して抜ける
+	    //return TRACE_STRAIGHT;
+	//} else if (sensorPattern == BIT_001110) {
+		////中央センサーなので、直進に設定して抜ける
+		//return TRACE_STRAIGHT;
+	//} else if (sensorPattern == BIT_000100) {
+		////中央センサーなので、直進に設定して抜ける
+	    //return TRACE_STRAIGHT;
+	//} else if (sensorPattern == BIT_000110) {
+	    ////右センサーなので、右曲りに設定して抜ける
+	    //return TRACE_R_ROUND_SOFT;
+	//} else if (sensorPattern == BIT_000010) {
+	    ////右センサーなので、右曲りに設定して抜ける
+	    //return TRACE_R_ROUND_MIDDLE;
+	//}
+	if ((sensorPattern == BIT_010000) ||
+		(sensorPattern == BIT_011000) ||
+		(sensorPattern == BIT_001000) ||
+		(sensorPattern == BIT_011100) ||
+		(sensorPattern == BIT_001100) ||
+		(sensorPattern == BIT_001110) ||
+		(sensorPattern == BIT_000100) ||
+		(sensorPattern == BIT_000110) ||
+		(sensorPattern == BIT_000010)) {
+		return sensorPattern;
 	}
 	
 	LED_on(3);
@@ -131,13 +142,15 @@ int executeLeftTurn(void){
 		sensorPattern = getSensorPattern();
 		if (sensorPattern == BIT_001000 || sensorPattern == BIT_001100 || sensorPattern == BIT_000100) {
 			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
-			return TRACE_STRAIGHT;
+			//return TRACE_STRAIGHT;
+			return BIT_000000;
 		} else if ( sensorPattern == BIT_010000 ||	sensorPattern == BIT_011000 ||
 					sensorPattern == BIT_100000 ||	sensorPattern == BIT_110000 ) {
 			//既に逆側まで旋回していたら（想定よりも早く解除できてしまった場合など）
 	        //左センサーなので、左曲りに設定して抜ける
             
-	        return TRACE_L_ROUND_MIDDLE;
+	        //return TRACE_L_ROUND_MIDDLE;
+			return BIT_010000;
 		}
 	}
 
@@ -149,10 +162,13 @@ int executeLeftTurn(void){
 		sensorPattern = getSensorPattern();
 		if (sensorPattern == BIT_001000 || sensorPattern == BIT_001100 || sensorPattern == BIT_000100) {
 			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
-			return TRACE_STRAIGHT;
+			//return TRACE_STRAIGHT;
+			return BIT_000000;
 		}
 	}
-	return TRACE_STRAIGHT;
+	//return TRACE_STRAIGHT;
+	return BIT_000000;
+
 }
 
 /**
@@ -196,35 +212,46 @@ int executeRightTurn(void){
 
 	//旋回停止判定後の止まった位置でセンサーが中央なら逆旋回終了
     sensorPattern = getSensorPattern();
-    if (sensorPattern == BIT_000010) {
-        //左センサーなので、左曲りに設定して抜ける
-        return TRACE_R_ROUND_MIDDLE;
-    } else if (sensorPattern == BIT_000110) {
-        //左センサーなので、左曲りに設定して抜ける
-        return TRACE_R_ROUND_SOFT;
-    } else if (sensorPattern == BIT_000100) {
-        //中央センサーなので、直進に設定して抜ける
-        return TRACE_STRAIGHT;
-    } else if (sensorPattern == BIT_001110) {
-        //左センサーなので、左曲りに設定して抜ける
-        return TRACE_R_ROUND_SOFT;
-    } else if (sensorPattern == BIT_001100) {
-        //中央センサーなので、直進に設定して抜ける
-        return TRACE_STRAIGHT;
-    } else if (sensorPattern == BIT_011100) {
-        //中央センサーなので、直進に設定して抜ける
-        return TRACE_STRAIGHT;
-    } else if (sensorPattern == BIT_001000) {
-        //中央センサーなので、直進に設定して抜ける
-        return TRACE_STRAIGHT;
-    } else if (sensorPattern == BIT_011000) {
-        //右センサーなので、右曲りに設定して抜ける
-        return TRACE_L_ROUND_SOFT;
-    } else if (sensorPattern == BIT_010000) {
-        //右センサーなので、右曲りに設定して抜ける
-        return TRACE_L_ROUND_MIDDLE;
-    }
-		
+    //if (sensorPattern == BIT_000010) {
+        ////左センサーなので、左曲りに設定して抜ける
+        //return TRACE_R_ROUND_MIDDLE;
+    //} else if (sensorPattern == BIT_000110) {
+        ////左センサーなので、左曲りに設定して抜ける
+        //return TRACE_R_ROUND_SOFT;
+    //} else if (sensorPattern == BIT_000100) {
+        ////中央センサーなので、直進に設定して抜ける
+        //return TRACE_STRAIGHT;
+    //} else if (sensorPattern == BIT_001110) {
+        ////左センサーなので、左曲りに設定して抜ける
+        //return TRACE_R_ROUND_SOFT;
+    //} else if (sensorPattern == BIT_001100) {
+        ////中央センサーなので、直進に設定して抜ける
+        //return TRACE_STRAIGHT;
+    //} else if (sensorPattern == BIT_011100) {
+        ////中央センサーなので、直進に設定して抜ける
+        //return TRACE_STRAIGHT;
+    //} else if (sensorPattern == BIT_001000) {
+        ////中央センサーなので、直進に設定して抜ける
+        //return TRACE_STRAIGHT;
+    //} else if (sensorPattern == BIT_011000) {
+        ////右センサーなので、右曲りに設定して抜ける
+        //return TRACE_L_ROUND_SOFT;
+    //} else if (sensorPattern == BIT_010000) {
+        ////右センサーなので、右曲りに設定して抜ける
+        //return TRACE_L_ROUND_MIDDLE;
+    //}
+	if ((sensorPattern == BIT_000010) ||
+		(sensorPattern == BIT_000110) ||
+		(sensorPattern == BIT_000100) ||
+		(sensorPattern == BIT_001110) ||
+		(sensorPattern == BIT_001100) ||
+		(sensorPattern == BIT_011100) ||
+		(sensorPattern == BIT_001000) ||
+		(sensorPattern == BIT_011000) ||
+		(sensorPattern == BIT_010000)) {
+			return sensorPattern;
+	}
+	
 	LED_on(3);
 	//センサーを中央に戻すため遅い旋回を実行
 	LeftTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
@@ -233,12 +260,14 @@ int executeRightTurn(void){
 		sensorPattern = getSensorPattern();
 		if (sensorPattern == BIT_001000 || sensorPattern == BIT_001100 || sensorPattern == BIT_000100) {
 			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
-			return TRACE_STRAIGHT;
+			//return TRACE_STRAIGHT;
+			return BIT_000000;
 		} else if ( sensorPattern == BIT_000110 || sensorPattern == BIT_000010 ||
 					sensorPattern == BIT_000011 || sensorPattern == BIT_000001 ) {
 			//既に逆側まで旋回していたら（想定よりも早く解除できてしまった場合）
 	        //左センサーなので、左曲りに設定して抜ける
-	        return TRACE_R_ROUND_MIDDLE;
+	        //return TRACE_R_ROUND_MIDDLE;
+			return BIT_000010;
 		}
 	}
 		
@@ -247,14 +276,14 @@ int executeRightTurn(void){
 	RightTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
 	while(1) {
 		//逆旋回動作を抜けるための条件を判定
-		getSensors();
 		sensorPattern = getSensorPattern();
 		if (sensorPattern == BIT_001000 || sensorPattern == BIT_001100 || sensorPattern == BIT_000100) {
 			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
-			break;
+			return BIT_000000;
 		}
 	}
-	return TRACE_STRAIGHT;
+	//return TRACE_STRAIGHT;
+	return BIT_000000;
 }
 
 /************************************************************************/

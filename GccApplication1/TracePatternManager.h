@@ -51,5 +51,6 @@ void initSensorHistory(void);
 void getSensors(void);
 int getSensorPattern(void);
 int getActionWithHistory(void);
+void setSensorHistory(int actionPattern);
 
 #endif /* TRACEPATTERNMANAGER_H_ */
