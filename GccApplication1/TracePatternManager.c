@@ -15,7 +15,7 @@ void initActionTable() {
 	ActionTable[0]  = TRACE_STRAIGHT;		/* 00:BIT_000000 */
 	ActionTable[1]  = TRACE_R_ROUND_TIGHT;	/* 01:BIT_000001 */
 	ActionTable[2]  = TRACE_R_ROUND_MIDDLE;	/* 02:BIT_000010 */
-	ActionTable[3]  = TRACE_R_TURN;			/* 03:BIT_000011 */
+	ActionTable[3]  = TRACE_R_ROUND_TIGHT;	/* 03:BIT_000011 */	// '17.11.07 発送前は　TRACE_R_TURN
 	ActionTable[4]  = TRACE_R_ROUND_SOFT;	/* 04:BIT_000100 */
 	ActionTable[5]  = TRACE_R_TURN;			/* 05:BIT_000101 */
 	ActionTable[6]  = TRACE_R_ROUND_SOFT;	/* 06:BIT_000110 */
@@ -60,7 +60,7 @@ void initActionTable() {
 	ActionTable[45] = TRACE_UNDEFINED;		/* 45:BIT_101101 */
 	ActionTable[46] = TRACE_UNDEFINED;		/* 46:BIT_101110 */
 	ActionTable[47] = TRACE_UNDEFINED;		/* 47:BIT_101111 */
-	ActionTable[48] = TRACE_L_TURN;			/* 48:BIT_110000 */
+	ActionTable[48] = TRACE_L_ROUND_TIGHT;	/* 48:BIT_110000 */	// '17.11.07 発送前は　TRACE_L_TURN
 	ActionTable[49] = TRACE_UNDEFINED;		/* 49:BIT_110001 */
 	ActionTable[50] = TRACE_UNDEFINED;		/* 50:BIT_110010 */
 	ActionTable[51] = TRACE_UNDEFINED;		/* 51:BIT_110011 */
