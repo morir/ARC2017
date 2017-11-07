@@ -65,6 +65,7 @@
         <avrgcc.compiler.symbols.DefSymbols>
           <ListValues>
             <Value>NDEBUG</Value>
+            <Value>F_CPU=16000000L</Value>
           </ListValues>
         </avrgcc.compiler.symbols.DefSymbols>
         <avrgcc.compiler.directories.IncludePaths>
@@ -106,6 +107,7 @@
         <avrgcc.compiler.symbols.DefSymbols>
           <ListValues>
             <Value>DEBUG</Value>
+            <Value>F_CPU=16000000L</Value>
           </ListValues>
         </avrgcc.compiler.symbols.DefSymbols>
         <avrgcc.compiler.directories.IncludePaths>
@@ -144,7 +146,19 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ArmActionManager.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ArmActionManager.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="AvrTimer.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="DebugLog.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="AvrTimer.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="include\dynamixel.h">
@@ -160,6 +174,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="MotorManager.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="MovingDistance.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="MovingDistance.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="PID.c">
@@ -181,6 +201,24 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="SerialManager.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="TracePatternManager.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="TracePatternManager.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="TraceManager.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="TraceManager.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="TurnManager.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="TurnManager.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>

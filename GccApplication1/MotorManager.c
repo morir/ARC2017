@@ -7,13 +7,11 @@
 #include "MotorManager.h"
 #include "math.h"
 
+#include "AvrTimer.h"
 #include "DebugLog.h"
 
 #define DBG 1
 //#define _MOTOR_OFF_
-
-// Speed settings
-#define MAX_SPEED (460)
 
 #define HIGH_RATE (0.90)
 #define SOFT_ROUND_RATE (0.80)
@@ -130,67 +128,23 @@ void Execute(int type) {
 			LOG_INFO("TRACE_SLOW_STRAIGHT\r\n");
 			StraightLowMove();
 			break;
+		case TRACE_L_TRESURE_FIND:
+		    LOG_INFO("Left Turn\r\n");
+		    LeftTresureFindMove();
+		    break;
+		case TRACE_R_TRESURE_FIND:
+		    LOG_INFO("Right Turn\r\n");
+		    RightTresureFindMove();
+		    break;
         default:
             LOG_INFO("Unknown type[%d]\r\n", type);
             break;
     }
 }
 
-void setParamMoveAction(int right, int left) {
-	int correctionVal = 0;
-    MotorControl( RIGHT_MOTOR, right );
-    MotorControl( LEFT_MOTOR, left + correctionVal );
-    LOG_DEBUG("RIGHT_MORTOR:%d  LEFT_MORTOR:%d \r\n",right, left);
-}
-
 void StopMove(void) {
     MotorControl( RIGHT_MOTOR, 1024 );
     MotorControl( LEFT_MOTOR, 0 );
-}
-
-void StraightMoveRightShift(void) {
-    MotorControl( RIGHT_MOTOR, 1473 );//280 P_CCW_SPEED_TURN    1532
-    MotorControl( LEFT_MOTOR, 500 );//300 P_CW_SPEED_NOMAL    609
-}
-
-void StraightMoveLeftShift(void) {
-    MotorControl( RIGHT_MOTOR, 1523 );//300 P_CCW_SPEED_NOMAL   1632
-    MotorControl( LEFT_MOTOR, 450 );//280 P_CW_SPEED_TURN     509
-}
-
-void StraightMoveRightShift2(void) {
-    MotorControl( RIGHT_MOTOR, 1423 );//250 P_CCW_SPEED_TURN_2 1432
-    MotorControl( LEFT_MOTOR, 500 );//300 P_CW_SPEED_NOMAL    609
-}
-
-void StraightMoveLeftShift2(void) {
-    MotorControl( RIGHT_MOTOR, 1523 ); //300 P_CCW_SPEED_NOMAL 1632
-    MotorControl( LEFT_MOTOR, 400 ); //250 P_CW_SPEED_TURN_2 409
-}
-
-void TurnMoveRight(void) {
-    MotorControl( RIGHT_MOTOR, 400 );//250 P_CW_SPEED_TURN 509
-    MotorControl( LEFT_MOTOR, 400 );//250 P_CW_SPEED_TURN 509
-}
-
-void TurnMoveLeft(void) {
-    MotorControl( RIGHT_MOTOR, 1424 );//250 P_CCW_SPEED_TURN 1532
-    MotorControl( LEFT_MOTOR, 1424 );//250 P_CCW_SPEED_TURN 1532
-}
-
-void TurnLowMoveRight(void) {
-    MotorControl( RIGHT_MOTOR, 300 );//200 P_CW_SPEED_TURN_2   409
-    MotorControl( LEFT_MOTOR, 300 );//200 P_CW_SPEED_TURN_2 409
-}
-
-void TurnLowMoveLeft(void) {
-    MotorControl( RIGHT_MOTOR, 1324 );//200 P_CCW_SPEED_TURN_2 1432
-    MotorControl( LEFT_MOTOR, 1324 );//200 P_CCW_SPEED_TURN_2 1432
-}
-
-void BackMove(void) {
-    MotorControl( RIGHT_MOTOR, 250 ); //250 P_CW_SPEED_TURN 509
-    MotorControl( LEFT_MOTOR, 1273 ); //R250 P_CCW_SPEED_TURN 1532
 }
 
 void Move(int leftSpeed, int rightSpeed)
@@ -215,12 +169,19 @@ void StraightLowMove(void) {
 	Move(leftSpeed, rightSpeed);
 }
 
-void BackLowMove(void) {
+void StraightLowMove2(void) {
+	int leftSpeed = 50;
+	int rightSpeed = (1024 + 50);
+
+	Move(leftSpeed, rightSpeed);
+}
+
+void BackLowMove(void)
+{
 	int leftSpeed = (1024 + SLOW_BACK_VAL);
 	int rightSpeed = SLOW_BACK_VAL;
 
-	MotorControl( LEFT_MOTOR, leftSpeed);
-	MotorControl( RIGHT_MOTOR, rightSpeed );
+	Move(leftSpeed, rightSpeed);
 }
 
 void LeftStraightMove(void) {
@@ -241,8 +202,7 @@ void RightStraightMove(void) {
 
 void LeftSoftRoundMove(void) {
 	int execBaseSpeed = (BaseSpeed < MAX_SPEED) ? BaseSpeed : MAX_SPEED;
-	float rate = (execBaseSpeed < 300) ? SOFT_ROUND_RATE : 0.95;
-	int leftSpeed = (int)((float)execBaseSpeed * rate);
+	int leftSpeed = (execBaseSpeed - 15) ;
 	int rightSpeed = (1024 + execBaseSpeed);
 
 	Move(leftSpeed, rightSpeed);
@@ -250,8 +210,7 @@ void LeftSoftRoundMove(void) {
 
 void LeftMiddleRoundMove(void) {
 	int execBaseSpeed = (BaseSpeed < MAX_SPEED) ? BaseSpeed : MAX_SPEED;
-	float rate = (execBaseSpeed < 300) ? MIDDLE_ROUND_RATE : 0.95;
-	int leftSpeed = (int)((float)execBaseSpeed * rate);
+	int leftSpeed = (execBaseSpeed - 30) ;
 	int rightSpeed = (1024 + execBaseSpeed);
 
 	Move(leftSpeed, rightSpeed);
@@ -259,8 +218,7 @@ void LeftMiddleRoundMove(void) {
 
 void LeftTightRoundMove(void) {
 	int execBaseSpeed = (BaseSpeed < MAX_SPEED) ? BaseSpeed : MAX_SPEED;
-	float rate = (execBaseSpeed < 300) ? TIGHT_ROUND_RATE : 0.95;
-	int leftSpeed = (int)((float)execBaseSpeed * rate);
+	int leftSpeed = (execBaseSpeed - 60) ;
 	int rightSpeed = (1024 + execBaseSpeed);
 
 	Move(leftSpeed, rightSpeed);
@@ -268,27 +226,24 @@ void LeftTightRoundMove(void) {
 
 void RightSoftRoundMove(void) {
 	int execBaseSpeed = (BaseSpeed < MAX_SPEED) ? BaseSpeed : MAX_SPEED;
-	float rate = (execBaseSpeed < 300) ? SOFT_ROUND_RATE : 0.95;
 	int leftSpeed = execBaseSpeed;
-	int rightSpeed = (1024 + (int)((float)execBaseSpeed * rate));
+	int rightSpeed = (1024 + (execBaseSpeed - 15));
 
 	Move(leftSpeed, rightSpeed);
 }
 
 void RightMiddleRoundMove(void) {
 	int execBaseSpeed = (BaseSpeed < MAX_SPEED) ? BaseSpeed : MAX_SPEED;
-	float rate = (execBaseSpeed < 300) ? MIDDLE_ROUND_RATE : 0.95;
 	int leftSpeed = execBaseSpeed;
-	int rightSpeed = (1024 + (int)((float)execBaseSpeed * rate));
+	int rightSpeed = (1024 + (execBaseSpeed - 30));
 
 	Move(leftSpeed, rightSpeed);
 }
 
 void RightTightRoundMove(void) {
 	int execBaseSpeed = (BaseSpeed < MAX_SPEED) ? BaseSpeed : MAX_SPEED;
-	float rate = (execBaseSpeed < 300) ? TIGHT_ROUND_RATE : 0.95;
 	int leftSpeed = execBaseSpeed;
-	int rightSpeed = (1024 + (int)((float)execBaseSpeed * rate));
+	int rightSpeed = (1024 + (execBaseSpeed - 60));
 
 	Move(leftSpeed, rightSpeed);
 }
@@ -309,54 +264,6 @@ void RightTurnMove(void) {
 	Move(leftSpeed, rightSpeed);
 }
 
-void LeftTurnByBaseSpeedAdjust(void) {
-	int leftSpeed = TURN_SPEED_BASE;
-	int rightSpeed = TURN_SPEED_BASE;
-	int turnSpeedJudgeVal = (int)(TURN_SPEED_JUDGE_VAL / 10);
-	int baseSpeedVal = (int)((BaseSpeed)/ 10);
-	int turnBaseVal = TURN_SPEED_BASE /10;
-	int turnAdjustVal = (int)(TURN_SPEED_BASE - (((baseSpeedVal * baseSpeedVal * turnBaseVal) / (turnSpeedJudgeVal * turnSpeedJudgeVal)) * 10) );
-	LOG_DEBUG("BaseSpeed:[%d] turnAdjustVal:[%d]\r\n",BaseSpeed, turnAdjustVal);
-
-	if (turnAdjustVal > 0) {
-		leftSpeed = TURN_SPEED_BASE - turnAdjustVal;
-		rightSpeed = TURN_SPEED_BASE + turnAdjustVal;
-	} else if (turnAdjustVal < 0 ) {
-		leftSpeed = TURN_SPEED_BASE + (TURN_SPEED_BASE + turnAdjustVal);
-		rightSpeed = TURN_SPEED_BASE - (TURN_SPEED_BASE + turnAdjustVal);
-	}
-    LOG_DEBUG("leftSpeed:[%d] rightSpeed:[%d]\r\n",leftSpeed, rightSpeed);
-	
-	leftSpeed = (1024 + leftSpeed);
-	rightSpeed = (1024 + rightSpeed);
-
-	Move(leftSpeed, rightSpeed);
-}
-
-void RightTurnByBaseSpeedAdjust(void) {
-	int leftSpeed = TURN_SPEED_BASE;
-	int rightSpeed = TURN_SPEED_BASE;
-	int turnSpeedJudgeVal = (int)(TURN_SPEED_JUDGE_VAL / 10);
-	int baseSpeedVal = (int)(BaseSpeed / 10);
-	int turnBaseVal = TURN_SPEED_BASE /10;
-	int turnAdjustVal = (int)(TURN_SPEED_BASE - (((baseSpeedVal * baseSpeedVal * turnBaseVal) / (turnSpeedJudgeVal * turnSpeedJudgeVal)) * 10) );
-    LOG_DEBUG("BaseSpeed:[%d] turnAdjustVal:[%d]\r\n",BaseSpeed, turnAdjustVal);
-
-	if (turnAdjustVal > 0) {
-		leftSpeed = TURN_SPEED_BASE + turnAdjustVal;
-		rightSpeed = TURN_SPEED_BASE - turnAdjustVal;
-	} else if (turnAdjustVal < 0 ) {
-		leftSpeed = TURN_SPEED_BASE - (TURN_SPEED_BASE + turnAdjustVal);
-		rightSpeed = TURN_SPEED_BASE + (TURN_SPEED_BASE + turnAdjustVal);
-	}
-    LOG_DEBUG("leftSpeed:[%d] rightSpeed:[%d]\r\n",leftSpeed, rightSpeed);
-	
-	leftSpeed = (leftSpeed);
-	rightSpeed = (rightSpeed);
-
-	Move(leftSpeed, rightSpeed);
-}
-
 void LeftTurnSlowMove(int rate) {
 	int speed = (TURN_SPEED_BASE * rate) / 100;
 	int leftSpeed = (1024 + speed);
@@ -371,6 +278,46 @@ void RightTurnSlowMove(int rate) {
 	int rightSpeed = speed;
 
 	Move(leftSpeed, rightSpeed);
+}
+
+/************************************************************************/
+/* 宝物検索用の左前進を実行 */
+/************************************************************************/
+void LeftTresureFindMove(void) {
+    int execBaseSpeed = (BaseSpeed < MAX_SPEED) ? BaseSpeed : MAX_SPEED;
+    int leftSpeed = ((execBaseSpeed * TRESURE_FIND_INSIDEMORTER_MOVE_VAL) / 100);
+    int rightSpeed = (1024 + execBaseSpeed);
+
+    Move(leftSpeed, rightSpeed);
+}
+
+/************************************************************************/
+/* 宝物検索用の右前進を実行 */
+/************************************************************************/
+void RightTresureFindMove(void) {
+    int execBaseSpeed = (BaseSpeed < MAX_SPEED) ? BaseSpeed : MAX_SPEED;
+    int leftSpeed = execBaseSpeed;
+    int rightSpeed = (1024 + (execBaseSpeed * TRESURE_FIND_INSIDEMORTER_MOVE_VAL) / 100);
+
+    Move(leftSpeed, rightSpeed);
+}
+
+/**
+ * 速度が0～入力値以下になるまで、停止動作を継続する 
+ * @param maxVal 停止判定の上限値
+ */
+void stopMoveLessThanVal(int maxVal){
+	StopMove();//停止を実行
+	int judgeSpeed = 0;
+	while(1) {
+		judgeSpeed = GetCurrentSpeedR();//モーターの速度を取得
+		if( (judgeSpeed >= 0 && judgeSpeed <= maxVal) ||
+		  (judgeSpeed >= 1024 && judgeSpeed <= (1024 + maxVal)) ) {
+			//速度がmaxVal以下ならstop()抜ける
+			break;
+		}
+		_delay_ms(1);
+	}
 }
 
 void PrintErrorCode() {
@@ -435,8 +382,9 @@ void PrintCommStatus(int CommStatus) {
  * @return 現在の速度(右モータ)
  * @detail 上位バイト3bit、下位8bitから現在の速度(右モータ)を取得する。
  *         パケット通信失敗時、前回の速度を返す。
- *         前進:1024～2047(CCW)
- *         後進:0000～1023(CW)
+ *         停止:0,1024
+ *         前進:1025～2047(CCW)
+ *         後進:0001～1023(CW)
  */
 int GetCurrentSpeedR(void) {
 	int readValueHigh = 0;	// 上位バイト
@@ -468,8 +416,9 @@ int GetCurrentSpeedR(void) {
  * @return 現在の速度(左モータ)
  * @detail 上位バイト3bit、下位8bitから現在の速度(左モータ)を取得する。
  *         パケット通信失敗時、前回の速度を返す。
- *         前進:0000～1023(CW)
- *         後進:1024～2047(CCW)
+ *         停止:0,1024
+ *         前進:0001～1023(CW)
+ *         後進:1025～2047(CCW)
  */
 int GetCurrentSpeedL(void) {
 	int readValueHigh = 0;	// 上位バイト
@@ -493,6 +442,57 @@ int GetCurrentSpeedL(void) {
 	LOG_DEBUG("GetCurrentSpeedL() is %d\n", speed);
 
 	return speed;
+}
+
+/**
+ * 現在の符号付の速度(右モータ)を取得。
+ * @brief 現在の符号付の速度(右モータ)を取得。
+ * @return 符号付の現在の速度(右モータ)
+ * @detail 現在の符号付の速度(右モータ)を取得する。
+ *         停止:0,1024
+ *         前進:1025～2047(CCW) ⇒ 1～1023
+ *         後進:0001～1023(CW)  ⇒ -1023～-1 
+ */
+int GetCurrentSignedSpeedR(void) {
+	int signed_speed = GetCurrentSpeedR();
+	
+	if(signed_speed == 0 || signed_speed == 1024)
+	{
+		signed_speed = 0;
+	}
+	else if(1025 <= signed_speed && signed_speed <= 2047) {
+		signed_speed = signed_speed - 1024;
+	}
+	else {
+		signed_speed = signed_speed - 1024;
+	}
+	
+	return signed_speed;
+}
+
+/**
+ * 現在の符号付の速度(左モータ)を取得。
+ * @brief 現在の符号付の速度(左モータ)を取得。
+ * @return 符号付の現在の速度(左モータ)
+ * @detail 現在の符号付の速度(左モータ)を取得する。
+ *         停止:0,1024
+ *         前進:0001～1023(CW)  ⇒ 変換しない
+ *         後進:1025～2047(CCW) ⇒ -1023～-1
+ */
+int GetCurrentSignedSpeedL(void) {
+	int signed_speed = GetCurrentSpeedL();
+	if(signed_speed == 0 || signed_speed == 1024)
+	{
+		signed_speed = 0;
+	}
+	else if(1 <= signed_speed && signed_speed <= 1023) {
+		//変換しない
+	}
+	else {
+		signed_speed = signed_speed - 1024;
+	}
+	
+	return signed_speed;
 }
 
 /**

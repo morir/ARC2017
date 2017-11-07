@@ -4,7 +4,6 @@
 //##                                           2009.11.10 ##
 //##########################################################
 
-#define F_CPU   16000000L   //16MHz
 #include <stdio.h>
 #include <math.h>
 #include <util/delay.h>
@@ -13,8 +12,11 @@
 #include "SensorManager.h"
 #include "MotorManager.h"
 #include "DebugLog.h"
-
-#include "pid.h"
+#include "AvrTimer.h"
+#include "ArmActionManager.h"
+#include "TraceManager.h"
+#include "TracePatternManager.h"
+#include "TurnManager.h"
 
 // ------------------ Defined ------------------
 // Line Sensor
@@ -22,56 +24,25 @@
 #define LINE_STATE_WHITE    1//センサー値でラインが黒判定
 
 #define _LED_ON_
-//#define _MODE_SKIP_			// ショートカットモード
-
-#define DELAY_MAX_TIME      (100)//delay時間の最大値(ミリ秒)
-#define STOP_JUDGE_MAX_LIMIT	(10)//停止判定の上限値
-#define SLOW_TURN_RATE_BY_BASE	(50)//ベースの20%の速さ
 
 // ------------------ Method Definition ------------------
 void executeTraceProcess(void);
-void traceForwardArea_01(void);
-void traceForwardArea_02(void);
-void traceForwardArea_03(void);
-void traceForwardArea_04(void);
-void traceForwardArea_05(void);
-void traceForwardArea_06(void);
-void traceTurnAroundPoint(void);
-void traceBackwardArea_01(void);
-void traceBackwardArea_02(void);
-void traceBackwardArea_03(void);
-void traceBackwardArea_04(void);
-void traceBackwardArea_05(void);
-void traceBackwardArea_06(void);
+void executeHunt1And2TraceProcess(void);
+void executeShortTraceProcess(void);
+void executeFinalRoundTraceProcess(void);
 
-int isRightRound(void);
-int isLeftRound(void);
-int isStraightDetected(int sensor);
-int isLeftInsideDetected(int sensor);
-int isRightInsideDetected(int sensor);
-int isDetectedNothing(int sensor);
-int doesNeedToResetSpeed(void);
-int getSensorPattern(void);
-void initPETbottlesMotor(void);
-void placePETbottles(void);
-void stopMoveLessThanVal(int val);
+void treasureHunt_01(void);
+void treasureHunt_02(void);
+void treasureHunt_03(void);
 
-void getSensors(void);
+void initCargoBedMotor(void);
+void dumpTreasures(void);
 
-int executeLeftTurn(void);
-int executeRightTurn(void);
-void executeRound(void);
-int needChangedSmooth(void);
-int getSmoothAction(void);
-
-int initLeftTurnAction(int maxVal);
-int initRightTurnAction(int maxVal);
-void adjustTurnPosition(void);
-void executeDelay(void);
 void executeFinalAction(void);
 
 void initEmergencyStop(void);
-void executeSkipAction(void);
+
+void sensorDebug(void);
 
 void setLED(void);
 void LED_on(int i);
@@ -82,109 +53,9 @@ void LED_off(int i);
 // Serial Message Buffer
 int serCmd[SERIAL_BUFFER_SIZE] = {0};
 
-// Goal Judgment counter
-int goalCounter = 0;
-
-// Move State
-//int mCurrentAction = MOVE_SELECTION_TYPE_STRAIGHT;
-//
-//// Next Move State
-//int mBeforeMoveState = MOVE_SELECTION_TYPE_STRAIGHT;
-
-// IR Sensor 
-unsigned int IR[ADC_PORT_6 + 1] = {0,0,0,0,0,0,0};
-
-// IRの状態(BITパターン)
-int IR_BitPattern = 0;
-
-int mMoveCount = 1;
-
-// 前々回のトレース動作
-int prePrevTraceAction = TRACE_STRAIGHT;
-// 前回のトレース動作
-int previousTraceAction = TRACE_STRAIGHT;
-// 今回のトレース動作
-int currentTraceAction = TRACE_STRAIGHT;
-
-// PID Param
-float pGain = 200;   //Proportional Gain
-float iGain =  0.2;  //Integral Gain
-float dGain =  120;  //Differential Gain
-int delay = 10;
-int32_t eInteg = 0;  //Integral accumulator
-int32_t ePrev  =0;   //Previous Error
-
-int PID_ctlr = 0;	//!< PID制御用変数。中心のセンサからの距離を入力することで、直進時のブレを抑制する制御を行う。
+int isSearchingLeft = 0;
 
 // ------------------ Method ------------------
-
-// ------------------ Table ------------------
-int ActionTable[] = {
-	/* 00:BIT_000000 */	TRACE_STRAIGHT,
-	/* 01:BIT_000001 */	TRACE_R_ROUND_TIGHT,
-	/* 02:BIT_000010 */	TRACE_R_ROUND_MIDDLE,
-	/* 03:BIT_000011 */	TRACE_R_TURN,
-	/* 04:BIT_000100 */	TRACE_R_ROUND_SOFT,
-	/* 05:BIT_000101 */	TRACE_R_TURN,
-	/* 06:BIT_000110 */	TRACE_R_ROUND_MIDDLE,
-	/* 07:BIT_000111 */	TRACE_R_TURN,
-	/* 08:BIT_001000 */	TRACE_L_ROUND_SOFT,
-	/* 09:BIT_001001 */	TRACE_R_ROUND_MIDDLE,
-	/* 10:BIT_001010 */	TRACE_R_ROUND_SOFT,
-	/* 11:BIT_001011 */	TRACE_R_TURN,
-	/* 12:BIT_001100 */	TRACE_STRAIGHT,
-	/* 13:BIT_001101 */	TRACE_R_TURN,
-	/* 14:BIT_001110 */	TRACE_R_ROUND_MIDDLE,
-	/* 15:BIT_001111 */	TRACE_R_TURN,
-	/* 16:BIT_010000 */	TRACE_L_ROUND_MIDDLE,
-	/* 17:BIT_010001 */	TRACE_R_ROUND_TIGHT,
-	/* 18:BIT_010010 */	TRACE_STRAIGHT,
-	/* 19:BIT_010011 */	TRACE_R_TURN,
-	/* 20:BIT_010100 */	TRACE_L_ROUND_SOFT,
-	/* 21:BIT_010101 */	TRACE_R_ROUND_MIDDLE,
-	/* 22:BIT_010110 */	TRACE_R_ROUND_TIGHT,
-	/* 23:BIT_010111 */	TRACE_R_TURN,
-	/* 24:BIT_011000 */	TRACE_L_ROUND_MIDDLE,
-	/* 25:BIT_011001 */	TRACE_STRAIGHT,
-	/* 26:BIT_011010 */	TRACE_L_ROUND_TIGHT,
-	/* 27:BIT_011011 */	TRACE_R_ROUND_MIDDLE,
-	/* 28:BIT_011100 */	TRACE_L_ROUND_MIDDLE,
-	/* 29:BIT_011101 */	TRACE_R_ROUND_MIDDLE,
-	/* 30:BIT_011110 */	TRACE_STRAIGHT,
-	/* 31:BIT_011111 */	TRACE_R_TURN,
-	/* 32:BIT_100000 */	TRACE_L_ROUND_TIGHT,
-	/* 33:BIT_100001 */	TRACE_STRAIGHT,
-	/* 34:BIT_100010 */	TRACE_L_ROUND_TIGHT,
-	/* 35:BIT_100011 */	TRACE_R_ROUND_MIDDLE,
-	/* 36:BIT_100100 */	TRACE_L_ROUND_MIDDLE,
-	/* 37:BIT_100101 */	TRACE_R_ROUND_MIDDLE,
-	/* 38:BIT_100110 */	TRACE_STRAIGHT,
-	/* 39:BIT_100111 */	TRACE_R_ROUND_TIGHT,
-	/* 40:BIT_101000 */	TRACE_L_TURN,
-	/* 41:BIT_101001 */	TRACE_L_ROUND_MIDDLE,
-	/* 42:BIT_101010 */	TRACE_L_ROUND_MIDDLE,
-	/* 43:BIT_101011 */	TRACE_R_ROUND_MIDDLE,
-	/* 44:BIT_101100 */	TRACE_L_TURN,
-	/* 45:BIT_101101 */	TRACE_STRAIGHT,
-	/* 46:BIT_101110 */	TRACE_L_ROUND_MIDDLE,
-	/* 47:BIT_101111 */	TRACE_R_TURN,
-	/* 48:BIT_110000 */	TRACE_L_TURN,
-	/* 49:BIT_110001 */	TRACE_L_ROUND_MIDDLE,
-	/* 50:BIT_110010 */	TRACE_L_TURN,
-	/* 51:BIT_110011 */	TRACE_STRAIGHT,
-	/* 52:BIT_110100 */	TRACE_L_TURN,
-	/* 53:BIT_110101 */	TRACE_L_ROUND_MIDDLE,
-	/* 54:BIT_110110 */	TRACE_L_ROUND_MIDDLE,
-	/* 55:BIT_110111 */	TRACE_R_ROUND_MIDDLE,
-	/* 56:BIT_111000 */	TRACE_L_TURN,
-	/* 57:BIT_111001 */	TRACE_L_ROUND_TIGHT,
-	/* 58:BIT_111010 */	TRACE_L_TURN,
-	/* 59:BIT_111011 */	TRACE_L_ROUND_MIDDLE,
-	/* 60:BIT_111100 */	TRACE_L_TURN,
-	/* 61:BIT_111101 */	TRACE_L_TURN,
-	/* 62:BIT_111110 */	TRACE_L_TURN,
-	/* 63:BIT_111111 */	TRACE_SLOW_STRAIGHT
-};
 
 /**
 * エントリーポイント
@@ -193,27 +64,60 @@ int ActionTable[] = {
 * @return 1：メイン処理の終了
 */
 int main(void) {
-    
+
     initEmergencyStop();
     setLED();
     initIRSensor();
+	initTraceAction();
+	initSensorHistory();
+	initActionTable();
     MotorInit();
     initSerial();
-	initPETbottlesMotor();
+	//sensorDebug();//センサー値の確認だけをしたい場合、コメントアウトを解除
+	initCargoBedMotor();
+	initDumpMotor();
+
+#if(0)
+	// 現在のモータ角度を表示(Debug用)
+	Debug_AllMotorCurrentAngle();
+
+	LOG_DEBUG("Call initDumpMotor() %s\r\n", "");
+ 	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+	initDumpMotor();
+	
+	
+//	LOG_DEBUG("Call FindFormation() %s\r\n", "");
+//	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+//	FindFormation();
+
+	LOG_DEBUG("Call ArmOpenFormation() %s\r\n", "");
+	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+	ArmOpenFormation();
+	
+	LOG_DEBUG("Call CatchAndReleaseFormation() %s\r\n", ""); 
+	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+	CatchAndReleaseFormation();
+
+#else
+	// 現在のモータ角度を表示(Debug用)
+//	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
+//	Debug_AllMotorCurrentAngle();
+	
+	// 検出し、載せるまでテスト
+//	treasureHunt_01();
+#endif
+
 	getSensorPattern();
-
-	// ロボ動作開始
-
-    // ショートカットモードを作る場合はここに入れる。
-#ifdef _MODE_SKIP_
-	executeSkipAction();
-#endif /* _MODE_SKIP_ */
-
+		
 	// トレース動作開始
-	executeTraceProcess();
+	//executeTraceProcess();
+	//executeShortTraceProcess();
+	executeHunt1And2TraceProcess();
+    //executeFinalRoundTraceProcess();
 
     // ゴール判定後の動作実質ここから開始？
 	executeFinalAction();
+	StopMove();
 }
 
 /**
@@ -223,388 +127,267 @@ int main(void) {
 * @detail ゴール判定条件を満たすまでライントレース動作を行う。
 */
 void executeTraceProcess(void) {
-	static int sensorPattern = BIT_000000;
-    static int counter = 0;
-	
-#ifdef _MODE_SKIP_
-	//ショートカットモードの場合は、初期動作不要
-#else
+	traceForwardArea_01();
+	traceForwardArea_02();
+	traceForwardArea_03();
+	traceForwardArea_04();
+	traceForwardArea_05();
+	treasureHunt_01();
+	traceBackwardArea_01();
+	traceBackwardArea_02();
+	traceBackwardArea_03();
+	traceBackwardArea_04();
+	treasureHunt_02();
+	traceBackwardArea_06();
+	traceBackwardArea_07();
+	traceBackwardArea_08();
+	traceBackwardArea_09();
+	traceBackwardArea_10();
+	traceBackwardArea_11();
+	traceBackwardArea_12();
+	traceBackwardArea_13();
+	treasureHunt_03();
+	traceBackwardArea_14();
+	traceBackwardArea_15();
+	traceBackwardArea_16();
+	traceBackwardArea_17();
+	traceBackwardArea_18();
+}
+
+/**
+* 宝物1と宝物2を取るライントレース動作
+* @brief ライントレース動作
+* @return なし
+* @detail ゴール判定条件を満たすまでライントレース動作を行う。
+*/
+void executeHunt1And2TraceProcess(void) {
+	traceForwardArea_01();
+	traceForwardArea_02();
+	traceForwardArea_03();
+	traceForwardArea_04();
+	traceForwardArea_05();
+	treasureHunt_01();
+	traceBackwardArea_01();
+	traceBackwardArea_02();
+	traceBackwardArea_03();
+	traceBackwardArea_04();
+	treasureHunt_02();
+	traceBackLowMoveArea_01();
+	shortTraceToRightTurn();
+	shortTraceToRightTurn();
+	traceBackwardArea_18();
+}
+
+/**
+* 宝物1個の場合のライントレース動作
+* @brief 宝物1個の場合のライントレース動作
+* @return なし
+* @detail ゴール判定条件を満たすまでライントレース動作を行う。
+*/
+void executeShortTraceProcess(void) {
 	//初期動作（少しだけ直進）
 	StraightMove();
 	_delay_ms(100);	// 10ms 間隔を空ける
-#endif /* _MODE_SKIP_ */
 
-	while (1) {
+	shortTraceToLeftTurn();
+	shortTraceToLeftTurn();
+	shortTraceToLeftTurn();
+	shortTraceToRightTurn();
+	shortTraceToRightTurn();
+	treasureHunt_01();
+	shortTraceToLeftTurn();
+	shortTraceToLeftTurn();
+	shortTraceToRightTurn();
+	shortTraceToRightTurn();
+	shortTraceToRightTurn();
+	traceBackwardArea_18();
+}
 
-		// センサ値のビットパターンを取得する。
-		sensorPattern = getSensorPattern();
+/************************************************************************/
+/* 決勝ラウンド用のライントレース */
+/************************************************************************/
+void executeFinalRoundTraceProcess(void) {
+	traceForwardArea_01();
+	traceForwardArea_02();
+	traceForwardArea_03();
+	traceForwardArea_04();
+	traceForwardArea_05();
+	treasureHunt_01();//宝物白
+	traceBackwardArea_01();
+	traceBackwardArea_02();
+	traceBackwardArea_03();
+	traceBackwardArea_04();
+	treasureHunt_02();//宝物銀１個目（予選と同じ）
+	traceBackwardArea_06();
+	treasureHunt_02();//宝物銀２個目（決勝で追加）
+	traceBackwardArea_07();
+	traceBackwardArea_08();    
+	traceBackwardArea_09();
+	traceBackwardArea_10();
+	traceBackwardArea_11();
+	treasureHunt_02();//宝物金１個目（決勝で追加）
+	traceBackwardArea_12();
+	treasureHunt_02();//宝物金２個目（決勝で追加）
+	treasureHunt_03();//宝物金３個目（予選と同じ）
+	traceBackwardArea_14();
+	traceBackwardArea_15();
+	traceBackwardArea_16();
+	traceBackwardArea_17();
+	traceBackwardArea_18();
+}
 
-		// センサ値のパターンが最終動作であればループを抜ける。
-		if (sensorPattern == TRACE_FINALACTION) {
-			LED_on(1);
-			LED_on(2);
-			LED_on(3);
-			LED_on(4);
-			LED_on(5);
-			break;
-		}
-
-		// 前回の動作とセンサ値のパターンの組み合わせから今回の動作を仮決定する。
-		currentTraceAction = ActionTable[(sensorPattern / 2)];
-//		LOG_INFO("(sensorPattern / 2) %3d\r\n", (sensorPattern / 2));
-//		LOG_INFO("previousTraceAction %3d: sensorPattern %3d: currentTraceAction: %3d \r\n",
-//		         previousTraceAction, sensorPattern, currentTraceAction);
-
-		// LEDを設定
-		setLED();
-
-		if(currentTraceAction == TRACE_L_TURN)
-		{
-			//旋回実行
-			currentTraceAction = executeLeftTurn();
-			if (currentTraceAction == TRACE_SLOW_STRAIGHT) {
-				StraightMove();
-				executeDelay();
-				sensorPattern = getSensorPattern();
-				if(sensorPattern != BIT_000000 ) {
-					currentTraceAction = TRACE_STRAIGHT;
-				}
-			}
-
-			BaseSpeed = BASE_SPEED_INIT_VAL;
-			//sensorPattern = getSensorPattern();
-			//if(sensorPattern == BIT_111110 ) {
-				//StraightMove();
-				//LED_on(1);
-				//LED_on(2);
-				//LED_on(3);
-				//LED_on(4);
-				//LED_on(5);
-				//_delay_ms(250);	// 200ms 間隔を空ける
-			//}
-		}
-		else if (currentTraceAction == TRACE_R_TURN)
-		{
-			//旋回実行
-			currentTraceAction = executeRightTurn();
-			if (currentTraceAction == TRACE_SLOW_STRAIGHT) {
-				StraightMove();
-				executeDelay();
-				sensorPattern = getSensorPattern();
-				if(sensorPattern != BIT_000000 ) {
-					currentTraceAction = TRACE_STRAIGHT;
-				}
-			}
-			BaseSpeed = BASE_SPEED_INIT_VAL;
-			sensorPattern = getSensorPattern();
-			//if(sensorPattern == BIT_111110 ) {
-				//StraightMove();
-				//LED_on(1);
-				//LED_on(2);
-				//LED_on(3);
-				//LED_on(4);
-				//LED_on(5);
-				//_delay_ms(250);	// 200ms 間隔を空ける
-			//}
-		}
-		else if (isLeftRound() || isRightRound()) {
-			executeRound();
-		}
-		else if (previousTraceAction == TRACE_SLOW_STRAIGHT && sensorPattern == BIT_000000) {
-			//前回ゆっくり直進でセンサーが白だったら、ゆっくりを継続
-			currentTraceAction = TRACE_SLOW_STRAIGHT;
-		}
-			
-		if (doesNeedToResetSpeed()) {
-			BaseSpeed = BASE_SPEED_INIT_VAL;
-		}
-			
-		counter++;
-#ifdef LOG_INFO_ON
-		if ((counter % 1) == 0) {
-			BaseSpeed = BaseSpeed + 1;
-			counter = 0;
-		}
-#else
-		if ((counter % 5) == 0) {
-			BaseSpeed = BaseSpeed + 2;
-			counter = 0;
-		}
-#endif /* _MODE_SKIP_ */
-
-		Execute(currentTraceAction);
-
-		_delay_ms(1);// delayTimeの間隔を空ける
-
-		// 今回の動作を前回の動作に退避する。
-		prePrevTraceAction = previousTraceAction;
-		previousTraceAction = currentTraceAction;
+void sensorDebug(void) {
+	while(1) {
+		getSensors();
+		LOG_WARN("sensor %3d: %3d: %3d: %3d: %3d: %3d \r\n",
+		IR[LEFT_OUTSIDE], IR[LEFT_CENTER], IR[LEFT_INSIDE],
+		IR[RIGHT_INSIDE], IR[RIGHT_CENTER], IR[RIGHT_OUTSIDE]);
+		LOG_WARN("IR[L %1d%1d%1d%1d%1d%1d R]\r\n",
+		((IR[LEFT_OUTSIDE]  <= COMPARE_VALUE) ? 1 : 0),
+		((IR[LEFT_CENTER]   <= COMPARE_VALUE) ? 1 : 0),
+		((IR[LEFT_INSIDE]   <= COMPARE_VALUE) ? 1 : 0),
+		((IR[RIGHT_INSIDE]  <= COMPARE_VALUE) ? 1 : 0),
+		((IR[RIGHT_CENTER]  <= COMPARE_VALUE) ? 1 : 0),
+		((IR[RIGHT_OUTSIDE] <= COMPARE_VALUE) ? 1 : 0));
+		currentTraceAction = getActionWithHistory();
+		LOG_WARN("currentTraceAction %d\r\n", currentTraceAction);
+		_delay_ms(500);
 	}
 }
 
-/*
- * 往路エリア 1 のトレース動作
- * @return なし
- * @condition
- *   開始条件：スタートコマンドを受信する。
- *   終了条件：センサで左ターンを検出して直角旋回が完了する。
- */
- void traceForwardArea_01(void) {
-}
 
 /*
- * 往路エリア 2 のトレース動作
- * @return なし
- * @condition
- *   開始条件：なし（往路エリア 1 のトレース動作から継続）。
- *   終了条件：センサで左ターンを検出して直角旋回が完了する。
- */
- void traceForwardArea_02(void) {
-}
-
-/*
- * 往路エリア 3 のトレース動作
- * @return なし
- * @condition
- *   開始条件：なし（往路エリア 2 のトレース動作から継続）。
- *   終了条件：センサで左ターンを検出して直角旋回が完了する。
- */
- void traceForwardArea_03(void) {
-}
-
-/*
- * 往路エリア 4 のトレース動作
- * @return なし
- * @condition
- *   開始条件：なし（往路エリア 3 のトレース動作から継続）。
- *   終了条件：センサで右ターンを検出して直角旋回が完了する。
- */
- void traceForwardArea_04(void) {
-}
-
-/*
- * 往路エリア 5 のトレース動作
- * @return なし
- * @condition
- *   開始条件：なし（往路エリア 4 のトレース動作から継続）。
- *   終了条件：センサで右ターンを検出して直角旋回が完了する。
- */
- void traceForwardArea_05(void) {
-}
-
-/*
- * 往路エリア 6 のトレース動作
+ * 宝物 1 のトレース動作
  * @return なし
  * @condition
  *   開始条件：なし（往路エリア 5 のトレース動作から継続）。
- *   終了条件：宝物（白）を検出して回収が完了する。
+ *   終了条件：宝物（白）を回収、180度旋回が完了する。
  */
- void traceForwardArea_06(void) {
-}
+ void treasureHunt_01(void) {
+    //int sensorPattern = BIT_000000;
+    LOG_INFO("treasureHunt_01() %s\r\n", "1");
 
-/*
- * 折り返し点のトレース動作
- * @return なし
- * @condition
- *   開始条件：宝物（白）の回収が完了する。
- *   終了条件：折り返し動作を終了する。
- */
- void traceTurnAroundPoint(void) {
-}
+    int left = 0, center = 0, right = 0;
+    int isFirst = 0;
+    while (center <= 180) {
+	    GetAXS1SensorFireData(&left, &center, &right);
+        // 宝物検索用ライントレースを実行
+        TreasureFindingLineTrace(isFirst);
+	    isFirst++;
+    }
+    // 停止する
+    StopMove();
+    _delay_ms(500);
 
-/*
- * 復路エリア 1 のトレース動作
- * @return なし
- * @condition
- *   開始条件：なし（折り返し点のトレース動作から継続）。
- *   終了条件：センサで左ターンを検出して直角旋回が完了する。
- */
- void traceBackwardArea_01(void) {
-}
+    // 手を開く
+    ArmOpenFormation();
 
-/*
- * 復路エリア 2 のトレース動作
- * @return なし
- * @condition
- *   開始条件：なし（復路エリア 1 のトレース動作から継続）。
- *   終了条件：センサで左ターンを検出して直角旋回が完了する。
- */
- void traceBackwardArea_02(void) {
-}
-
-/*
- * 復路エリア 3 のトレース動作
- * @return なし
- * @condition
- *   開始条件：なし（復路エリア 2 のトレース動作から継続）。
- *   終了条件：センサで右ターンを検出して直角旋回が完了する。
- */
- void traceBackwardArea_03(void) {
-}
-
-/*
- * 復路エリア 4 のトレース動作
- * @return なし
- * @condition
- *   開始条件：なし（復路エリア 3 のトレース動作から継続）。
- *   終了条件：センサで右ターンを検出して直角旋回が完了する。
- */
- void traceBackwardArea_04(void) {
-}
-
-/*
- * 復路エリア 5 のトレース動作
- * @return なし
- * @condition
- *   開始条件：なし（復路エリア 4 のトレース動作から継続）。
- *   終了条件：センサで右ターンを検出して直角旋回が完了する。
- */
- void traceBackwardArea_05(void) {
-}
-
-/*
- * 復路エリア 6 のトレース動作
- * @return なし
- * @condition
- *   開始条件：なし（復路エリア 5 のトレース動作から継続）。
- *   終了条件：ゴールエリアを検出して終了動作が完了する。
- */
- void traceBackwardArea_06(void) {
-}
-
-/**
- * 右カーブ動作中か判定する 
- * @return 戻り値
- */
-int isRightRound(void) {
-	return ((previousTraceAction == TRACE_R_STRAIGHT) ||
-			(previousTraceAction == TRACE_R_ROUND_SOFT) ||
-			(previousTraceAction == TRACE_R_ROUND_MIDDLE) ||
-			(previousTraceAction == TRACE_R_ROUND_TIGHT));
-}
-
-/**
- * 左カーブ動作中か判定する 
- * @return 戻り値
- */
-int isLeftRound(void) {
-	return ((previousTraceAction == TRACE_L_STRAIGHT) ||
-			(previousTraceAction == TRACE_L_ROUND_SOFT) ||
-			(previousTraceAction == TRACE_L_ROUND_MIDDLE) ||
-			(previousTraceAction == TRACE_L_ROUND_TIGHT));
-}
-
-/**
- * 中央のセンサでラインを検出したか判定する 
- * @param sensor センサの検出パターン
- * @return 戻り値
- */
-int isStraightDetected(int sensor) {
-	return ((sensor == BIT_001000) || (sensor == BIT_001001));
-}
-
-/**
- * 左内側のセンサでラインを検出したか判定する 
- * @param sensor センサの検出パターン
- * @return 戻り値
- */
-int isLeftInsideDetected(int sensor) {
-	return ((sensor == BIT_010000) || (sensor == BIT_010001));
-}
-
-/**
- * 右内側のセンサでラインを検出したか判定する 
- * @param sensor センサの検出パターン
- * @return 戻り値
- */
-int isRightInsideDetected(int sensor) {
-	return ((sensor == BIT_000100) || (sensor == BIT_000101));
-}
-
-/**
- * センサでラインが未検出か判定する 
- * @param sensor センサの検出パターン
- * @return 戻り値
- */
-int isDetectedNothing(int sensor) {
-	return ((sensor == BIT_000000) || (sensor == BIT_000001));
-}
-
-/**
- * 速度をリセットするか判定する 
- * @return 戻り値
- */
-int doesNeedToResetSpeed(void) {
-	return ((currentTraceAction == TRACE_L_TURN) || (currentTraceAction == TRACE_R_TURN));
-}
-
-/**
-* センサー値のBitパターンを取得する。
-* @brief センサー値を参照し、対応するアクションを取得する。
-* @return 戻り値の説明
-*/
-int getSensorPattern(void) {
-    int ptn = 0;
+    // 前進or後進する（実動作に合わせて設定）。
+    StraightLowMove2();
+	/* 長すぎると、ペットボトルを倒すかも */
+	_delay_ms(350);
 	
-	// LEDを設定
-	//setLED();
-	
-	// センサー値を取得
-	getSensors();
-	
-	// 判定条件数を減らすためゴール判定用センサ値をフィルタリングする。
-	ptn = ((IR_BitPattern >> 1) << 1);
+    // 停止する
+    StopMove();
+    _delay_ms(1000);
 
-	// ゴール判定カウント（ラインセンサーが白の時カウント）
-	if (IR[GOAL_JUDGE] >= COMPARE_VALUE_GOAL && (ptn == BIT_000000)) {
-		goalCounter++;
-	} else {
-		//一度でも白なら判定解除
-		goalCounter = 0;
-	}
+    // 宝物を掴んで荷台に乗せる
+    CatchAndReleaseFormation();
 
-	if (goalCounter >= 50 &&
-		( (IR_BitPattern == BIT_000011 ) ||
-		(IR_BitPattern == BIT_000111 ) ||
-		(IR_BitPattern == BIT_001111 ) ||
-		(IR_BitPattern == BIT_011111 ) ||
-		(IR_BitPattern == BIT_111111 )
-		)){
-		ptn = TRACE_FINALACTION;
-	}
+    // ライン上からの旋回を行う
+    executeRightTurnFromOnLine();
 
-	return ptn;
+    // 停止する
+    StopMove();
+    _delay_ms(100);
 }
 
-/**
- * センサー値を取得
- * @brief センサー値を取得
+/*
+ * 宝物 2 のトレース動作
  * @return なし
- * @detail センサー値を取得し、IR[]およびIR_BitPatternを更新する。
+ * @condition
+ *   開始条件：
+ *   終了条件：宝物を発見して回収処理実行
  */
-void getSensors(void) {
-	/* センサー値を取得 */
-    ReadIRSensors(IR);
-	
-	/* IR状態をBITパターンに変換 */
-	IR_BitPattern = 0;
-	if ( IR[GOAL_JUDGE]		<= COMPARE_VALUE_GOAL )	IR_BitPattern |= BIT_GOAL_JUDGE_ON;
-	if ( IR[RIGHT_OUTSIDE]	<= COMPARE_VALUE )	IR_BitPattern |= BIT_RIGHT_OUTSIDE_ON;
-	if ( IR[RIGHT_INSIDE]	<= COMPARE_VALUE )	IR_BitPattern |= BIT_RIGHT_INSIDE_ON;
-	if ( IR[CENTER]			<= COMPARE_VALUE )	IR_BitPattern |= BIT_CENTER_ON;
-	if ( IR[LEFT_INSIDE]	<= COMPARE_VALUE )	IR_BitPattern |= BIT_LEFT_INSIDE_ON;
-	if ( IR[LEFT_OUTSIDE]	<= COMPARE_VALUE_OTHER )	IR_BitPattern |= BIT_LEFT_OUTSIDE_ON;
+ void treasureHunt_02(void) {
+    LOG_INFO("treasureHunt_02() %s\r\n", "1");
 
-    LOG_INFO("sensor %3d: %3d: %3d: %3d: %3d: %3d \r\n",
-	       IR[LEFT_OUTSIDE], IR[LEFT_INSIDE], IR[CENTER], IR[RIGHT_INSIDE], IR[RIGHT_OUTSIDE], IR[GOAL_JUDGE]);
-	LOG_DEBUG("IR[R %1d%1d%1d%1d%1d L] GOAL[%1d]\r\n",
-				((IR[LEFT_OUTSIDE]	<= COMPARE_VALUE_OTHER)?  1 : 0),
-				((IR[LEFT_INSIDE]	<= COMPARE_VALUE)?  1 : 0),
-				((IR[CENTER]		<= COMPARE_VALUE)?  1 : 0),
-				((IR[RIGHT_INSIDE]	<= COMPARE_VALUE)?  1 : 0),
-				((IR[RIGHT_OUTSIDE]	<= COMPARE_VALUE)?  1 : 0),
-				((IR[GOAL_JUDGE]	<= COMPARE_VALUE_GOAL)?  1 : 0));
+    //int left = 0, center = 0, right = 0;
+    //GetAXS1SensorFireData(&left, &center, &right);
+    //while (center <= 130) {
+        //// 宝物検索用ライントレースを実行(旋回)
+        //LeftTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
+		//_delay_ms(1);
+        //GetAXS1SensorFireData(&left, &center, &right);
+    //}
+
+    // 停止する
+    StopMove();
+    _delay_ms(500);
+ 
+    // 手を開く
+    ArmOpenFormation();
+     	
+    // 前進or後進する（実動作に合わせて設定）。
+    StraightLowMove2();
+    /* 長すぎると、ペットボトルを倒すかも */
+    _delay_ms(350);
+
+    // 停止する
+    StopMove();
+    _delay_ms(1000);
+
+    // 宝物を掴んで荷台に乗せる
+    CatchAndReleaseFormation();
+
+    // 停止する
+    StopMove();
+    _delay_ms(100);
+}
+
+/*
+ * 宝物 3 のトレース動作
+ * @return なし
+ * @condition
+ *   開始条件：
+ *   終了条件：
+ */
+ void treasureHunt_03(void) {
+    LOG_INFO("treasureHunt_03() %s\r\n", "1");
+
+    int left = 0, center = 0, right = 0;
+    int isFirst = 0;
+    while (center <= 180) {
+        GetAXS1SensorFireData(&left, &center, &right);
+        // 宝物検索用ライントレースを実行
+        TreasureFindingLineTrace(isFirst);
+        isFirst++;
+    }
+    // 停止する
+    StopMove();
+    _delay_ms(500);
+
+    // 手を開く
+    ArmOpenFormation();
 	
+	// 前進or後進する（実動作に合わせて設定）。
+	StraightLowMove2();
+	/* 長すぎると、ペットボトルを倒すかも */
+	_delay_ms(350);
+    
+    // 停止する
+    StopMove();
+    _delay_ms(1000);
+
+    // 宝物を掴んで荷台に乗せる
+    CatchAndReleaseFormation();
+
+    // ライン上からの旋回を行う
+    executeRightTurnFromOnLine();
+
+    // 停止する
+    StopMove();
+    _delay_ms(100);
 }
 
 /**
@@ -616,25 +399,29 @@ void executeFinalAction(void)
 {
 	LOG_INFO("executeFinalAction!!\r\n");
 	StopMove();
-	_delay_ms(5000);
-
-	/* 200度くらい右回りで回転 */
-	MotorControl(RIGHT_MOTOR, 75);
-	MotorControl(LEFT_MOTOR, 75);
-	_delay_ms(1200);
-	StopMove();
-	_delay_ms(10);
-
-	/* ペットボトル設置を実行 */
-	placePETbottles();
-	_delay_ms(10);
+	_delay_ms(1000);
 
 	/* ゆっくり後進 */
 	MotorControl(RIGHT_MOTOR, 40);
 	MotorControl(LEFT_MOTOR, 1063);
-	_delay_ms(500);
+	_delay_ms(500);//！要調整
 	StopMove();//停止を実行
 	_delay_ms(10);
+
+	/* 200度くらい右回りで回転 */
+	MotorControl(RIGHT_MOTOR, 75);
+	MotorControl(LEFT_MOTOR, 75);
+	_delay_ms(1200);//！要調整
+	StopMove();
+	_delay_ms(10);
+
+	// 肩を前に出す
+	MotorControlJoint(SHOULDER_MOTOR, 100, 600);
+	_delay_ms(1000);//！要調整
+
+	/* 荷台を傾けて宝物を落とす */
+	dumpTreasures();
+	_delay_ms(500);
 	
 	/* ゆっくり前進 */
 	MotorControl(RIGHT_MOTOR, 1063);
@@ -644,551 +431,25 @@ void executeFinalAction(void)
 }
 
 /************************************************************************/
-// ペットボトル用モータの初期設定
-// ペットボトル設置用モーターを少し前方に傾ける。
+// 荷台用モータの初期設定
+// 荷台用モーターを少し進行方向に傾ける。
 /************************************************************************/
-void initPETbottlesMotor(void) {
+void initCargoBedMotor(void) {
+	GetCurrentAngle(CARGO_BED_MOTOR);
 	//最大速度で、642の位置へ動かす
-	MotorControlJoint( PETBOTTOLE_MOTOR, 0, 642 );
+	MotorControlJoint( CARGO_BED_MOTOR, 0, 550 );//！要調整
 }
 
 /************************************************************************/
-// ペットボトル設置
+// 宝物を落とす
 /************************************************************************/
-void placePETbottles(void) {
+void dumpTreasures(void) {
 	_delay_ms(1000);//1秒待つ⇒動作に合わせて変更してください
-	MotorControlJoint( PETBOTTOLE_MOTOR, 30, 352 );//モーターを後方にゆっくり傾ける
+	MotorControlJoint( CARGO_BED_MOTOR, 30, 352 );//モーターを後方にゆっくり傾ける！要調整
 	_delay_ms(6000);//6秒継続
-	MotorControlJoint( PETBOTTOLE_MOTOR, 100, 512 );//モーターをセンター位置に戻す
+	MotorControlJoint( CARGO_BED_MOTOR, 100, 512 );//モーターをセンター位置に戻す！要調整
 	_delay_ms(3000);//3秒待つ⇒動作に合わせて変更してください
 
-}
-
-/**
- * 速度が0～入力値以下になるまで、停止動作を継続する 
- * @param maxVal 停止判定の上限値
- */
-void stopMoveLessThanVal(int maxVal){
-	StopMove();//停止を実行
-	int judgeSpeed = 0;
-	while(1) {
-		judgeSpeed = GetCurrentSpeedR();//モーターの速度を取得
-		if( (judgeSpeed >= 0 && judgeSpeed <= maxVal) ||
-		  (judgeSpeed >= 1024 && judgeSpeed <= (1024 + maxVal)) ) {
-			//速度がmaxVal以下ならstop()抜ける
-			break;
-		}
-	}
-}
-
-/**
- * 左旋回実行
- * 旋回動作をさせて、センサーが中央になったら直進を指定して抜ける
- */
-int executeLeftTurn(void){
-	int sensorPattern = BIT_000000;
-
-	//旋回判定されたら停止を実行
-	int initResult = initLeftTurnAction(STOP_JUDGE_MAX_LIMIT);
-	if (initResult == TRACE_SLOW_STRAIGHT) {
-		return TRACE_SLOW_STRAIGHT;
-	}
-	LED_on(1);
-
-	//停止が確定したらベース速度に応じて、前進or後進を実行
-	adjustTurnPosition();
-
-//	_delay_ms(5000);	// 10ms 間隔を空ける
-//	LeftTurnByBaseSpeedAdjust();
-	LeftTurnMove();
-	while(1) {
-		sensorPattern = getSensorPattern();
-		//旋回動作を抜けるための条件を判定
-		if (
-			sensorPattern == BIT_010000 || sensorPattern == BIT_010001 ||
-			sensorPattern == BIT_011000 || sensorPattern == BIT_011001 ||
-			sensorPattern == BIT_001000 || sensorPattern == BIT_001001 ||
-			sensorPattern == BIT_001100 || sensorPattern == BIT_001101 ||
-			sensorPattern == BIT_000100 || sensorPattern == BIT_000101
-			) {
-			LED_on(2);
-			//中央のセンサーが黒なら停止を実行
-			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
-			break;
-		}
-	}
-
-	//旋回停止判定後の止まった位置でセンサーが中央なら逆旋回終了
-	getSensors();
-	sensorPattern = IR_BitPattern;
-	if (sensorPattern == BIT_001000 || sensorPattern == BIT_001001) {
-		//中央センサーなので、直進に設定して抜ける
-		return TRACE_STRAIGHT;
-	} else if (sensorPattern == BIT_010000 || sensorPattern == BIT_010001) {
-		//左センサーなので、左曲りに設定して抜ける
-		return TRACE_L_ROUND_MIDDLE;
-	}
-	
-	LED_on(3);
-	//センサーを中央に戻すため遅い旋回を実行
-	RightTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
-	while(1) {
-		//逆旋回動作を抜けるための条件を判定
-		getSensors();
-		sensorPattern = IR_BitPattern;
-		if (sensorPattern == BIT_001000 || sensorPattern == BIT_001001) {
-			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
-			return TRACE_STRAIGHT;
-		} else if ( sensorPattern == BIT_010000 ||	sensorPattern == BIT_010001 ||
-					sensorPattern == BIT_100000 ||	sensorPattern == BIT_100001 ) {
-			//既に逆側まで旋回していたら（想定よりも早く解除できてしまった場合など）
-			break;
-		}
-	}
-
-	//再度センサーを中央に戻すため遅い旋回を実行（ここまでは実行されない想定）
-	LED_on(4);
-	LeftTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
-	while(1) {
-		//逆旋回動作を抜けるための条件を判定
-		getSensors();
-		sensorPattern = IR_BitPattern;
-		if (sensorPattern == BIT_001000 || sensorPattern == BIT_001001) {
-			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
-			return TRACE_STRAIGHT;
-		}
-	}
-	return TRACE_STRAIGHT;
-}
-
-/**
- * 右旋回実行
- * 旋回動作をさせて、センサーが中央になったら直進を指定して抜ける
- */
-int executeRightTurn(void){
-	int sensorPattern = BIT_000000;
-
-	int initResult = initRightTurnAction(STOP_JUDGE_MAX_LIMIT);
-	if (initResult == TRACE_SLOW_STRAIGHT) {
-		return TRACE_SLOW_STRAIGHT;
-	}
-
-	LED_on(1);
-
-	//停止が確定したらベース速度に応じて、前進or後進を実行
-	adjustTurnPosition();
-
-//	_delay_ms(5000);	// 10ms 間隔を空ける
-
-//	RightTurnByBaseSpeedAdjust();
-	RightTurnMove();
-	while(1) {
-		sensorPattern = getSensorPattern();
-		//旋回動作を抜けるための条件を判定(＊＊＊＊＊この判定で不足している。旋回抜ける)
-		if (
-		sensorPattern == BIT_000100 || sensorPattern == BIT_000101 ||
-		sensorPattern == BIT_001100 || sensorPattern == BIT_001101 ||
-		sensorPattern == BIT_001000 || sensorPattern == BIT_001001 ||
-		sensorPattern == BIT_011000 || sensorPattern == BIT_011001 ||
-		sensorPattern == BIT_010000 || sensorPattern == BIT_010001
-		) {
-			LED_on(2);
-			//中央のセンサーが黒なら停止を実行
-			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
-			break;
-		}
-	}
-
-	//旋回停止判定後の止まった位置でセンサーが中央なら逆旋回終了
-	getSensors();
-	sensorPattern = IR_BitPattern;
-	if (sensorPattern == BIT_001000 || sensorPattern == BIT_001001) {
-		//中央センサーなので、直進に設定して抜ける
-		return TRACE_STRAIGHT;
-	} else if (sensorPattern == BIT_000100 || sensorPattern == BIT_000101) {
-		//右センサーなので、右曲りに設定して抜ける
-		return TRACE_R_ROUND_MIDDLE;
-	}
-		
-	LED_on(3);
-	//センサーを中央に戻すため遅い旋回を実行
-	LeftTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
-	while(1) {
-		//逆旋回動作を抜けるための条件を判定
-		getSensors();
-		sensorPattern = IR_BitPattern;
-		if (sensorPattern == BIT_001000 || sensorPattern == BIT_001001) {
-			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
-			return TRACE_STRAIGHT;
-		} else if ( sensorPattern == BIT_010000 ||
-					sensorPattern == BIT_010001 ||
-					sensorPattern == BIT_100000 ||
-					sensorPattern == BIT_100001 ) {
-			//既に逆側まで旋回していたら（想定よりも早く解除できてしまった場合）
-			break;
-
-		}
-	}
-		
-	//再度センサーを中央に戻すため遅い旋回を実行（ここまでは実行されない想定）
-	LED_on(4);
-	RightTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
-	while(1) {
-		//逆旋回動作を抜けるための条件を判定
-		getSensors();
-		sensorPattern = IR_BitPattern;
-		if (sensorPattern == BIT_001000 || sensorPattern == BIT_001001) {
-			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
-			return TRACE_STRAIGHT;
-		}
-	}
-	return TRACE_STRAIGHT;
-}
-
-/**
- * カーブ実行
- */
-void executeRound(void){
-	static int sensorPattern = BIT_000000;
-	
-	while (1) {
-		// 直進または旋回検知時は処理終了
-		if ((currentTraceAction == TRACE_STRAIGHT) ||
-			(currentTraceAction == TRACE_L_TURN) ||
-			(currentTraceAction == TRACE_R_TURN)) {
-				break;
-		}
-		
-		// センサ値のビットパターンを取得する。
-		sensorPattern = getSensorPattern();
-		if (isDetectedNothing(sensorPattern)) {
-			// センサ未検知の場合はラインがセンサの狭間にある場合なので、
-			// トレースがなるべく直進に収束するようにトレース動作を調整する。
-			if (needChangedSmooth()) {
-				currentTraceAction = getSmoothAction();
-			} 
-			
-			Execute(currentTraceAction);
-			prePrevTraceAction = previousTraceAction;
-			previousTraceAction = currentTraceAction;
-		}
-		else
-		{
-			break;
-		}
-	}
-}
-
-int needChangedSmooth(void) {
-	if (prePrevTraceAction == TRACE_L_ROUND_SOFT) {
-		return ((previousTraceAction == TRACE_STRAIGHT) ||
-				(previousTraceAction == TRACE_L_STRAIGHT));
-	}
-	else if (prePrevTraceAction == TRACE_L_ROUND_MIDDLE) {
-		return ((previousTraceAction == TRACE_STRAIGHT) ||
-				(previousTraceAction == TRACE_L_STRAIGHT) ||
-				(previousTraceAction == TRACE_L_ROUND_SOFT));
-	}
-	else if (prePrevTraceAction == TRACE_L_ROUND_TIGHT) {
-		return ((previousTraceAction == TRACE_STRAIGHT) ||
-				(previousTraceAction == TRACE_L_STRAIGHT) ||
-				(previousTraceAction == TRACE_L_ROUND_SOFT) ||
-				(previousTraceAction == TRACE_L_ROUND_MIDDLE));
-	}
-	else if (prePrevTraceAction == TRACE_R_ROUND_SOFT) {
-		return ((previousTraceAction == TRACE_STRAIGHT) ||
-				(previousTraceAction == TRACE_R_STRAIGHT));
-	}
-	else if (prePrevTraceAction == TRACE_R_ROUND_MIDDLE) {
-		return ((previousTraceAction == TRACE_STRAIGHT) ||
-				(previousTraceAction == TRACE_R_STRAIGHT) ||
-				(previousTraceAction == TRACE_R_ROUND_SOFT));
-	}
-	else if (prePrevTraceAction == TRACE_R_ROUND_TIGHT) {
-		return ((previousTraceAction == TRACE_STRAIGHT) ||
-				(previousTraceAction == TRACE_R_STRAIGHT) ||
-				(previousTraceAction == TRACE_R_ROUND_SOFT) ||
-				(previousTraceAction == TRACE_R_ROUND_MIDDLE));
-	}
-	else {
-		return FALSE;
-	}
-}
-
-int getSmoothAction() {
-	
-	if (previousTraceAction == TRACE_L_STRAIGHT) {
-		return TRACE_R_STRAIGHT;
-	}
-	else if (previousTraceAction == TRACE_L_ROUND_SOFT) {
-		//return TRACE_R_STRAIGHT;
-		return TRACE_L_STRAIGHT;
-	}
-	else if (previousTraceAction == TRACE_L_ROUND_MIDDLE) {
-		//return TRACE_R_STRAIGHT;
-		return TRACE_L_ROUND_SOFT;
-	}
-	else if (previousTraceAction == TRACE_L_ROUND_TIGHT) {
-		//return TRACE_R_STRAIGHT;
-		return TRACE_L_ROUND_MIDDLE;
-	}
-	else if (previousTraceAction == TRACE_R_STRAIGHT) {
-		return TRACE_L_STRAIGHT;
-	}
-	else if (previousTraceAction == TRACE_R_ROUND_SOFT) {
-		//return TRACE_L_STRAIGHT;
-		return TRACE_R_STRAIGHT;
-	}
-	else if (previousTraceAction == TRACE_R_ROUND_MIDDLE) {
-		//return TRACE_L_STRAIGHT;
-		return TRACE_R_ROUND_SOFT;
-	}
-	else if (previousTraceAction == TRACE_R_ROUND_TIGHT) {
-		//return TRACE_L_STRAIGHT;
-		return TRACE_R_ROUND_MIDDLE;
-	}
-	else {
-		return TRACE_STRAIGHT;
-	}
-}
-
-/**
- * 右カーブ実行
- */
-void executeRightRound(void){
-	while (1) {
-		// ターン検出時は処理終了
-		if ((currentTraceAction == TRACE_L_TURN) ||
-			(currentTraceAction == TRACE_R_TURN)) {
-				break;
-		}
-	}
-}
-
-/**
- * 左旋回動作の初期化
- * 停止を実行して、途中で全て黒になったら直進モードにする
- * 基準以下の速度まで減速できたら、旋回を継続する
- */
-int initLeftTurnAction(int maxVal) {
-	int sensorPattern = BIT_000000;
-
-	StopMove();//停止を実行
-	int judgeSpeed = 0;
-	while(1) {
-		sensorPattern = getSensorPattern();//センサー値を取得
-		if(sensorPattern == BIT_111110 || sensorPattern == BIT_111111 ||
-		sensorPattern == BIT_011110 || sensorPattern == BIT_011111 ||
-		sensorPattern == BIT_001110 || sensorPattern == BIT_001111 ||
-		sensorPattern == BIT_000110 || sensorPattern == BIT_000111 ||
-		sensorPattern == BIT_000010 || sensorPattern == BIT_000011
-		) {
-			//旋回判定後の停止中に黒ラインになったら旋回を止めて、直進する
-			//旋回を止める条件は、センサー値がBIT_XXXX1Xでも良いかな。。。
-			return TRACE_SLOW_STRAIGHT;
-		}
-
-		judgeSpeed = GetCurrentSpeedR();//モーターの速度を取得
-		if( (judgeSpeed >= 0 && judgeSpeed <= maxVal) ||
-			(judgeSpeed >= 1024 && judgeSpeed <= (1024 + maxVal)) ) {
-			//速度がmaxVal以下ならstop()抜ける
-			return TRACE_L_TURN;
-		}
-	}
-}
-
-/**
- * 右旋回動作の初期化
- * 停止を実行して、途中で全て黒になったら直進モードにする
- * 基準以下の速度まで減速できたら、旋回を継続する
- */
-int initRightTurnAction(int maxVal) {
-	int sensorPattern = BIT_000000;
-
-	StopMove();//停止を実行
-	int judgeSpeed = 0;
-	while(1) {
-		sensorPattern = getSensorPattern();//センサー値を取得
-		if(sensorPattern == BIT_111110 || sensorPattern == BIT_111111 ||
-		sensorPattern == BIT_111100 || sensorPattern == BIT_111101 ||
-		sensorPattern == BIT_111000 || sensorPattern == BIT_111001 ||
-		sensorPattern == BIT_110000 || sensorPattern == BIT_110001 ||
-		sensorPattern == BIT_100000 || sensorPattern == BIT_100001
-		) {
-			//旋回判定後の停止中に黒ラインになったら旋回を止めて、直進する
-			//旋回を止める条件は、センサー値がBIT_1XXXXXでも良いかな。。。
-			return TRACE_SLOW_STRAIGHT;
-		}
-
-		judgeSpeed = GetCurrentSpeedR();//モーターの速度を取得
-		if( (judgeSpeed >= 0 && judgeSpeed <= maxVal) ||
-			(judgeSpeed >= 1024 && judgeSpeed <= (1024 + maxVal)) ) {
-			//速度がmaxVal以下ならstop()抜ける
-			return TRACE_R_TURN;
-		}
-	}
-}
-
-/**
- * 旋回に入ったベース速度に応じて、位置を調整する。
- */
-void adjustTurnPosition(void) {
-	if (BaseSpeed <= 200 ) {
-		StraightLowMove();
-		_delay_ms(200);	// 10ms 間隔を空ける
-	} else if (BaseSpeed > 200 && BaseSpeed <= 300 ) {
-		StraightLowMove();
-		_delay_ms(150);	// 10ms 間隔を空ける
-	} else if (BaseSpeed > 300 && BaseSpeed <= 330 ) {
-		StraightLowMove();
-		_delay_ms(60);	// 10ms 間隔を空ける
-	} else if (BaseSpeed > 330 && BaseSpeed <= 350 ) {
-		//StraightLowMove();
-		//_delay_ms(50);	// 10ms 間隔を空ける
-	} else if (BaseSpeed > 350 && BaseSpeed <= 450 ) {
-		BackLowMove();
-		_delay_ms(250);	// 10ms 間隔を空ける
-	} else if (BaseSpeed > 450 && BaseSpeed <= 480 ) {
-		BackLowMove();
-		_delay_ms(300);	// 10ms 間隔を空ける
-	} else if (BaseSpeed > 480 && BaseSpeed <= 500 ) {
-		BackLowMove();
-		_delay_ms(350);	// 10ms 間隔を空ける
-	} else if (BaseSpeed > 500 && BaseSpeed <= 530 ) {
-		BackLowMove();
-		_delay_ms(400);	// 10ms 間隔を空ける
-	}
-	StopMove();
-}
-
-/**
- * 速度に応じた旋回復帰後のディレイ時間を取得する。
- */
-void executeDelay(void) {
-	if (BaseSpeed <= 200 ) {
-		_delay_ms(400);
-	} else if (BaseSpeed > 200 && BaseSpeed <= 250 ) {
-		_delay_ms(350);
-	} else if (BaseSpeed > 250 && BaseSpeed <= 300 ) {
-		_delay_ms(300);
-	} else if (BaseSpeed > 300 && BaseSpeed <= 350 ) {
-		_delay_ms(250);
-	} else if (BaseSpeed > 350 && BaseSpeed <= 400 ) {
-		_delay_ms(200);
-	} else {
-		_delay_ms(400);
-	}
-}
-
-/**
-* ショートカットの処理
-* @brief ショートカットの処理
-* @return なし
-*/
-void executeSkipAction(void) {
-	LOG_INFO("***** executeSkipAction START!! *****\r\n");
-
-	static int sensorPattern = BIT_000000;
-    static int counter = 0;
-
-	// 初期動作（直進）
-	StraightMove();
-	_delay_ms(100);	// 10ms 間隔を空ける
-
-	while (1) {
-		StraightMove();
-
-		// センサ値のビットパターンを取得する。
-		getSensors();
-		sensorPattern = IR_BitPattern;
-
-		// センサ値のパターンが全黒 or 直角ライン判定であればループを抜ける。
-		if (sensorPattern == BIT_111111 || sensorPattern == BIT_111110 ||
-			sensorPattern == BIT_011111 || sensorPattern == BIT_011110 ||
-			sensorPattern == BIT_001111 || sensorPattern == BIT_001110 ||
-			sensorPattern == BIT_000111 || sensorPattern == BIT_000110 ||
-			sensorPattern == BIT_111101 || sensorPattern == BIT_111100 ||
-			sensorPattern == BIT_111001 || sensorPattern == BIT_111000 ||
-			sensorPattern == BIT_110001 || sensorPattern == BIT_110000
-			) {
-			break;
-		}
-#ifdef LOG_INFO_ON
-		if ((counter % 1) == 0) {
-			BaseSpeed = BaseSpeed + 1;
-			counter = 0;
-		}
-#else
-		if ((counter % 5) == 0) {
-			BaseSpeed = BaseSpeed + 3;
-			counter = 0;
-		}
-#endif /* _MODE_SKIP_ */
-	}
-
-	//旋回判定されたら停止を実行
-	stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
-
-	//停止が確定したらベース速度に応じて、前進or後進を実行
-	adjustTurnPosition();
-
-	//ベース速度を初期化
-	BaseSpeed = BASE_SPEED_INIT_VAL;
-
-	// 左旋回
-	LeftTurnMove();
-	while(1) {
-		getSensors();
-		sensorPattern = IR_BitPattern;
-		//旋回動作を抜けるための条件を判定
-		if (
-			sensorPattern == BIT_010000 || sensorPattern == BIT_010001 ||
-			sensorPattern == BIT_011000 || sensorPattern == BIT_011001 ||
-			sensorPattern == BIT_001000 || sensorPattern == BIT_001001 ||
-			sensorPattern == BIT_001100 || sensorPattern == BIT_001101 ||
-			sensorPattern == BIT_000100 || sensorPattern == BIT_000101
-			) {
-			LED_on(2);
-			//中央のセンサーが黒なら停止を実行
-			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
-			break;
-		}
-	}
-	
-	//旋回停止判定後の止まった位置でセンサーが中央なら逆旋回終了
-	getSensors();
-	sensorPattern = IR_BitPattern;
-	if (sensorPattern == BIT_001000 || sensorPattern == BIT_001001) {
-		//中央センサーなので、直進に設定して抜ける
-		StraightMove();
-		return;
-		} else if (sensorPattern == BIT_010000 || sensorPattern == BIT_010001) {
-		//左センサーなので、左曲りに設定して抜ける
-		LeftSoftRoundMove();
-		return;
-	}
-
-	//センサーを中央に戻すため遅い旋回を実行
-	RightTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
-	while(1) {
-		//逆旋回動作を抜けるための条件を判定
-		getSensors();
-		sensorPattern = IR_BitPattern;
-		if (sensorPattern == BIT_001000 || sensorPattern == BIT_001001) {
-			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
-			StraightMove();
-			return;
-		} else if ( sensorPattern == BIT_010000 ||	sensorPattern == BIT_010001 ||
-			sensorPattern == BIT_100000 ||	sensorPattern == BIT_100001 ) {
-			//既に逆側まで旋回していたら（想定よりも早く解除できてしまった場合など）
-			LeftMiddleRoundMove();
-			return;
-		}
-	}
-
-	LOG_INFO("***** executeSkipAction END!! *****\r\n");
-
-	// 通常のライントレースに復帰
 }
 
 void initEmergencyStop(void) {
