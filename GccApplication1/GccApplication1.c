@@ -331,7 +331,7 @@ void executeFinalRoundWSSG(void){
     shortTraceToRightTurn();
     traceBackwardArea_17();
     traceBackwardArea_08();
-    treasureHunt_03();//銀回収
+    treasureHunt_02();//銀回収
     traceBackLowMoveArea_02();//後退して、左旋回
     traceBackwardArea_09();//左直角ラインを検出したら右旋回
     traceBackwardArea_10();//直角ラインを見つけたら停止
