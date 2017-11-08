@@ -732,7 +732,8 @@ void TreasureFindingLineTrace(int isFirst) {
 	    isSearchingLeftSide = 0;
 	    Execute(TRACE_R_TRESURE_FIND);
 	}
-		_delay_ms(10);
+		//_delay_ms(10);
+		_delay_ms(5);//ダメなら戻す
 		return;
 	}
 
@@ -740,7 +741,9 @@ void TreasureFindingLineTrace(int isFirst) {
 	    (sensorPattern == BIT_010000 ||
 	    sensorPattern == BIT_001000 ||
 	    sensorPattern == BIT_011000 ||
-	    sensorPattern == BIT_011100
+	    sensorPattern == BIT_011100// ||
+   	    //sensorPattern == BIT_110000 ||//_delay変えてダメなら追加
+        //sensorPattern == BIT_100000//_delay変えてダメなら追加
 	    )) {
 		// ラインの右側サーチ中に左ラインを検出したら、
 		// ラインの左側サーチに切り替える
@@ -751,7 +754,9 @@ void TreasureFindingLineTrace(int isFirst) {
 	    (sensorPattern == BIT_000010 ||
 	    sensorPattern == BIT_000100 ||
 	    sensorPattern == BIT_000110 ||
-	    sensorPattern == BIT_001110
+	    sensorPattern == BIT_001110// ||
+	    //sensorPattern == BIT_000011 ||//_delay変えてダメなら追加
+	    //sensorPattern == BIT_000001//_delay変えてダメなら追加
 	    )) {
 		// ラインの左側サーチ中に右ラインを検出したら、
 		// ラインの右側サーチに切り替える
@@ -759,7 +764,8 @@ void TreasureFindingLineTrace(int isFirst) {
 		Execute(TRACE_R_TRESURE_FIND);
 	}
 	
-	_delay_ms(10);
+	//_delay_ms(10);
+	_delay_ms(5);//ダメなら戻す
 }
 
 /*
