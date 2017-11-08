@@ -263,6 +263,7 @@ void traceCommon(int *counter, int *maxSpeed) {
 				break;
 			}
 		}
+        // ラインを検出できなくても芝にエリアに入った辺りでループを抜ける
 		if (loopCount > 700) {
 			break;
 		}
@@ -312,19 +313,7 @@ void traceCommon(int *counter, int *maxSpeed) {
  *   終了条件：
  */
 void traceBackwardArea_06(void) {
-	 int counter = 0;
-	 int maxSpeed = BASE_SPEED_BY_TURF_AREA;
-
-	 while (currentTraceAction != TRACE_R_TURN) {
-		//バックする。
-		// 未実装
-	 }
-
-	 //必要に応じて位置を調整
-
-	 // 右旋回実行
-	 executeRightTurn();
-	 BaseSpeed = BASE_SPEED_BY_TURF_AREA;
+    traceBackLowMoveArea_01();
 }
 
 /*
@@ -356,50 +345,67 @@ void traceBackwardArea_06(void) {
  *   開始条件：なし（復路エリア 7 のトレース動作から継続）。
  *   終了条件：
  */
- void traceBackwardArea_08(void) {
-	int counter = 0;
-	int maxSpeed = BASE_SPEED_BY_TURF_AREA;
-    int sensorPattern = BIT_111111;
-	int findAnySensorCount = 0;
+ //void traceBackwardArea_08(void) {
+	//int counter = 0;
+	//int maxSpeed = BASE_SPEED_BY_TURF_AREA;
+    //int sensorPattern = BIT_111111;
+	//int findAnySensorCount = 0;
+//
+	//// ラインが途切れるまではトレース動作
+	//while (sensorPattern != BIT_000000) {
+		//traceCommon(&counter, &maxSpeed);
+		//sensorPattern = getSensorPattern();
+		//// 加速しない
+		//maxSpeed = BASE_SPEED_BY_TURF_AREA;
+		//_delay_ms(1);
+	//}
+//
+	//// 停止実行
+	////stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
+//
+	//StraightMove();
+    //_delay_ms(10);
+//
+	//// センサーのいずれかが白判定するまで、直進継続
+	//while (1) {
+		//StraightMove();
+		//sensorPattern = getSensorPattern();
+//
+		//// 3回連続して白判定したらループを抜ける
+		//if (sensorPattern != BIT_000000) {
+			//findAnySensorCount++;
+			//if (findAnySensorCount > 2) {
+				//break;
+			//}
+		//}
+		//_delay_ms(1);
+	//}
+//
+	//// ちょっと進んで停止
+	//adjustTurnPosition();
+//
+	//// 右旋回実行
+	//executeRightTurnFromOnLine();
+	//BaseSpeed = BASE_SPEED_INIT_VAL;
+	//initSensorHistory();
+	//currentTraceAction = TRACE_STRAIGHT;
+//}
+void traceBackwardArea_08(void) {
+    int counter = 0;
+	int maxSpeed = MAX_SPEED;
 
-	// ラインが途切れるまではトレース動作
-	while (sensorPattern != BIT_000000) {
-		traceCommon(&counter, &maxSpeed);
-		sensorPattern = getSensorPattern();
-		// 加速しない
-		maxSpeed = BASE_SPEED_BY_TURF_AREA;
-		_delay_ms(1);
-	}
+    // 左の直角ラインを検出するまでライントレースを継続
+    while (currentTraceAction != TRACE_L_TURN) {
+        traceCommon(&counter, &maxSpeed);
+		counter++;
+    }
 
-	// 停止実行
-	//stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
+    // 停止実行
+    stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
 
-	StraightMove();
-    _delay_ms(10);
-
-	// センサーのいずれかが白判定するまで、直進継続
-	while (1) {
-		StraightMove();
-		sensorPattern = getSensorPattern();
-
-		// 3回連続して白判定したらループを抜ける
-		if (sensorPattern != BIT_000000) {
-			findAnySensorCount++;
-			if (findAnySensorCount > 2) {
-				break;
-			}
-		}
-		_delay_ms(1);
-	}
-
-	// ちょっと進んで停止
-	adjustTurnPosition();
-
-	// 右旋回実行
-	executeRightTurnFromOnLine();
-	BaseSpeed = BASE_SPEED_INIT_VAL;
-	initSensorHistory();
-	currentTraceAction = TRACE_STRAIGHT;
+    initSensorHistory();
+    currentTraceAction = TRACE_STRAIGHT;
+    BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
@@ -413,7 +419,8 @@ void traceBackwardArea_06(void) {
 	int counter = 0;
 	int maxSpeed = MAX_SPEED;
 
-	while (currentTraceAction != TRACE_L_TURN) {
+    // 左の直角ラインを検出するまでライントレースを継続
+    while (currentTraceAction != TRACE_L_TURN) {
 		traceCommon(&counter, &maxSpeed);
 		counter++;
 		_delay_ms(1);
@@ -424,7 +431,8 @@ void traceBackwardArea_06(void) {
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 	initSensorHistory();
 	currentTraceAction = TRACE_STRAIGHT;
-	StopMove();//DBG
+    //currentTraceAction = executeRightTurn();
+    //setSensorHistory(executeRightTurn());
 }
 
 /*
@@ -439,8 +447,8 @@ void traceBackwardArea_06(void) {
 	int maxSpeed = MAX_SPEED;
 
 	while (currentTraceAction != TRACE_R_TURN) {
-		traceCommon(&counter, &maxSpeed);
-		counter++;
+    	traceCommon(&counter, &maxSpeed);
+    	counter++;
 	}
 
 	// 停止実行
@@ -460,6 +468,9 @@ void traceBackwardArea_06(void) {
  void traceBackwardArea_11(void) {
 	int sensorPattern = BIT_000000;
 	int findAnySensorCount = 0;
+	int loopCount = 0;
+	StraightMove();
+	_delay_ms(200);
 
 	// センサーのいずれかが白判定するまで、直進継続
 	while (1) {
@@ -472,11 +483,16 @@ void traceBackwardArea_06(void) {
 				break;
 			}
 		}
+        // ラインを検出できなくても芝にエリアに入った辺りでループを抜ける
+        if (loopCount > 700) {
+            break;
+        }
+		loopCount++;
 		_delay_ms(1);
 	}
 
 	// 停止実行
-	StopMove();
+	stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
 
 	// センサー値に応じて旋回を実行
 	// TODO:実装
@@ -618,19 +634,33 @@ void traceBackwardArea_06(void) {
  *   開始条件：なし（復路エリア 16 のトレース動作から継続）。
  *   終了条件：
  */
+//void traceBackwardArea_17(void) {
+	//int counter = 0;
+	//int maxSpeed = MAX_SPEED;
+//
+	//while (currentTraceAction != TRACE_R_TURN) {
+		//traceCommon(&counter, &maxSpeed);
+		//counter++;
+	//}
+//
+	//// 右旋回実行
+	//currentTraceAction = executeRightTurn();
+	////setSensorHistory(executeRightTurn());
+	//BaseSpeed = BASE_SPEED_INIT_VAL;
+//}
 void traceBackwardArea_17(void) {
-	int counter = 0;
-	int maxSpeed = MAX_SPEED;
+    int counter = 0;
+    int maxSpeed = MAX_SPEED;
 
-	while (currentTraceAction != TRACE_R_TURN) {
-		traceCommon(&counter, &maxSpeed);
-		counter++;
-	}
+    while (currentTraceAction != TRACE_R_TURN) {
+        traceCommon(&counter, &maxSpeed);
+        counter++;
+    }
 
-	// 右旋回実行
-	currentTraceAction = executeRightTurn();
-	//setSensorHistory(executeRightTurn());
-	BaseSpeed = BASE_SPEED_INIT_VAL;
+	// 左旋回実行
+	currentTraceAction = executeLeftTurn();
+	//setSensorHistory(executeLeftTurn());
+    BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
@@ -787,6 +817,10 @@ void traceBackLowMoveArea_01(void) {
 	BaseSpeed = BASE_SPEED_BY_TURF_AREA;
 	int sensorPattern = BIT_111111;
 
+    // 安全策のため、ロボットを少しだけ左旋回する。
+    //LeftTurnMove();
+    //_delay_ms(30);//要調整
+
 	// (芝上のバック）センサーが前黒判定するまで、後退継続
 	while (sensorPattern != BIT_000000) {
 		BackLowMove();
@@ -809,12 +843,61 @@ void traceBackLowMoveArea_01(void) {
 	// 停止実行
     stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
 
-	// ベース速度を0に設定
+	// 位置調整のためベース速度を0に設定
 	BaseSpeed = 0;
 
 	//右旋回実行
 	executeRightTurn();
+	//setSensorHistory(executeRightTurn());←これでうまく動いて欲しい
+	//currentTraceAction = executeRightTurn();
+	currentTraceAction = TRACE_STRAIGHT;
+	BaseSpeed = BASE_SPEED_INIT_VAL;
+}
 
+/*
+ * 宝物を取得後の少し右旋回して後退用トレース動作
+ * @return なし
+ * @condition
+ *   開始条件：前回のトレース動作から継続。
+ *   終了条件：センサで右ターンを検出して停止が完了する。
+ */
+void traceBackLowMoveArea_02(void) {
+	BaseSpeed = BASE_SPEED_BY_TURF_AREA;
+	int sensorPattern = BIT_111111;
+
+    // 安全策のため、ロボットを少しだけ右旋回する。
+    //RightTurnMove();
+    //_delay_ms(30);//要調整
+
+	// (芝上のバック）センサーが前黒判定するまで、後退継続
+	while (sensorPattern != BIT_000000) {
+		BackLowMove();
+		sensorPattern = getSensorPattern();
+		_delay_ms(1);
+	}
+
+	// 確実に線から離れるため、強制で後進する
+	BackLowMove();
+	_delay_ms(300);
+
+	BaseSpeed = SLOW_BACK_VAL;
+	// （プラダン上のバック）センサーのいずれかが白判定するまで、後退継続
+	while (sensorPattern == BIT_000000) {
+		BackLowMove();
+		sensorPattern = getSensorPattern();
+		_delay_ms(1);
+	}
+
+	// 停止実行
+    stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
+
+	// 位置調整のためベース速度を0に設定
+	BaseSpeed = 0;
+
+	//左旋回実行
+	executeLeftTurn();
+	//setSensorHistory(executeLeftTurn());←これでうまく動いて欲しい
+	//currentTraceAction = executeLeftTurn();
 	currentTraceAction = TRACE_STRAIGHT;
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }

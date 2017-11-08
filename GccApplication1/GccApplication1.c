@@ -26,10 +26,14 @@
 #define _LED_ON_
 
 // ------------------ Method Definition ------------------
-void executeTraceProcess(void);
-void executeHunt1And2TraceProcess(void);
-void executeShortTraceProcess(void);
-void executeFinalRoundTraceProcess(void);
+void executeTraceProcess(void);//予選用：白→銀→金　全回収
+void executeHunt1And2TraceProcess(void);//予選用：白→銀　回収
+void executeShortTraceProcess(void);//予選用：白　回収
+void executeFinalRoundTraceProcess(void);//決勝用：白→銀→銀→金→金→金　全回収
+void executeFinalRoundWSS(void);//決勝用：白→銀→銀　回収
+void executeFinalRoundWG(void);//決勝用：白→金　回収
+void executeFinalRoundWSG(void);//決勝用：白→銀→金　回収
+void executeFinalRoundWSSG(void);//決勝用：白→銀→銀→金　回収
 
 void treasureHunt_01(void);
 void treasureHunt_02(void);
@@ -221,7 +225,7 @@ void executeFinalRoundTraceProcess(void) {
 	traceBackwardArea_06();
 	treasureHunt_02();//宝物銀２個目（決勝で追加）
 	traceBackwardArea_07();
-	traceBackwardArea_08();    
+	traceBackwardArea_08();
 	traceBackwardArea_09();
 	traceBackwardArea_10();
 	traceBackwardArea_11();
@@ -236,6 +240,111 @@ void executeFinalRoundTraceProcess(void) {
 	traceBackwardArea_18();
 }
 
+/************************************************************************/
+// 決勝用：白→銀→銀　回収
+/************************************************************************/
+void executeFinalRoundWSS(void){
+    traceForwardArea_01();
+    traceForwardArea_02();
+    traceForwardArea_03();
+    traceForwardArea_04();
+    traceForwardArea_05();
+    treasureHunt_01();//白回収
+    traceBackwardArea_01();
+    traceBackwardArea_02();
+    traceBackwardArea_03();
+    traceBackwardArea_04();//芝エリアへ移動したら停止
+    treasureHunt_02();//銀回収
+    traceBackLowMoveArea_01();//後退して、右旋回
+  	shortTraceToRightTurn();
+    traceBackwardArea_17();
+    traceBackwardArea_08();
+    treasureHunt_03();//銀回収
+    traceBackLowMoveArea_02();//後退して、左旋回
+	traceBackwardArea_09();//左直角ラインを検出したら右旋回
+	shortTraceToRightTurn();
+	shortTraceToRightTurn();
+    traceBackwardArea_18();
+}
+
+/************************************************************************/
+//決勝用：白→金　回収
+/************************************************************************/  
+void executeFinalRoundWG(void){
+    traceForwardArea_01();
+    traceForwardArea_02();
+    traceForwardArea_03();
+    traceForwardArea_04();
+    traceForwardArea_05();
+    treasureHunt_01();//白回収
+	shortTraceToLeftTurn();
+	shortTraceToLeftTurn();
+	shortTraceToLeftTurn();
+	shortTraceToRightTurn();
+    traceBackwardArea_10();//右直角ラインを見つけたら停止
+    traceBackwardArea_11();//芝エリアへ移動したら停止
+    treasureHunt_02();//金回収
+    traceBackLowMoveArea_01();//後退して、右旋回
+    traceBackwardArea_18();
+}
+
+
+/************************************************************************/
+//決勝用：白→銀→金　回収
+/************************************************************************/
+void executeFinalRoundWSG(void){
+    traceForwardArea_01();
+    traceForwardArea_02();
+    traceForwardArea_03();
+    traceForwardArea_04();
+    traceForwardArea_05();
+    treasureHunt_01();//白回収
+    traceBackwardArea_01();
+    traceBackwardArea_02();
+    traceBackwardArea_03();
+    traceBackwardArea_04();//芝エリアへ移動したら停止
+    treasureHunt_02();//銀回収
+    traceBackLowMoveArea_01();//後退して、右旋回
+    traceBackwardArea_10();//直角ラインを見つけたら停止
+    traceBackwardArea_11();//芝エリアへ移動したら停止
+    treasureHunt_02();//金回収
+    traceBackLowMoveArea_01();//後退して、右旋回
+	traceBackwardArea_18();
+}
+
+/************************************************************************/
+//決勝用：白→銀→銀→金　回収
+/************************************************************************/
+void executeFinalRoundWSSG(void){
+    traceForwardArea_01();
+    traceForwardArea_02();
+    traceForwardArea_03();
+    traceForwardArea_04();
+    traceForwardArea_05();
+    treasureHunt_01();//白回収
+    traceBackwardArea_01();
+    traceBackwardArea_02();
+    traceBackwardArea_03();
+    traceBackwardArea_04();//芝エリアへ移動したら停止
+    treasureHunt_02();//銀回収
+    traceBackLowMoveArea_01();//後退して、右旋回
+    shortTraceToRightTurn();
+    traceBackwardArea_17();
+    traceBackwardArea_08();
+    treasureHunt_03();//銀回収
+    traceBackLowMoveArea_02();//後退して、左旋回
+    traceBackwardArea_09();//左直角ラインを検出したら右旋回
+    traceBackwardArea_10();//直角ラインを見つけたら停止
+    traceBackwardArea_11();//芝エリアへ移動したら停止
+    treasureHunt_02();//金回収
+    traceBackLowMoveArea_01();//後退して、右旋回
+    traceBackwardArea_18();
+}
+
+/************************************************************************/
+// センサーのデバッグ用
+// 500msで回り続ける
+/************************************************************************/
 void sensorDebug(void) {
 	while(1) {
 		getSensors();
@@ -417,7 +526,7 @@ void executeFinalAction(void)
 
 	// 肩を前に出す
 	MotorControlJoint(SHOULDER_MOTOR, 100, 600);
-	_delay_ms(1000);//！要調整
+	_delay_ms(500);//！要調整
 
 	/* 荷台を傾けて宝物を落とす */
 	dumpTreasures();
@@ -444,11 +553,13 @@ void initCargoBedMotor(void) {
 // 宝物を落とす
 /************************************************************************/
 void dumpTreasures(void) {
-	_delay_ms(1000);//1秒待つ⇒動作に合わせて変更してください
+	_delay_ms(100);//1秒待つ⇒動作に合わせて変更してください
 	MotorControlJoint( CARGO_BED_MOTOR, 30, 352 );//モーターを後方にゆっくり傾ける！要調整
-	_delay_ms(6000);//6秒継続
+	_delay_ms(100);//6秒継続
+	MotorControlJoint( CARGO_BED_MOTOR, 30, 352 );//モーターを後方にゆっくり傾ける！要調整
+	_delay_ms(5000);//6秒継続
 	MotorControlJoint( CARGO_BED_MOTOR, 100, 512 );//モーターをセンター位置に戻す！要調整
-	_delay_ms(3000);//3秒待つ⇒動作に合わせて変更してください
+	_delay_ms(2000);//3秒待つ⇒動作に合わせて変更してください
 
 }
 

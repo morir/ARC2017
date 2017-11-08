@@ -57,5 +57,6 @@ void shortTraceToLeftTurn(void);
 void shortTraceToRightTurn(void);
 
 void traceBackLowMoveArea_01(void);
+void traceBackLowMoveArea_02(void);
 
 #endif /* TRACEMANAGER_H_ */
