@@ -20,6 +20,8 @@ int currentTraceAction;
 
 int isSearchingLeftSide;
 
+int undefinedCount;
+
 // ------------------ Method Definition ------------------
 void initTraceAction(void);
 

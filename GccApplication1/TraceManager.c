@@ -28,14 +28,41 @@ void initTraceAction() {
  *   終了条件：センサで左ターンを検出して直角旋回が完了する。
  */
 void traceCommon(int *counter, int *maxSpeed) {
+    
+    //// ラインセンサーで想定外の値を連続して検出した場合
+    //// 後進してラインに復帰する。
+    //const int undefinedCountMax = 100;
+    //int sensorPattern = BIT_000000;
+    //if (undefinedCount > undefinedCountMax) {
+       //while (1) {
+           //sensorPattern = getSensorPattern();
+           //if (sensorPattern != BIT_000000) {
+               //// 停止実行
+               //stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
+//
+               //// 停止した位置のセンサー値を取得する。
+               //getSensors();
+//
+               //// 履歴にTRACE_UNDEFINEDが溜まっているはずなので履歴を設定しなおす
+               //setSensorHistory(sensorPattern);
+               //BaseSpeed = 30;// 遅い速度で移動する
+               //break;
+           //} else {
+               //BackLowMove();
+               //_delay_ms(1);
+           //}
+       //}
+    //}        
 	// センサー値を取得
 	getSensors();
 	currentTraceAction = getActionWithHistory();
 	if (currentTraceAction == TRACE_UNDEFINED) {
 		_delay_ms(2);// delayTimeの間隔を空ける
+        //undefinedCount++;
 		return;
 	}
 
+    //undefinedCount = 0;
 #ifdef LOG_INFO_ON
 	if ((*counter % 1) == 0) {
 		BaseSpeed = BaseSpeed + 1;
