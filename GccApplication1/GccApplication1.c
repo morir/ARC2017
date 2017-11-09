@@ -429,7 +429,7 @@ void sensorDebug(void) {
     //while (center <= 130) {
         // 宝物検索用に左右交互に旋回を実行
         //TreasureFindingZigZagMove(&moveCounter);
-        //moveCounter++;
+        //moveCounter++:
         //GetAXS1SensorFireData(&left, &center, &right);
     //}
 
@@ -509,6 +509,15 @@ void sensorDebug(void) {
 void TreasureFindingZigZagMove(int *counter) {
     const int moveWidthCount = 100;//旋回の幅を指定
 
+    if (*counter > (moveWidthCount * 2)) {
+        // counterがmoveWidthCountの２倍になったら
+        // 少しだけ前進してリセット
+        BaseSpeed = 30;//要調整
+        StraightMove();
+        _delay_ms(30);//要調整
+        *counter = 0;
+    }
+
 	// counterを判定
 	if (*counter < moveWidthCount) {
         // counterがmoveWidthCount以内なら左旋回
@@ -519,15 +528,6 @@ void TreasureFindingZigZagMove(int *counter) {
 	    RightTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
 		_delay_ms(1);
 	}
-    
-    if (*counter > (moveWidthCount * 2)) {
-        // counterがmoveWidthCountの２倍になったら
-        // 少しだけ前進してリセット
-        BaseSpeed = 30;//要調整
-        _delay_ms(30);//要調整
-        *counter = 0;
-        StraightMove();
-    }
 }
 
 /**
