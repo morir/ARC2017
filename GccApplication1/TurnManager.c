@@ -57,7 +57,7 @@ int initRightTurnAction(int referenceVal) {
  * 旋回動作をさせて、センサーが中央になったら直進を指定して抜ける
  */
 int executeLeftTurn(void){
-	int sensorPattern = BIT_000000;
+	static int sensorPattern = BIT_000000;
 
 	//旋回判定されたら停止を実行
 	initLeftTurnAction(STOP_JUDGE_MAX_LIMIT);
@@ -176,7 +176,7 @@ int executeLeftTurn(void){
  * 旋回動作をさせて、センサーが中央になったら直進を指定して抜ける
  */
 int executeRightTurn(void){
-	int sensorPattern = BIT_000000;
+	static int sensorPattern = BIT_000000;
 
 	//旋回判定されたら停止を実行
 	initRightTurnAction(STOP_JUDGE_MAX_LIMIT);
