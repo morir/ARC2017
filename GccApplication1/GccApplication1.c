@@ -42,6 +42,8 @@ void treasureHunt_03(void);
 void initCargoBedMotor(void);
 void dumpTreasures(void);
 
+void TreasureFindingZigZagMove(int *counter);
+
 void executeFinalAction(void);
 
 void initEmergencyStop(void);
@@ -422,11 +424,12 @@ void sensorDebug(void) {
     LOG_INFO("treasureHunt_02() %s\r\n", "1");
 
     //int left = 0, center = 0, right = 0;
+    //int moveCounter = 0;
     //GetAXS1SensorFireData(&left, &center, &right);
     //while (center <= 130) {
-        //// 宝物検索用ライントレースを実行(旋回)
-        //LeftTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
-		//_delay_ms(1);
+        // 宝物検索用に左右交互に旋回を実行
+        //TreasureFindingZigZagMove(&moveCounter);
+        //moveCounter++;
         //GetAXS1SensorFireData(&left, &center, &right);
     //}
 
@@ -497,6 +500,34 @@ void sensorDebug(void) {
     // 停止する
     StopMove();
     _delay_ms(100);
+}
+
+/*
+ * ロボットを左右交互に旋回して少し前進する。
+ * ラインセンサーの値は使用せず、決められた間隔で方向を変える。
+ */
+void TreasureFindingZigZagMove(int *counter) {
+    const int moveWidthCount = 100;//旋回の幅を指定
+
+	// counterを判定
+	if (*counter < moveWidthCount) {
+        // counterがmoveWidthCount以内なら左旋回
+		LeftTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
+		_delay_ms(1);
+	} else {
+	    // counterがmoveWidthCountより大きい場合右旋回
+	    RightTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
+		_delay_ms(1);
+	}
+    
+    if (*counter > (moveWidthCount * 2)) {
+        // counterがmoveWidthCountの２倍になったら
+        // 少しだけ前進してリセット
+        BaseSpeed = 30;//要調整
+        _delay_ms(30);//要調整
+        *counter = 0;
+        StraightMove();
+    }
 }
 
 /**
