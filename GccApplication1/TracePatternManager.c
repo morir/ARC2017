@@ -12,7 +12,7 @@
 #include "DebugLog.h"
 
 void initActionTable() {
-	ActionTable[0]  = TRACE_STRAIGHT;		/* 00:BIT_000000 */
+	ActionTable[0]  = TRACE_UNDEFINED;		/* 00:BIT_000000 */	// '17.11.07 発送前は　TRACE_STRAIGHT
 	ActionTable[1]  = TRACE_R_ROUND_TIGHT;	/* 01:BIT_000001 */
 	ActionTable[2]  = TRACE_R_ROUND_MIDDLE;	/* 02:BIT_000010 */
 	ActionTable[3]  = TRACE_R_ROUND_TIGHT;	/* 03:BIT_000011 */	// '17.11.07 発送前は　TRACE_R_TURN

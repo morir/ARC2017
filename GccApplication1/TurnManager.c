@@ -143,7 +143,7 @@ int executeLeftTurn(void){
 		if (sensorPattern == BIT_001000 || sensorPattern == BIT_001100 || sensorPattern == BIT_000100) {
 			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
 			//return TRACE_STRAIGHT;
-			return BIT_000000;
+			return BIT_001100;
 		} else if ( sensorPattern == BIT_010000 ||	sensorPattern == BIT_011000 ||
 					sensorPattern == BIT_100000 ||	sensorPattern == BIT_110000 ) {
 			//既に逆側まで旋回していたら（想定よりも早く解除できてしまった場合など）
@@ -163,11 +163,11 @@ int executeLeftTurn(void){
 		if (sensorPattern == BIT_001000 || sensorPattern == BIT_001100 || sensorPattern == BIT_000100) {
 			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
 			//return TRACE_STRAIGHT;
-			return BIT_000000;
+			return BIT_001100;
 		}
 	}
 	//return TRACE_STRAIGHT;
-	return BIT_000000;
+	return BIT_001100;
 
 }
 
@@ -261,7 +261,7 @@ int executeRightTurn(void){
 		if (sensorPattern == BIT_001000 || sensorPattern == BIT_001100 || sensorPattern == BIT_000100) {
 			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
 			//return TRACE_STRAIGHT;
-			return BIT_000000;
+			return BIT_001100;
 		} else if ( sensorPattern == BIT_000110 || sensorPattern == BIT_000010 ||
 					sensorPattern == BIT_000011 || sensorPattern == BIT_000001 ) {
 			//既に逆側まで旋回していたら（想定よりも早く解除できてしまった場合）
@@ -279,11 +279,11 @@ int executeRightTurn(void){
 		sensorPattern = getSensorPattern();
 		if (sensorPattern == BIT_001000 || sensorPattern == BIT_001100 || sensorPattern == BIT_000100) {
 			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
-			return BIT_000000;
+			return BIT_001100;
 		}
 	}
 	//return TRACE_STRAIGHT;
-	return BIT_000000;
+	return BIT_001100;
 }
 
 /************************************************************************/
