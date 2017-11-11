@@ -167,21 +167,22 @@ void executeTraceProcess(void) {
 * @detail ゴール判定条件を満たすまでライントレース動作を行う。
 */
 void executeHunt1And2TraceProcess(void) {
-	traceForwardArea_01();
-	traceForwardArea_02();
-	traceForwardArea_03();
-	traceForwardArea_04();
-	traceForwardArea_05();
-	treasureHunt_01();
-	traceBackwardArea_01();
-	traceBackwardArea_02();
-	traceBackwardArea_03();
-	traceBackwardArea_04();
-	treasureHunt_02();
-	traceBackLowMoveArea_01();
+	//traceForwardArea_01();
+	//traceForwardArea_02();
+	//traceForwardArea_03();
+	//traceForwardArea_04();
+	//traceForwardArea_05();
+	//treasureHunt_01();
+	//traceBackwardArea_01();
+	//traceBackwardArea_02();
+	//traceBackwardArea_03();
+	//traceBackwardArea_04();
+	//treasureHunt_02();
+	//traceBackLowMoveArea_01();
+	//shortTraceToRightTurn();
 	shortTraceToRightTurn();
-	shortTraceToRightTurn();
-	traceBackwardArea_18();
+	//traceBackwardArea_18();
+    traceBackwardArea_19();
 }
 
 /**
@@ -354,12 +355,12 @@ void sensorDebug(void) {
 		IR[LEFT_OUTSIDE], IR[LEFT_CENTER], IR[LEFT_INSIDE],
 		IR[RIGHT_INSIDE], IR[RIGHT_CENTER], IR[RIGHT_OUTSIDE]);
 		LOG_WARN("IR[L %1d%1d%1d%1d%1d%1d R]\r\n",
-		((IR[LEFT_OUTSIDE]  <= COMPARE_VALUE) ? 1 : 0),
+		((IR[LEFT_OUTSIDE]  <= COMPARE_VALUE_LEFTSIDE) ? 1 : 0),
 		((IR[LEFT_CENTER]   <= COMPARE_VALUE) ? 1 : 0),
 		((IR[LEFT_INSIDE]   <= COMPARE_VALUE) ? 1 : 0),
 		((IR[RIGHT_INSIDE]  <= COMPARE_VALUE) ? 1 : 0),
 		((IR[RIGHT_CENTER]  <= COMPARE_VALUE) ? 1 : 0),
-		((IR[RIGHT_OUTSIDE] <= COMPARE_VALUE) ? 1 : 0));
+		((IR[RIGHT_OUTSIDE] <= COMPARE_VALUE_RIGHTSIDE) ? 1 : 0));
 		currentTraceAction = getActionWithHistory();
 		LOG_WARN("currentTraceAction %d\r\n", currentTraceAction);
 		_delay_ms(500);

@@ -52,6 +52,7 @@ void traceBackwardArea_15(void);
 void traceBackwardArea_16(void);
 void traceBackwardArea_17(void);
 void traceBackwardArea_18(void);
+void traceBackwardArea_19(void);
 
 void TreasureFindingLineTrace(int isFirst);
 

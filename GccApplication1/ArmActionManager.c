@@ -19,7 +19,8 @@
 void initDumpMotor(void) {
 	MotorControlJoint(WRIST_MOTOR, 200, 512);
 	executeRotate(SHOULDER_MOTOR, 100, 680, 680);
-	executeRotate(UPPER_ARM_MOTOR, 100, 70, 70);
+//	executeRotate(UPPER_ARM_MOTOR, 100, 70, 70);
+	executeRotate(UPPER_ARM_MOTOR, 100, 50, 50);
 	executeRotate(FORE_ARM_MOTOR, 100, 300, 300);
 }
 
@@ -31,7 +32,8 @@ void FindFormation(void)
 {
 	MotorControlJoint(WRIST_MOTOR, 200, 512);
 	executeRotate(SHOULDER_MOTOR, 100, 680, 680);
-	executeRotate(UPPER_ARM_MOTOR, 100, 70, 70);
+//	executeRotate(UPPER_ARM_MOTOR, 100, 70, 70);
+	executeRotate(UPPER_ARM_MOTOR, 100, 50, 50);
 	executeRotate(FORE_ARM_MOTOR, 100, 300, 300);
 }
 

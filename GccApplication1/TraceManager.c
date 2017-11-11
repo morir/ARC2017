@@ -57,7 +57,7 @@ void traceCommon(int *counter, int *maxSpeed) {
 	getSensors();
 	currentTraceAction = getActionWithHistory();
 	if (currentTraceAction == TRACE_UNDEFINED) {
-		_delay_ms(2);// delayTimeの間隔を空ける
+		_delay_ms(1);// delayTimeの間隔を空ける
         //undefinedCount++;
 		return;
 	}
@@ -96,6 +96,27 @@ void traceCommon(int *counter, int *maxSpeed) {
 	//初期動作（少しだけ直進）
 	StraightMove();
 	_delay_ms(100);	// 10ms 間隔を空ける
+
+    // スタートラインの判定対策
+	while (1) {
+        if (currentTraceAction == TRACE_L_TURN)
+        {
+    // ラインを超えるまで任意時間ディレイ
+	        StraightMove();
+	        _delay_ms(500);	// 10ms 間隔を空ける
+                break;
+        }
+
+        if(currentTraceAction == TRACE_R_TURN) 
+        {
+    // ラインを超えるまで任意時間ディレイ
+	        StraightMove();
+	        _delay_ms(500);	// 10ms 間隔を空ける
+    	    break;
+        }
+        traceCommon(&counter, &maxSpeed);
+        counter++;
+    }
 
 	while (currentTraceAction != TRACE_L_TURN) {
 		traceCommon(&counter, &maxSpeed);
@@ -733,6 +754,47 @@ void traceBackwardArea_18(void) {
 
 	// 停止実行
 	StopMove();
+}
+
+
+/*
+ * 復路エリア 18 のトレース動作(スタートライン判定用)
+ * @return なし
+ * @condition
+ *   開始条件：なし（復路エリア 17 のトレース動作から継続）。
+ *   終了条件：ゴールエリアを検出して終了動作が完了する。
+ */
+void traceBackwardArea_19(void) {
+    int counter = 0;
+    int maxSpeed = MAX_SPEED;
+
+    // 直進
+    currentTraceAction = TRACE_STRAIGHT;
+    BaseSpeed = BASE_SPEED_INIT_VAL;
+
+    // スタートラインの判定対策
+    while (1) {
+        if (currentTraceAction == TRACE_L_TURN)
+        {
+            // ラインを超えるまで任意時間ディレイ
+            StraightMove();
+            _delay_ms(500);	// 10ms 間隔を空ける
+            break;
+        }
+
+        if(currentTraceAction == TRACE_R_TURN)
+        {
+            // ラインを超えるまで任意時間ディレイ
+            StraightMove();
+            _delay_ms(500);	// 10ms 間隔を空ける
+            break;
+        }
+        traceCommon(&counter, &maxSpeed);
+        counter++;
+    }
+
+    // 停止実行
+    StopMove();
 }
 
 /*
