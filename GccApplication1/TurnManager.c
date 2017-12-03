@@ -15,63 +15,63 @@ extern void LED_on(int i);
 extern void stopMoveLessThanVal(int val);
 
  /**
- * ¶ù‰ñ“®ì‚Ì‰Šú‰»ˆ—
- * ’âŽ~‚ðŽÀs‚µ‚ÄA
- * Šî€ˆÈ‰º‚Ì‘¬“x‚Ü‚ÅŒ¸‘¬‚Å‚«‚½‚çA¶ù‰ñ‚ÌƒXƒe[ƒ^ƒX‚ð•Ô‚·
+ * å·¦æ—‹å›žå‹•ä½œã®åˆæœŸåŒ–å‡¦ç†
+ * åœæ­¢ã‚’å®Ÿè¡Œã—ã¦ã€
+ * åŸºæº–ä»¥ä¸‹ã®é€Ÿåº¦ã¾ã§æ¸›é€Ÿã§ããŸã‚‰ã€å·¦æ—‹å›žã®ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’è¿”ã™
  */
 int initLeftTurnAction(int referenceVal) {
 
-	StopMove();//’âŽ~‚ðŽÀs
+	StopMove();//åœæ­¢ã‚’å®Ÿè¡Œ
 	int judgeSpeed = 0;
 	while(1) {
-		judgeSpeed = GetCurrentSpeedR();//ƒ‚[ƒ^[‚Ì‘¬“x‚ðŽæ“¾
+		judgeSpeed = GetCurrentSpeedR();//ãƒ¢ãƒ¼ã‚¿ãƒ¼ã®é€Ÿåº¦ã‚’å–å¾—
 		if( (judgeSpeed >= 0 && judgeSpeed <= referenceVal) ||
 			(judgeSpeed >= 1024 && judgeSpeed <= (1024 + referenceVal)) ) {
-			//‘¬“x‚ªmaxValˆÈ‰º‚È‚çstop()”²‚¯‚é
+			//é€Ÿåº¦ãŒmaxValä»¥ä¸‹ãªã‚‰stop()æŠœã‘ã‚‹
 			return TRACE_L_TURN;
 		}
 	}
 }
 
 /**
- * ‰Eù‰ñ“®ì‚Ì‰Šú‰»
- * ’âŽ~‚ðŽÀs‚µ‚ÄA
- * Šî€ˆÈ‰º‚Ì‘¬“x‚Ü‚ÅŒ¸‘¬‚Å‚«‚½‚çA‰Eù‰ñ‚ÌƒXƒe[ƒ^ƒX‚ð•Ô‚·
+ * å³æ—‹å›žå‹•ä½œã®åˆæœŸåŒ–
+ * åœæ­¢ã‚’å®Ÿè¡Œã—ã¦ã€
+ * åŸºæº–ä»¥ä¸‹ã®é€Ÿåº¦ã¾ã§æ¸›é€Ÿã§ããŸã‚‰ã€å³æ—‹å›žã®ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’è¿”ã™
  */
 int initRightTurnAction(int referenceVal) {
 
-	StopMove();//’âŽ~‚ðŽÀs
+	StopMove();//åœæ­¢ã‚’å®Ÿè¡Œ
 	int judgeSpeed = 0;
 	while(1) {
-		judgeSpeed = GetCurrentSpeedR();//ƒ‚[ƒ^[‚Ì‘¬“x‚ðŽæ“¾
+		judgeSpeed = GetCurrentSpeedR();//ãƒ¢ãƒ¼ã‚¿ãƒ¼ã®é€Ÿåº¦ã‚’å–å¾—
 		if( (judgeSpeed >= 0 && judgeSpeed <= referenceVal) ||
 			(judgeSpeed >= 1024 && judgeSpeed <= (1024 + referenceVal)) ) {
-			//‘¬“x‚ªmaxValˆÈ‰º‚È‚çstop()”²‚¯‚é
+			//é€Ÿåº¦ãŒmaxValä»¥ä¸‹ãªã‚‰stop()æŠœã‘ã‚‹
 			return TRACE_R_TURN;
 		}
 	}
 }
 
 /**
- * ¶ù‰ñŽÀs
- * ù‰ñ“®ì‚ð‚³‚¹‚ÄAƒZƒ“ƒT[‚ª’†‰›‚É‚È‚Á‚½‚ç’¼i‚ðŽw’è‚µ‚Ä”²‚¯‚é
+ * å·¦æ—‹å›žå®Ÿè¡Œ
+ * æ—‹å›žå‹•ä½œã‚’ã•ã›ã¦ã€ã‚»ãƒ³ã‚µãƒ¼ãŒä¸­å¤®ã«ãªã£ãŸã‚‰ç›´é€²ã‚’æŒ‡å®šã—ã¦æŠœã‘ã‚‹
  */
 int executeLeftTurn(void){
 	static int sensorPattern = BIT_000000;
 
-	//ù‰ñ”»’è‚³‚ê‚½‚ç’âŽ~‚ðŽÀs
+	//æ—‹å›žåˆ¤å®šã•ã‚ŒãŸã‚‰åœæ­¢ã‚’å®Ÿè¡Œ
 	initLeftTurnAction(STOP_JUDGE_MAX_LIMIT);
 	LED_on(1);
 
-	//’âŽ~‚ªŠm’è‚µ‚½‚çƒx[ƒX‘¬“x‚É‰ž‚¶‚ÄA‘OiorŒãi‚ðŽÀs
+	//åœæ­¢ãŒç¢ºå®šã—ãŸã‚‰ãƒ™ãƒ¼ã‚¹é€Ÿåº¦ã«å¿œã˜ã¦ã€å‰é€²orå¾Œé€²ã‚’å®Ÿè¡Œ
 	adjustTurnPosition();
 
-	// ¶ù‰ñŽÀs
+	// å·¦æ—‹å›žå®Ÿè¡Œ
     LeftTurnMove();
 	while(1) {
 		sensorPattern = getSensorPattern();
 
-		//ù‰ñ“®ì‚ð”²‚¯‚é‚½‚ß‚ÌðŒ‚ð”»’è
+		//æ—‹å›žå‹•ä½œã‚’æŠœã‘ã‚‹ãŸã‚ã®æ¡ä»¶ã‚’åˆ¤å®š
 		if (
 			//sensorPattern == BIT_010000 || sensorPattern == BIT_011000 ||
 			sensorPattern == BIT_011100 || sensorPattern == BIT_001110 ||
@@ -80,46 +80,46 @@ int executeLeftTurn(void){
 			sensorPattern == BIT_000010
 			) {
 			LED_on(2);
-			//’†‰›‚ÌƒZƒ“ƒT[‚ª”’‚È‚ç’âŽ~‚ðŽÀs
+			//ä¸­å¤®ã®ã‚»ãƒ³ã‚µãƒ¼ãŒç™½ãªã‚‰åœæ­¢ã‚’å®Ÿè¡Œ
 			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
 			break;
 		}
 
-   	    //¶ƒZƒ“ƒT[‚ðŒŸo‚µ‚Ä‚¢‚é‚©Šm”F‚·‚é
+   	    //å·¦ã‚»ãƒ³ã‚µãƒ¼ã‚’æ¤œå‡ºã—ã¦ã„ã‚‹ã‹ç¢ºèªã™ã‚‹
    	    if (sensorPattern == BIT_100000) {
-       	    //¶ƒZƒ“ƒT[‚ðŒŸo‚µ‚½‚çù‰ñ‘¬“x‚ð—Ž‚Æ‚·
+       	    //å·¦ã‚»ãƒ³ã‚µãƒ¼ã‚’æ¤œå‡ºã—ãŸã‚‰æ—‹å›žé€Ÿåº¦ã‚’è½ã¨ã™
        	    LeftTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
    	    }
 	}
 
-	//ù‰ñ’âŽ~”»’èŒã‚ÌŽ~‚Ü‚Á‚½ˆÊ’u‚ÅƒZƒ“ƒT[‚ª’†‰›‚SŒÂ‚Ì‚¢‚¸‚ê‚©‚È‚ç‹tù‰ñI—¹
+	//æ—‹å›žåœæ­¢åˆ¤å®šå¾Œã®æ­¢ã¾ã£ãŸä½ç½®ã§ã‚»ãƒ³ã‚µãƒ¼ãŒä¸­å¤®ï¼”å€‹ã®ã„ãšã‚Œã‹ãªã‚‰é€†æ—‹å›žçµ‚äº†
 	sensorPattern = getSensorPattern();
 	//if (sensorPattern == BIT_010000) {
-	    ////¶ƒZƒ“ƒT[‚È‚Ì‚ÅA¶‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+	    ////å·¦ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å·¦æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
 	    //return TRACE_L_ROUND_MIDDLE;
 	//} else if (sensorPattern == BIT_011000) {
-	    ////¶ƒZƒ“ƒT[‚È‚Ì‚ÅA¶‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+	    ////å·¦ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å·¦æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
 	    //return TRACE_L_ROUND_SOFT;
 	//} else if (sensorPattern == BIT_001000) {
-		////’†‰›ƒZƒ“ƒT[‚È‚Ì‚ÅA’¼i‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+		////ä¸­å¤®ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€ç›´é€²ã«è¨­å®šã—ã¦æŠœã‘ã‚‹
 	    //return TRACE_STRAIGHT;
 	//} else if (sensorPattern == BIT_011100) {
-		////’†‰›ƒZƒ“ƒT[‚È‚Ì‚ÅA’¼i‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+		////ä¸­å¤®ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€ç›´é€²ã«è¨­å®šã—ã¦æŠœã‘ã‚‹
 		//return TRACE_STRAIGHT;
 	//} else if (sensorPattern == BIT_001100) {
-		////’†‰›ƒZƒ“ƒT[‚È‚Ì‚ÅA’¼i‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+		////ä¸­å¤®ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€ç›´é€²ã«è¨­å®šã—ã¦æŠœã‘ã‚‹
 	    //return TRACE_STRAIGHT;
 	//} else if (sensorPattern == BIT_001110) {
-		////’†‰›ƒZƒ“ƒT[‚È‚Ì‚ÅA’¼i‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+		////ä¸­å¤®ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€ç›´é€²ã«è¨­å®šã—ã¦æŠœã‘ã‚‹
 		//return TRACE_STRAIGHT;
 	//} else if (sensorPattern == BIT_000100) {
-		////’†‰›ƒZƒ“ƒT[‚È‚Ì‚ÅA’¼i‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+		////ä¸­å¤®ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€ç›´é€²ã«è¨­å®šã—ã¦æŠœã‘ã‚‹
 	    //return TRACE_STRAIGHT;
 	//} else if (sensorPattern == BIT_000110) {
-	    ////‰EƒZƒ“ƒT[‚È‚Ì‚ÅA‰E‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+	    ////å³ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å³æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
 	    //return TRACE_R_ROUND_SOFT;
 	//} else if (sensorPattern == BIT_000010) {
-	    ////‰EƒZƒ“ƒT[‚È‚Ì‚ÅA‰E‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+	    ////å³ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å³æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
 	    //return TRACE_R_ROUND_MIDDLE;
 	//}
 	if ((sensorPattern == BIT_010000) ||
@@ -135,10 +135,10 @@ int executeLeftTurn(void){
 	}
 	
 	LED_on(3);
-	//ƒZƒ“ƒT[‚ð’†‰›‚É–ß‚·‚½‚ß’x‚¢ù‰ñ‚ðŽÀs
+	//ã‚»ãƒ³ã‚µãƒ¼ã‚’ä¸­å¤®ã«æˆ»ã™ãŸã‚é…ã„æ—‹å›žã‚’å®Ÿè¡Œ
 	RightTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
 	while(1) {
-		//‹tù‰ñ“®ì‚ð”²‚¯‚é‚½‚ß‚ÌðŒ‚ð”»’è
+		//é€†æ—‹å›žå‹•ä½œã‚’æŠœã‘ã‚‹ãŸã‚ã®æ¡ä»¶ã‚’åˆ¤å®š
 		sensorPattern = getSensorPattern();
 		if (sensorPattern == BIT_001000 || sensorPattern == BIT_001100 || sensorPattern == BIT_000100) {
 			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
@@ -146,19 +146,19 @@ int executeLeftTurn(void){
 			return BIT_001100;
 		} else if ( sensorPattern == BIT_010000 ||	sensorPattern == BIT_011000 ||
 					sensorPattern == BIT_100000 ||	sensorPattern == BIT_110000 ) {
-			//Šù‚É‹t‘¤‚Ü‚Åù‰ñ‚µ‚Ä‚¢‚½‚çi‘z’è‚æ‚è‚à‘‚­‰ðœ‚Å‚«‚Ä‚µ‚Ü‚Á‚½ê‡‚È‚Çj
-	        //¶ƒZƒ“ƒT[‚È‚Ì‚ÅA¶‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+			//æ—¢ã«é€†å´ã¾ã§æ—‹å›žã—ã¦ã„ãŸã‚‰ï¼ˆæƒ³å®šã‚ˆã‚Šã‚‚æ—©ãè§£é™¤ã§ãã¦ã—ã¾ã£ãŸå ´åˆãªã©ï¼‰
+	        //å·¦ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å·¦æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
             
 	        //return TRACE_L_ROUND_MIDDLE;
 			return BIT_010000;
 		}
 	}
 
-	//Ä“xƒZƒ“ƒT[‚ð’†‰›‚É–ß‚·‚½‚ß’x‚¢ù‰ñ‚ðŽÀsi‚±‚±‚Ü‚Å‚ÍŽÀs‚³‚ê‚È‚¢‘z’èj
+	//å†åº¦ã‚»ãƒ³ã‚µãƒ¼ã‚’ä¸­å¤®ã«æˆ»ã™ãŸã‚é…ã„æ—‹å›žã‚’å®Ÿè¡Œï¼ˆã“ã“ã¾ã§ã¯å®Ÿè¡Œã•ã‚Œãªã„æƒ³å®šï¼‰
 	LED_on(4);
 	LeftTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
 	while(1) {
-		//‹tù‰ñ“®ì‚ð”²‚¯‚é‚½‚ß‚ÌðŒ‚ð”»’è
+		//é€†æ—‹å›žå‹•ä½œã‚’æŠœã‘ã‚‹ãŸã‚ã®æ¡ä»¶ã‚’åˆ¤å®š
 		sensorPattern = getSensorPattern();
 		if (sensorPattern == BIT_001000 || sensorPattern == BIT_001100 || sensorPattern == BIT_000100) {
 			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
@@ -172,25 +172,25 @@ int executeLeftTurn(void){
 }
 
 /**
- * ‰Eù‰ñŽÀs
- * ù‰ñ“®ì‚ð‚³‚¹‚ÄAƒZƒ“ƒT[‚ª’†‰›‚É‚È‚Á‚½‚ç’¼i‚ðŽw’è‚µ‚Ä”²‚¯‚é
+ * å³æ—‹å›žå®Ÿè¡Œ
+ * æ—‹å›žå‹•ä½œã‚’ã•ã›ã¦ã€ã‚»ãƒ³ã‚µãƒ¼ãŒä¸­å¤®ã«ãªã£ãŸã‚‰ç›´é€²ã‚’æŒ‡å®šã—ã¦æŠœã‘ã‚‹
  */
 int executeRightTurn(void){
 	static int sensorPattern = BIT_000000;
 
-	//ù‰ñ”»’è‚³‚ê‚½‚ç’âŽ~‚ðŽÀs
+	//æ—‹å›žåˆ¤å®šã•ã‚ŒãŸã‚‰åœæ­¢ã‚’å®Ÿè¡Œ
 	initRightTurnAction(STOP_JUDGE_MAX_LIMIT);
 	LED_on(1);
 
-	//’âŽ~‚ªŠm’è‚µ‚½‚çƒx[ƒX‘¬“x‚É‰ž‚¶‚ÄA‘OiorŒãi‚ðŽÀs
+	//åœæ­¢ãŒç¢ºå®šã—ãŸã‚‰ãƒ™ãƒ¼ã‚¹é€Ÿåº¦ã«å¿œã˜ã¦ã€å‰é€²orå¾Œé€²ã‚’å®Ÿè¡Œ
 	adjustTurnPosition();
 
-	// ‰Eù‰ñŽÀs
+	// å³æ—‹å›žå®Ÿè¡Œ
 	RightTurnMove();
 	while(1) {
 		sensorPattern = getSensorPattern();
 
-		//ù‰ñ“®ì‚ð”²‚¯‚é‚½‚ß‚ÌðŒ‚ð”»’è
+		//æ—‹å›žå‹•ä½œã‚’æŠœã‘ã‚‹ãŸã‚ã®æ¡ä»¶ã‚’åˆ¤å®š
 		if (
 			//sensorPattern == BIT_000010 || sensorPattern == BIT_000110 ||
 			sensorPattern == BIT_011100 || sensorPattern == BIT_001110 ||
@@ -199,45 +199,45 @@ int executeRightTurn(void){
 			sensorPattern == BIT_010000
 		    ) {
 			LED_on(2);
-			//’†‰›‚ÌƒZƒ“ƒT[‚ª•‚È‚ç’âŽ~‚ðŽÀs
+			//ä¸­å¤®ã®ã‚»ãƒ³ã‚µãƒ¼ãŒé»’ãªã‚‰åœæ­¢ã‚’å®Ÿè¡Œ
 			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
 			break;
 		}
-   	    //‰EƒZƒ“ƒT[‚ðŒŸo‚µ‚Ä‚¢‚é‚©Šm”F‚·‚é
+   	    //å³ã‚»ãƒ³ã‚µãƒ¼ã‚’æ¤œå‡ºã—ã¦ã„ã‚‹ã‹ç¢ºèªã™ã‚‹
    	    if (sensorPattern == BIT_000001) {
-       	    //‰EƒZƒ“ƒT[‚ðŒŸo‚µ‚½‚çù‰ñ‘¬“x‚ð—Ž‚Æ‚·
+       	    //å³ã‚»ãƒ³ã‚µãƒ¼ã‚’æ¤œå‡ºã—ãŸã‚‰æ—‹å›žé€Ÿåº¦ã‚’è½ã¨ã™
        	    RightTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
    	    }
 	}
 
-	//ù‰ñ’âŽ~”»’èŒã‚ÌŽ~‚Ü‚Á‚½ˆÊ’u‚ÅƒZƒ“ƒT[‚ª’†‰›‚È‚ç‹tù‰ñI—¹
+	//æ—‹å›žåœæ­¢åˆ¤å®šå¾Œã®æ­¢ã¾ã£ãŸä½ç½®ã§ã‚»ãƒ³ã‚µãƒ¼ãŒä¸­å¤®ãªã‚‰é€†æ—‹å›žçµ‚äº†
     sensorPattern = getSensorPattern();
     //if (sensorPattern == BIT_000010) {
-        ////¶ƒZƒ“ƒT[‚È‚Ì‚ÅA¶‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+        ////å·¦ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å·¦æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
         //return TRACE_R_ROUND_MIDDLE;
     //} else if (sensorPattern == BIT_000110) {
-        ////¶ƒZƒ“ƒT[‚È‚Ì‚ÅA¶‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+        ////å·¦ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å·¦æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
         //return TRACE_R_ROUND_SOFT;
     //} else if (sensorPattern == BIT_000100) {
-        ////’†‰›ƒZƒ“ƒT[‚È‚Ì‚ÅA’¼i‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+        ////ä¸­å¤®ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€ç›´é€²ã«è¨­å®šã—ã¦æŠœã‘ã‚‹
         //return TRACE_STRAIGHT;
     //} else if (sensorPattern == BIT_001110) {
-        ////¶ƒZƒ“ƒT[‚È‚Ì‚ÅA¶‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+        ////å·¦ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å·¦æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
         //return TRACE_R_ROUND_SOFT;
     //} else if (sensorPattern == BIT_001100) {
-        ////’†‰›ƒZƒ“ƒT[‚È‚Ì‚ÅA’¼i‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+        ////ä¸­å¤®ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€ç›´é€²ã«è¨­å®šã—ã¦æŠœã‘ã‚‹
         //return TRACE_STRAIGHT;
     //} else if (sensorPattern == BIT_011100) {
-        ////’†‰›ƒZƒ“ƒT[‚È‚Ì‚ÅA’¼i‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+        ////ä¸­å¤®ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€ç›´é€²ã«è¨­å®šã—ã¦æŠœã‘ã‚‹
         //return TRACE_STRAIGHT;
     //} else if (sensorPattern == BIT_001000) {
-        ////’†‰›ƒZƒ“ƒT[‚È‚Ì‚ÅA’¼i‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+        ////ä¸­å¤®ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€ç›´é€²ã«è¨­å®šã—ã¦æŠœã‘ã‚‹
         //return TRACE_STRAIGHT;
     //} else if (sensorPattern == BIT_011000) {
-        ////‰EƒZƒ“ƒT[‚È‚Ì‚ÅA‰E‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+        ////å³ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å³æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
         //return TRACE_L_ROUND_SOFT;
     //} else if (sensorPattern == BIT_010000) {
-        ////‰EƒZƒ“ƒT[‚È‚Ì‚ÅA‰E‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+        ////å³ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å³æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
         //return TRACE_L_ROUND_MIDDLE;
     //}
 	if ((sensorPattern == BIT_000010) ||
@@ -253,10 +253,10 @@ int executeRightTurn(void){
 	}
 	
 	LED_on(3);
-	//ƒZƒ“ƒT[‚ð’†‰›‚É–ß‚·‚½‚ß’x‚¢ù‰ñ‚ðŽÀs
+	//ã‚»ãƒ³ã‚µãƒ¼ã‚’ä¸­å¤®ã«æˆ»ã™ãŸã‚é…ã„æ—‹å›žã‚’å®Ÿè¡Œ
 	LeftTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
 	while(1) {
-		//‹tù‰ñ“®ì‚ð”²‚¯‚é‚½‚ß‚ÌðŒ‚ð”»’è
+		//é€†æ—‹å›žå‹•ä½œã‚’æŠœã‘ã‚‹ãŸã‚ã®æ¡ä»¶ã‚’åˆ¤å®š
 		sensorPattern = getSensorPattern();
 		if (sensorPattern == BIT_001000 || sensorPattern == BIT_001100 || sensorPattern == BIT_000100) {
 			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
@@ -264,18 +264,18 @@ int executeRightTurn(void){
 			return BIT_001100;
 		} else if ( sensorPattern == BIT_000110 || sensorPattern == BIT_000010 ||
 					sensorPattern == BIT_000011 || sensorPattern == BIT_000001 ) {
-			//Šù‚É‹t‘¤‚Ü‚Åù‰ñ‚µ‚Ä‚¢‚½‚çi‘z’è‚æ‚è‚à‘‚­‰ðœ‚Å‚«‚Ä‚µ‚Ü‚Á‚½ê‡j
-	        //¶ƒZƒ“ƒT[‚È‚Ì‚ÅA¶‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+			//æ—¢ã«é€†å´ã¾ã§æ—‹å›žã—ã¦ã„ãŸã‚‰ï¼ˆæƒ³å®šã‚ˆã‚Šã‚‚æ—©ãè§£é™¤ã§ãã¦ã—ã¾ã£ãŸå ´åˆï¼‰
+	        //å·¦ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å·¦æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
 	        //return TRACE_R_ROUND_MIDDLE;
 			return BIT_000010;
 		}
 	}
 		
-	//Ä“xƒZƒ“ƒT[‚ð’†‰›‚É–ß‚·‚½‚ß’x‚¢ù‰ñ‚ðŽÀsi‚±‚±‚Ü‚Å‚ÍŽÀs‚³‚ê‚È‚¢‘z’èj
+	//å†åº¦ã‚»ãƒ³ã‚µãƒ¼ã‚’ä¸­å¤®ã«æˆ»ã™ãŸã‚é…ã„æ—‹å›žã‚’å®Ÿè¡Œï¼ˆã“ã“ã¾ã§ã¯å®Ÿè¡Œã•ã‚Œãªã„æƒ³å®šï¼‰
 	LED_on(4);
 	RightTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
 	while(1) {
-		//‹tù‰ñ“®ì‚ð”²‚¯‚é‚½‚ß‚ÌðŒ‚ð”»’è
+		//é€†æ—‹å›žå‹•ä½œã‚’æŠœã‘ã‚‹ãŸã‚ã®æ¡ä»¶ã‚’åˆ¤å®š
 		sensorPattern = getSensorPattern();
 		if (sensorPattern == BIT_001000 || sensorPattern == BIT_001100 || sensorPattern == BIT_000100) {
 			stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
@@ -287,328 +287,330 @@ int executeRightTurn(void){
 }
 
 /************************************************************************/
-// ƒgƒŒ[ƒXƒ‰ƒCƒ“ã‚©‚ç‚Ì¶ù‰ñ‚ðs‚¤B
-// ŽÀs‘O‚É‘–sƒ‚[ƒ^‚ð’âŽ~‚µ‚Ä‚¨‚­‚±‚ÆB
-// ù‰ñŒãA’†‰›‚ÌƒZƒ“ƒT[‚ªƒgƒŒ[ƒXƒ‰ƒCƒ“‚ðŒŸo‚µ‚½‚çˆ—‚ðI—¹‚·‚éB
+// ãƒˆãƒ¬ãƒ¼ã‚¹ãƒ©ã‚¤ãƒ³ä¸Šã‹ã‚‰ã®å·¦æ—‹å›žã‚’è¡Œã†ã€‚
+// å®Ÿè¡Œå‰ã«èµ°è¡Œãƒ¢ãƒ¼ã‚¿ã‚’åœæ­¢ã—ã¦ãŠãã“ã¨ã€‚
+// æ—‹å›žå¾Œã€ä¸­å¤®ã®ã‚»ãƒ³ã‚µãƒ¼ãŒãƒˆãƒ¬ãƒ¼ã‚¹ãƒ©ã‚¤ãƒ³ã‚’æ¤œå‡ºã—ãŸã‚‰å‡¦ç†ã‚’çµ‚äº†ã™ã‚‹ã€‚
 /************************************************************************/
 void executeLeftTurnFromOnLine(void) {
     int sensorPattern = BIT_000000;
 
-    // ¶ù‰ñŽÀs
+    // å·¦æ—‹å›žå®Ÿè¡Œ
     LeftTurnMove();
     
-    // ù‰ñŠJŽnŽž‚Éƒ‰ƒCƒ“ƒZƒ“ƒT[‚ªƒ‰ƒCƒ“‚ð“Ç‚ÝŽæ‚éˆÊ’u‚É‹‚é‚Í‚¸‚È‚Ì‚Å
-    // ƒZƒ“ƒT[‚ªƒ‰ƒCƒ“ŠO‚Ü‚Å’Ê‰ß‚µ‚Ä‚¢‚é‚±‚Æ‚ðŠm”F‚·‚éB
+    // æ—‹å›žé–‹å§‹æ™‚ã«ãƒ©ã‚¤ãƒ³ã‚»ãƒ³ã‚µãƒ¼ãŒãƒ©ã‚¤ãƒ³ã‚’èª­ã¿å–ã‚‹ä½ç½®ã«å±…ã‚‹ã¯ãšãªã®ã§
+    // ã‚»ãƒ³ã‚µãƒ¼ãŒãƒ©ã‚¤ãƒ³å¤–ã¾ã§é€šéŽã—ã¦ã„ã‚‹ã“ã¨ã‚’ç¢ºèªã™ã‚‹ã€‚
     while(1) {
         sensorPattern = getSensorPattern();
 
-        //‰EƒZƒ“ƒT[‚ðŒŸo‚µ‚Ä‚¢‚é‚©Šm”F‚·‚é
+        //å³ã‚»ãƒ³ã‚µãƒ¼ã‚’æ¤œå‡ºã—ã¦ã„ã‚‹ã‹ç¢ºèªã™ã‚‹
         if (sensorPattern == BIT_000001) {
-            // ù‰ñ‚ðŒp‘±‚µ‚Ä”²‚¯‚éi‚Å‚«‚ê‚Î‚±‚±‚ÅŠmŽÀ‚É”²‚¯‚½‚¢j
-            _delay_ms(300);//ƒZƒ“ƒT[‚ª‘S‚Ä’Ê‰ß‚·‚é‚Ü‚Åù‰ñ
+            // æ—‹å›žã‚’ç¶™ç¶šã—ã¦æŠœã‘ã‚‹ï¼ˆã§ãã‚Œã°ã“ã“ã§ç¢ºå®Ÿã«æŠœã‘ãŸã„ï¼‰
+            _delay_ms(300);//ã‚»ãƒ³ã‚µãƒ¼ãŒå…¨ã¦é€šéŽã™ã‚‹ã¾ã§æ—‹å›ž
             break;
             } else if (sensorPattern == BIT_000010) {
-            // ù‰ñ‚ðŒp‘±‚µ‚Ä”²‚¯‚é
-            _delay_ms(500);//ƒZƒ“ƒT[‚ª‘S‚Ä’Ê‰ß‚·‚é‚Ü‚Åù‰ñ
+            // æ—‹å›žã‚’ç¶™ç¶šã—ã¦æŠœã‘ã‚‹
+            _delay_ms(500);//ã‚»ãƒ³ã‚µãƒ¼ãŒå…¨ã¦é€šéŽã™ã‚‹ã¾ã§æ—‹å›ž
             break;
             } else if (sensorPattern == BIT_000110) {
-            // ù‰ñ‚ðŒp‘±‚µ‚Ä”²‚¯‚éi—\”õj
+            // æ—‹å›žã‚’ç¶™ç¶šã—ã¦æŠœã‘ã‚‹ï¼ˆäºˆå‚™ï¼‰
             //_delay_ms(100);
             //break;
         }
-        //_delay_ms(10);//ƒ‹[ƒv‚Ì‘Ò‚¿ŽžŠÔ‚ð•K—v‚É‰ž‚¶‚ÄÝ’è
+        //_delay_ms(10);//ãƒ«ãƒ¼ãƒ—ã®å¾…ã¡æ™‚é–“ã‚’å¿…è¦ã«å¿œã˜ã¦è¨­å®š
     }
     
-    // ù‰ñ“®ì‚Ì•œ‹A“®ì
+    // æ—‹å›žå‹•ä½œã®å¾©å¸°å‹•ä½œ
     while(1) {
         sensorPattern = getSensorPattern();
 
-        //ù‰ñ“®ì‚ð”²‚¯‚é‚½‚ß‚ÌðŒ‚ð”»’è
+        //æ—‹å›žå‹•ä½œã‚’æŠœã‘ã‚‹ãŸã‚ã®æ¡ä»¶ã‚’åˆ¤å®š
         if (
         sensorPattern == BIT_011100 || sensorPattern == BIT_001110 ||
         sensorPattern == BIT_001000 || sensorPattern == BIT_001100 ||
         sensorPattern == BIT_000100 || sensorPattern == BIT_000110
         ) {
             LED_on(2);
-            //’†‰›‚ÌƒZƒ“ƒT[‚ª”’‚È‚ç’âŽ~‚ðŽÀs
+            //ä¸­å¤®ã®ã‚»ãƒ³ã‚µãƒ¼ãŒç™½ãªã‚‰åœæ­¢ã‚’å®Ÿè¡Œ
             stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
             break;
         }
 
-        //¶ƒZƒ“ƒT[‚ðŒŸo‚µ‚Ä‚¢‚é‚©Šm”F‚·‚é
+        //å·¦ã‚»ãƒ³ã‚µãƒ¼ã‚’æ¤œå‡ºã—ã¦ã„ã‚‹ã‹ç¢ºèªã™ã‚‹
         if (sensorPattern == BIT_100000) {
-            //¶ƒZƒ“ƒT[‚ðŒŸo‚µ‚½‚çù‰ñ‘¬“x‚ð—Ž‚Æ‚·
+            //å·¦ã‚»ãƒ³ã‚µãƒ¼ã‚’æ¤œå‡ºã—ãŸã‚‰æ—‹å›žé€Ÿåº¦ã‚’è½ã¨ã™
             LeftTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
         }
     }
     
-    //ù‰ñ’âŽ~”»’èŒã‚ÌŽ~‚Ü‚Á‚½ˆÊ’u‚ÅƒZƒ“ƒT[‚ª’†‰›‚SŒÂ‚Ì‚¢‚¸‚ê‚©‚È‚ç‹tù‰ñI—¹
+    //æ—‹å›žåœæ­¢åˆ¤å®šå¾Œã®æ­¢ã¾ã£ãŸä½ç½®ã§ã‚»ãƒ³ã‚µãƒ¼ãŒä¸­å¤®ï¼”å€‹ã®ã„ãšã‚Œã‹ãªã‚‰é€†æ—‹å›žçµ‚äº†
     sensorPattern = getSensorPattern();
     if (sensorPattern == BIT_010000) {
-        //¶ƒZƒ“ƒT[‚È‚Ì‚ÅA¶‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+        //å·¦ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å·¦æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
         Execute(TRACE_L_ROUND_MIDDLE);
         _delay_ms(50);
         return;
         } else if (sensorPattern == BIT_011000) {
-        //¶ƒZƒ“ƒT[‚È‚Ì‚ÅA¶‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+        //å·¦ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å·¦æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
         Execute(TRACE_L_ROUND_SOFT);
         _delay_ms(50);
         return;
         } else if (sensorPattern == BIT_001000) {
-        //’†‰›ƒZƒ“ƒT[‚È‚Ì‚ÅA’¼i‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+        //ä¸­å¤®ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€ç›´é€²ã«è¨­å®šã—ã¦æŠœã‘ã‚‹
         Execute(TRACE_STRAIGHT);
         _delay_ms(50);
         return;
         } else if (sensorPattern == BIT_001100) {
-        //’†‰›ƒZƒ“ƒT[‚È‚Ì‚ÅA’¼i‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+        //ä¸­å¤®ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€ç›´é€²ã«è¨­å®šã—ã¦æŠœã‘ã‚‹
         Execute(TRACE_STRAIGHT);
         _delay_ms(50);
         return;
         } else if (sensorPattern == BIT_000100) {
-        //’†‰›ƒZƒ“ƒT[‚È‚Ì‚ÅA’¼i‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+        //ä¸­å¤®ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€ç›´é€²ã«è¨­å®šã—ã¦æŠœã‘ã‚‹
         Execute(TRACE_STRAIGHT);
         _delay_ms(50);
         return;
         } else if (sensorPattern == BIT_000110) {
-        //‰EƒZƒ“ƒT[‚È‚Ì‚ÅA‰E‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+        //å³ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å³æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
         Execute(TRACE_R_ROUND_SOFT);
         _delay_ms(50);
         return;
         } else if (sensorPattern == BIT_000010) {
-        //‰EƒZƒ“ƒT[‚È‚Ì‚ÅA‰E‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+        //å³ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å³æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
         Execute(TRACE_R_ROUND_MIDDLE);
         _delay_ms(50);
         return;
     }
     
-    // ù‰ñ’âŽ~”»’è’†‚ÉƒZƒ“ƒT[‚ªƒ‰ƒCƒ“‚ð’Ê‚è‰z‚µ‚½‘z’è
-    //ƒZƒ“ƒT[‚ð’†‰›‚É–ß‚·‚½‚ß’x‚¢ù‰ñ‚ðŽÀs
+    // æ—‹å›žåœæ­¢åˆ¤å®šä¸­ã«ã‚»ãƒ³ã‚µãƒ¼ãŒãƒ©ã‚¤ãƒ³ã‚’é€šã‚Šè¶Šã—ãŸæƒ³å®š
+    //ã‚»ãƒ³ã‚µãƒ¼ã‚’ä¸­å¤®ã«æˆ»ã™ãŸã‚é…ã„æ—‹å›žã‚’å®Ÿè¡Œ
     RightTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
     while(1) {
         sensorPattern = getSensorPattern();
 
-        //ù‰ñ“®ì‚ð”²‚¯‚é‚½‚ß‚ÌðŒ‚ð”»’è
-        // ¸“x‚Í—Ž‚¿‚é‚ªA‚Æ‚è‚ ‚¦‚¸ù‰ñ‚ð”²‚¯‚é
+        //æ—‹å›žå‹•ä½œã‚’æŠœã‘ã‚‹ãŸã‚ã®æ¡ä»¶ã‚’åˆ¤å®š
+        // ç²¾åº¦ã¯è½ã¡ã‚‹ãŒã€ã¨ã‚Šã‚ãˆãšæ—‹å›žã‚’æŠœã‘ã‚‹
         if (sensorPattern == BIT_000010) {
-            //‰EƒZƒ“ƒT[‚È‚Ì‚ÅA‰E‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+            //å³ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å³æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
             Execute(TRACE_R_ROUND_MIDDLE);
             _delay_ms(50);
             return;
             } else if (sensorPattern == BIT_000110) {
-            //‰EƒZƒ“ƒT[‚È‚Ì‚ÅA‰E‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+            //å³ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å³æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
             Execute(TRACE_R_ROUND_SOFT);
             _delay_ms(50);
             return;
             } else if (sensorPattern == BIT_000100) {
-            //’†‰›ƒZƒ“ƒT[‚È‚Ì‚ÅA’¼i‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+            //ä¸­å¤®ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€ç›´é€²ã«è¨­å®šã—ã¦æŠœã‘ã‚‹
             Execute(TRACE_STRAIGHT);
             _delay_ms(50);
             return;
             } else if (sensorPattern == BIT_001100) {
-            //’†‰›ƒZƒ“ƒT[‚È‚Ì‚ÅA’¼i‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+            //ä¸­å¤®ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€ç›´é€²ã«è¨­å®šã—ã¦æŠœã‘ã‚‹
             Execute(TRACE_STRAIGHT);
             _delay_ms(50);
             return;
             } else if (sensorPattern == BIT_001000) {
-            //’†‰›ƒZƒ“ƒT[‚È‚Ì‚ÅA’¼i‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+            //ä¸­å¤®ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€ç›´é€²ã«è¨­å®šã—ã¦æŠœã‘ã‚‹
             Execute(TRACE_STRAIGHT);
             _delay_ms(50);
             return;
             } else if (sensorPattern == BIT_011000) {
-            //¶ƒZƒ“ƒT[‚È‚Ì‚ÅA¶‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+            //å·¦ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å·¦æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
             Execute(TRACE_L_ROUND_SOFT);
             _delay_ms(50);
             return;
             } else if (sensorPattern == BIT_010000) {
-            //¶ƒZƒ“ƒT[‚È‚Ì‚ÅA¶‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+            //å·¦ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å·¦æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
             Execute(TRACE_L_ROUND_MIDDLE);
             _delay_ms(50);
             return;
         }
     }
 
-    // ‚ ‚«‚ç‚ß‚Ä’¼i‚Å”²‚¯‚é
+    // ã‚ãã‚‰ã‚ã¦ç›´é€²ã§æŠœã‘ã‚‹
     Execute(TRACE_STRAIGHT);
     _delay_ms(20);
     return;
 }
 
 /************************************************************************/
-// ƒgƒŒ[ƒXƒ‰ƒCƒ“ã‚©‚ç‚Ì‰Eù‰ñ‚ðs‚¤B
-// ŽÀs‘O‚É‘–sƒ‚[ƒ^‚ð’âŽ~‚µ‚Ä‚¨‚­‚±‚ÆB
-// ù‰ñŒãA’†‰›‚ÌƒZƒ“ƒT[‚ªƒgƒŒ[ƒXƒ‰ƒCƒ“‚ðŒŸo‚µ‚½‚çˆ—‚ðI—¹‚·‚éB
+// ãƒˆãƒ¬ãƒ¼ã‚¹ãƒ©ã‚¤ãƒ³ä¸Šã‹ã‚‰ã®å³æ—‹å›žã‚’è¡Œã†ã€‚
+// å®Ÿè¡Œå‰ã«èµ°è¡Œãƒ¢ãƒ¼ã‚¿ã‚’åœæ­¢ã—ã¦ãŠãã“ã¨ã€‚
+// æ—‹å›žå¾Œã€ä¸­å¤®ã®ã‚»ãƒ³ã‚µãƒ¼ãŒãƒˆãƒ¬ãƒ¼ã‚¹ãƒ©ã‚¤ãƒ³ã‚’æ¤œå‡ºã—ãŸã‚‰å‡¦ç†ã‚’çµ‚äº†ã™ã‚‹ã€‚
 /************************************************************************/
 void executeRightTurnFromOnLine(void) {
     int sensorPattern = BIT_000000;
 
-    // ¶ù‰ñŽÀs
+    // å·¦æ—‹å›žå®Ÿè¡Œ
     RightTurnMove();
     
-    // ù‰ñŠJŽnŽž‚Éƒ‰ƒCƒ“ƒZƒ“ƒT[‚ªƒ‰ƒCƒ“‚ð“Ç‚ÝŽæ‚éˆÊ’u‚É‹‚é‚Í‚¸‚È‚Ì‚Å
-    // ƒZƒ“ƒT[‚ªƒ‰ƒCƒ“ŠO‚Ü‚Å’Ê‰ß‚µ‚Ä‚¢‚é‚±‚Æ‚ðŠm”F‚·‚éB
+    // æ—‹å›žé–‹å§‹æ™‚ã«ãƒ©ã‚¤ãƒ³ã‚»ãƒ³ã‚µãƒ¼ãŒãƒ©ã‚¤ãƒ³ã‚’èª­ã¿å–ã‚‹ä½ç½®ã«å±…ã‚‹ã¯ãšãªã®ã§
+    // ã‚»ãƒ³ã‚µãƒ¼ãŒãƒ©ã‚¤ãƒ³å¤–ã¾ã§é€šéŽã—ã¦ã„ã‚‹ã“ã¨ã‚’ç¢ºèªã™ã‚‹ã€‚
     while(1) {
         sensorPattern = getSensorPattern();
 
-        //‰EƒZƒ“ƒT[‚ðŒŸo‚µ‚Ä‚¢‚é‚©Šm”F‚·‚é
+        //å³ã‚»ãƒ³ã‚µãƒ¼ã‚’æ¤œå‡ºã—ã¦ã„ã‚‹ã‹ç¢ºèªã™ã‚‹
         if (sensorPattern == BIT_100000) {
-            // ù‰ñ‚ðŒp‘±‚µ‚Ä”²‚¯‚éi‚Å‚«‚ê‚Î‚±‚±‚ÅŠmŽÀ‚É”²‚¯‚½‚¢j
-            _delay_ms(300);//ƒZƒ“ƒT[‚ª‘S‚Ä’Ê‰ß‚·‚é‚Ü‚Åù‰ñ
+            // æ—‹å›žã‚’ç¶™ç¶šã—ã¦æŠœã‘ã‚‹ï¼ˆã§ãã‚Œã°ã“ã“ã§ç¢ºå®Ÿã«æŠœã‘ãŸã„ï¼‰
+            _delay_ms(300);//ã‚»ãƒ³ã‚µãƒ¼ãŒå…¨ã¦é€šéŽã™ã‚‹ã¾ã§æ—‹å›ž
             break;
             } else if (sensorPattern == BIT_010000) {
-            // ù‰ñ‚ðŒp‘±‚µ‚Ä”²‚¯‚é
-            _delay_ms(500);//ƒZƒ“ƒT[‚ª‘S‚Ä’Ê‰ß‚·‚é‚Ü‚Åù‰ñ
+            // æ—‹å›žã‚’ç¶™ç¶šã—ã¦æŠœã‘ã‚‹
+            _delay_ms(500);//ã‚»ãƒ³ã‚µãƒ¼ãŒå…¨ã¦é€šéŽã™ã‚‹ã¾ã§æ—‹å›ž
             break;
             } else if (sensorPattern == BIT_011000) {
-            // ù‰ñ‚ðŒp‘±‚µ‚Ä”²‚¯‚éi—\”õj
+            // æ—‹å›žã‚’ç¶™ç¶šã—ã¦æŠœã‘ã‚‹ï¼ˆäºˆå‚™ï¼‰
             //_delay_ms(100);
             //break;
         }
-        //_delay_ms(10);//ƒ‹[ƒv‚Ì‘Ò‚¿ŽžŠÔ‚ð•K—v‚É‰ž‚¶‚ÄÝ’è
+        //_delay_ms(10);//ãƒ«ãƒ¼ãƒ—ã®å¾…ã¡æ™‚é–“ã‚’å¿…è¦ã«å¿œã˜ã¦è¨­å®š
     }
     
-    // ù‰ñ“®ì‚Ì•œ‹A“®ì
+    // æ—‹å›žå‹•ä½œã®å¾©å¸°å‹•ä½œ
     while(1) {
         sensorPattern = getSensorPattern();
 
-        //ù‰ñ“®ì‚ð”²‚¯‚é‚½‚ß‚ÌðŒ‚ð”»’è
+        //æ—‹å›žå‹•ä½œã‚’æŠœã‘ã‚‹ãŸã‚ã®æ¡ä»¶ã‚’åˆ¤å®š
         if (
         sensorPattern == BIT_001110 || sensorPattern == BIT_011100 ||
         sensorPattern == BIT_000100 || sensorPattern == BIT_001100 ||
         sensorPattern == BIT_001000 || sensorPattern == BIT_011000
         ) {
             LED_on(2);
-            //’†‰›‚ÌƒZƒ“ƒT[‚ª”’‚È‚ç’âŽ~‚ðŽÀs
+            //ä¸­å¤®ã®ã‚»ãƒ³ã‚µãƒ¼ãŒç™½ãªã‚‰åœæ­¢ã‚’å®Ÿè¡Œ
             stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
             break;
         }
 
-        //‰EƒZƒ“ƒT[‚ðŒŸo‚µ‚Ä‚¢‚é‚©Šm”F‚·‚é
+        //å³ã‚»ãƒ³ã‚µãƒ¼ã‚’æ¤œå‡ºã—ã¦ã„ã‚‹ã‹ç¢ºèªã™ã‚‹
         if (sensorPattern == BIT_000001) {
-            //‰EƒZƒ“ƒT[‚ðŒŸo‚µ‚½‚çù‰ñ‘¬“x‚ð—Ž‚Æ‚·
+            //å³ã‚»ãƒ³ã‚µãƒ¼ã‚’æ¤œå‡ºã—ãŸã‚‰æ—‹å›žé€Ÿåº¦ã‚’è½ã¨ã™
             RightTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
         }
     }
     
-    //ù‰ñ’âŽ~”»’èŒã‚ÌŽ~‚Ü‚Á‚½ˆÊ’u‚ÅƒZƒ“ƒT[‚ª’†‰›‚SŒÂ‚Ì‚¢‚¸‚ê‚©‚È‚ç‹tù‰ñI—¹
+    //æ—‹å›žåœæ­¢åˆ¤å®šå¾Œã®æ­¢ã¾ã£ãŸä½ç½®ã§ã‚»ãƒ³ã‚µãƒ¼ãŒä¸­å¤®ï¼”å€‹ã®ã„ãšã‚Œã‹ãªã‚‰é€†æ—‹å›žçµ‚äº†
     sensorPattern = getSensorPattern();
     if (sensorPattern == BIT_000010) {
-        //¶ƒZƒ“ƒT[‚È‚Ì‚ÅA¶‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+        //å·¦ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å·¦æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
         Execute(TRACE_L_ROUND_MIDDLE);
         _delay_ms(50);
         return;
         } else if (sensorPattern == BIT_011000) {
-        //¶ƒZƒ“ƒT[‚È‚Ì‚ÅA¶‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+        //å·¦ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å·¦æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
         Execute(TRACE_L_ROUND_SOFT);
         _delay_ms(50);
         return;
         } else if (sensorPattern == BIT_001000) {
-        //’†‰›ƒZƒ“ƒT[‚È‚Ì‚ÅA’¼i‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+        //ä¸­å¤®ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€ç›´é€²ã«è¨­å®šã—ã¦æŠœã‘ã‚‹
         Execute(TRACE_STRAIGHT);
         _delay_ms(50);
         return;
         } else if (sensorPattern == BIT_001100) {
-        //’†‰›ƒZƒ“ƒT[‚È‚Ì‚ÅA’¼i‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+        //ä¸­å¤®ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€ç›´é€²ã«è¨­å®šã—ã¦æŠœã‘ã‚‹
         Execute(TRACE_STRAIGHT);
         _delay_ms(50);
         return;
         } else if (sensorPattern == BIT_000100) {
-        //’†‰›ƒZƒ“ƒT[‚È‚Ì‚ÅA’¼i‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+        //ä¸­å¤®ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€ç›´é€²ã«è¨­å®šã—ã¦æŠœã‘ã‚‹
         Execute(TRACE_STRAIGHT);
         _delay_ms(50);
         return;
         } else if (sensorPattern == BIT_000110) {
-        //‰EƒZƒ“ƒT[‚È‚Ì‚ÅA‰E‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+        //å³ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å³æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
         Execute(TRACE_R_ROUND_SOFT);
         _delay_ms(50);
         return;
         } else if (sensorPattern == BIT_000010) {
-        //‰EƒZƒ“ƒT[‚È‚Ì‚ÅA‰E‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+        //å³ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å³æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
         Execute(TRACE_R_ROUND_MIDDLE);
         _delay_ms(50);
         return;
     }
     
-    // ù‰ñ’âŽ~”»’è’†‚ÉƒZƒ“ƒT[‚ªƒ‰ƒCƒ“‚ð’Ê‚è‰z‚µ‚½‘z’è
-    //ƒZƒ“ƒT[‚ð’†‰›‚É–ß‚·‚½‚ß’x‚¢ù‰ñ‚ðŽÀs
+    // æ—‹å›žåœæ­¢åˆ¤å®šä¸­ã«ã‚»ãƒ³ã‚µãƒ¼ãŒãƒ©ã‚¤ãƒ³ã‚’é€šã‚Šè¶Šã—ãŸæƒ³å®š
+    //ã‚»ãƒ³ã‚µãƒ¼ã‚’ä¸­å¤®ã«æˆ»ã™ãŸã‚é…ã„æ—‹å›žã‚’å®Ÿè¡Œ
     RightTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
     while(1) {
         sensorPattern = getSensorPattern();
 
-        //ù‰ñ“®ì‚ð”²‚¯‚é‚½‚ß‚ÌðŒ‚ð”»’è
-        // ¸“x‚Í—Ž‚¿‚é‚ªA‚Æ‚è‚ ‚¦‚¸ù‰ñ‚ð”²‚¯‚é
+        //æ—‹å›žå‹•ä½œã‚’æŠœã‘ã‚‹ãŸã‚ã®æ¡ä»¶ã‚’åˆ¤å®š
+        // ç²¾åº¦ã¯è½ã¡ã‚‹ãŒã€ã¨ã‚Šã‚ãˆãšæ—‹å›žã‚’æŠœã‘ã‚‹
         if (sensorPattern == BIT_000010) {
-            //‰EƒZƒ“ƒT[‚È‚Ì‚ÅA‰E‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+            //å³ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å³æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
             Execute(TRACE_R_ROUND_MIDDLE);
             _delay_ms(50);
             return;
             } else if (sensorPattern == BIT_000110) {
-            //‰EƒZƒ“ƒT[‚È‚Ì‚ÅA‰E‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+            //å³ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å³æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
             Execute(TRACE_R_ROUND_SOFT);
             _delay_ms(50);
             return;
             } else if (sensorPattern == BIT_000100) {
-            //’†‰›ƒZƒ“ƒT[‚È‚Ì‚ÅA’¼i‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+            //ä¸­å¤®ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€ç›´é€²ã«è¨­å®šã—ã¦æŠœã‘ã‚‹
             Execute(TRACE_STRAIGHT);
             _delay_ms(50);
             return;
             } else if (sensorPattern == BIT_001100) {
-            //’†‰›ƒZƒ“ƒT[‚È‚Ì‚ÅA’¼i‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+            //ä¸­å¤®ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€ç›´é€²ã«è¨­å®šã—ã¦æŠœã‘ã‚‹
             Execute(TRACE_STRAIGHT);
             _delay_ms(50);
             return;
             } else if (sensorPattern == BIT_001000) {
-            //’†‰›ƒZƒ“ƒT[‚È‚Ì‚ÅA’¼i‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+            //ä¸­å¤®ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€ç›´é€²ã«è¨­å®šã—ã¦æŠœã‘ã‚‹
             Execute(TRACE_STRAIGHT);
             _delay_ms(50);
             return;
             } else if (sensorPattern == BIT_011000) {
-            //¶ƒZƒ“ƒT[‚È‚Ì‚ÅA¶‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+            //å·¦ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å·¦æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
             Execute(TRACE_L_ROUND_SOFT);
             _delay_ms(50);
             return;
             } else if (sensorPattern == BIT_010000) {
-            //¶ƒZƒ“ƒT[‚È‚Ì‚ÅA¶‹È‚è‚ÉÝ’è‚µ‚Ä”²‚¯‚é
+            //å·¦ã‚»ãƒ³ã‚µãƒ¼ãªã®ã§ã€å·¦æ›²ã‚Šã«è¨­å®šã—ã¦æŠœã‘ã‚‹
             Execute(TRACE_L_ROUND_MIDDLE);
             _delay_ms(50);
             return;
         }
     }
 
-    // ‚ ‚«‚ç‚ß‚Ä’¼i‚Å”²‚¯‚é
+    // ã‚ãã‚‰ã‚ã¦ç›´é€²ã§æŠœã‘ã‚‹
     Execute(TRACE_STRAIGHT);
     _delay_ms(20);
     return;
 }
 
 /**
- * ù‰ñ‚É“ü‚Á‚½ƒx[ƒX‘¬“x‚É‰ž‚¶‚ÄAˆÊ’u‚ð’²®‚·‚éB
- * 2017ƒƒ{‚É‡‚í‚¹‚Ä’²®•K—vI
+ * æ—‹å›žã«å…¥ã£ãŸãƒ™ãƒ¼ã‚¹é€Ÿåº¦ã«å¿œã˜ã¦ã€ä½ç½®ã‚’èª¿æ•´ã™ã‚‹ã€‚
+ * 2017ãƒ­ãƒœã«åˆã‚ã›ã¦èª¿æ•´å¿…è¦ï¼
  */
 void adjustTurnPosition(void) {
 	if (BaseSpeed <= 45 ) {
-		StraightLowMove();
-		_delay_ms(220);	// 300ms ŠÔŠu‚ð‹ó‚¯‚é
+        BaseSpeed = 80;
+		StraightMove();
+		//StraightLowMove();
+		_delay_ms(200);	// 300ms é–“éš”ã‚’ç©ºã‘ã‚‹
 	} else if (BaseSpeed <= 80 ) {
 		StraightLowMove();
-		_delay_ms(200);	// 270ms ŠÔŠu‚ð‹ó‚¯‚é
+		_delay_ms(200);	// 270ms é–“éš”ã‚’ç©ºã‘ã‚‹
 	} else if (BaseSpeed <= 100 ) {
 		StraightLowMove();
-		_delay_ms(170);	// 270ms ŠÔŠu‚ð‹ó‚¯‚é
+		_delay_ms(170);	// 270ms é–“éš”ã‚’ç©ºã‘ã‚‹
 	} else if (BaseSpeed <= 120 ) {
 		StraightLowMove();
-		_delay_ms(140);	// 240ms ŠÔŠu‚ð‹ó‚¯‚é
+		_delay_ms(140);	// 240ms é–“éš”ã‚’ç©ºã‘ã‚‹
 	} else if (BaseSpeed <= 140 ) {
 		StraightLowMove();
-		_delay_ms(130);	// 190ms ŠÔŠu‚ð‹ó‚¯‚é
+		_delay_ms(130);	// 190ms é–“éš”ã‚’ç©ºã‘ã‚‹
 	} else if (BaseSpeed <= 160 ) {
 		StraightLowMove();
-		_delay_ms(110);	// 160ms ŠÔŠu‚ð‹ó‚¯‚é
+		_delay_ms(110);	// 160ms é–“éš”ã‚’ç©ºã‘ã‚‹
 	} else if (BaseSpeed <= 180 ) {
 		StraightLowMove();
-		_delay_ms(100);	// 140ms ŠÔŠu‚ð‹ó‚¯‚é
+		_delay_ms(100);	// 140ms é–“éš”ã‚’ç©ºã‘ã‚‹
 	} else {
 		StraightLowMove();
-		_delay_ms(80);	// 120ms ŠÔŠu‚ð‹ó‚¯‚é
+		_delay_ms(80);	// 120ms é–“éš”ã‚’ç©ºã‘ã‚‹
 	}
 
     StopMove();

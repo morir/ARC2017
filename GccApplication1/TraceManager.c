@@ -21,31 +21,31 @@ void initTraceAction() {
 }
 
 /*
- * ‹¤’ÊƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å…±é€šãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒFƒXƒ^[ƒgƒRƒ}ƒ“ƒh‚ğóM‚·‚éB
- *   I—¹ğŒFƒZƒ“ƒT‚Å¶ƒ^[ƒ“‚ğŒŸo‚µ‚Ä’¼Špù‰ñ‚ªŠ®—¹‚·‚éB
+ *   é–‹å§‹æ¡ä»¶ï¼šã‚¹ã‚¿ãƒ¼ãƒˆã‚³ãƒãƒ³ãƒ‰ã‚’å—ä¿¡ã™ã‚‹ã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼šã‚»ãƒ³ã‚µã§å·¦ã‚¿ãƒ¼ãƒ³ã‚’æ¤œå‡ºã—ã¦ç›´è§’æ—‹å›ãŒå®Œäº†ã™ã‚‹ã€‚
  */
 void traceCommon(int *counter, int *maxSpeed) {
     
-    //// ƒ‰ƒCƒ“ƒZƒ“ƒT[‚Å‘z’èŠO‚Ì’l‚ğ˜A‘±‚µ‚ÄŒŸo‚µ‚½ê‡
-    //// Œãi‚µ‚Äƒ‰ƒCƒ“‚É•œ‹A‚·‚éB
+    //// ãƒ©ã‚¤ãƒ³ã‚»ãƒ³ã‚µãƒ¼ã§æƒ³å®šå¤–ã®å€¤ã‚’é€£ç¶šã—ã¦æ¤œå‡ºã—ãŸå ´åˆ
+    //// å¾Œé€²ã—ã¦ãƒ©ã‚¤ãƒ³ã«å¾©å¸°ã™ã‚‹ã€‚
     //const int undefinedCountMax = 100;
     //int sensorPattern = BIT_000000;
     //if (undefinedCount > undefinedCountMax) {
        //while (1) {
            //sensorPattern = getSensorPattern();
            //if (sensorPattern != BIT_000000) {
-               //// ’â~Às
+               //// åœæ­¢å®Ÿè¡Œ
                //stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
 //
-               //// ’â~‚µ‚½ˆÊ’u‚ÌƒZƒ“ƒT[’l‚ğæ“¾‚·‚éB
+               //// åœæ­¢ã—ãŸä½ç½®ã®ã‚»ãƒ³ã‚µãƒ¼å€¤ã‚’å–å¾—ã™ã‚‹ã€‚
                //getSensors();
 //
-               //// —š—ğ‚ÉTRACE_UNDEFINED‚ª—­‚Ü‚Á‚Ä‚¢‚é‚Í‚¸‚È‚Ì‚Å—š—ğ‚ğİ’è‚µ‚È‚¨‚·
+               //// å±¥æ­´ã«TRACE_UNDEFINEDãŒæºœã¾ã£ã¦ã„ã‚‹ã¯ãšãªã®ã§å±¥æ­´ã‚’è¨­å®šã—ãªãŠã™
                //setSensorHistory(sensorPattern);
-               //BaseSpeed = 30;// ’x‚¢‘¬“x‚ÅˆÚ“®‚·‚é
+               //BaseSpeed = 30;// é…ã„é€Ÿåº¦ã§ç§»å‹•ã™ã‚‹
                //break;
            //} else {
                //BackLowMove();
@@ -53,11 +53,11 @@ void traceCommon(int *counter, int *maxSpeed) {
            //}
        //}
     //}        
-	// ƒZƒ“ƒT[’l‚ğæ“¾
+	// ã‚»ãƒ³ã‚µãƒ¼å€¤ã‚’å–å¾—
 	getSensors();
 	currentTraceAction = getActionWithHistory();
 	if (currentTraceAction == TRACE_UNDEFINED) {
-		_delay_ms(1);// delayTime‚ÌŠÔŠu‚ğ‹ó‚¯‚é
+		_delay_ms(1);// delayTimeã®é–“éš”ã‚’ç©ºã‘ã‚‹
         //undefinedCount++;
 		return;
 	}
@@ -79,62 +79,65 @@ void traceCommon(int *counter, int *maxSpeed) {
 	}
 
 	Execute(currentTraceAction);
-	_delay_ms(1);// delayTime‚ÌŠÔŠu‚ğ‹ó‚¯‚é
+	_delay_ms(1);// delayTimeã®é–“éš”ã‚’ç©ºã‘ã‚‹
 }
 
 /*
- * ‰˜HƒGƒŠƒA 1 ‚ÌƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å¾€è·¯ã‚¨ãƒªã‚¢ 1 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒFƒXƒ^[ƒgƒRƒ}ƒ“ƒh‚ğóM‚·‚éB
- *   I—¹ğŒFƒZƒ“ƒT‚Å¶ƒ^[ƒ“‚ğŒŸo‚µ‚Ä’¼Špù‰ñ‚ªŠ®—¹‚·‚éB
+ *   é–‹å§‹æ¡ä»¶ï¼šã‚¹ã‚¿ãƒ¼ãƒˆã‚³ãƒãƒ³ãƒ‰ã‚’å—ä¿¡ã™ã‚‹ã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼šã‚»ãƒ³ã‚µã§å·¦ã‚¿ãƒ¼ãƒ³ã‚’æ¤œå‡ºã—ã¦ç›´è§’æ—‹å›ãŒå®Œäº†ã™ã‚‹ã€‚
  */
  void traceForwardArea_01(void) {
 	int counter = 0;
 	int maxSpeed = MAX_SPEED;
 
-	//‰Šú“®ìi­‚µ‚¾‚¯’¼ij
+	//åˆæœŸå‹•ä½œï¼ˆå°‘ã—ã ã‘ç›´é€²ï¼‰
 	StraightMove();
-	_delay_ms(100);	// 10ms ŠÔŠu‚ğ‹ó‚¯‚é
+	_delay_ms(100);	// 10ms é–“éš”ã‚’ç©ºã‘ã‚‹
 
-    // ƒXƒ^[ƒgƒ‰ƒCƒ“‚Ì”»’è‘Îô
+    // ã‚¹ã‚¿ãƒ¼ãƒˆãƒ©ã‚¤ãƒ³ã®åˆ¤å®šå¯¾ç­–
 	while (1) {
         if (currentTraceAction == TRACE_L_TURN)
         {
-    // ƒ‰ƒCƒ“‚ğ’´‚¦‚é‚Ü‚Å”CˆÓŠÔƒfƒBƒŒƒC
+    // ãƒ©ã‚¤ãƒ³ã‚’è¶…ãˆã‚‹ã¾ã§ä»»æ„æ™‚é–“ãƒ‡ã‚£ãƒ¬ã‚¤
 	        StraightMove();
-	        _delay_ms(500);	// 10ms ŠÔŠu‚ğ‹ó‚¯‚é
+	        _delay_ms(500);	// 10ms é–“éš”ã‚’ç©ºã‘ã‚‹
                 break;
         }
 
         if(currentTraceAction == TRACE_R_TURN) 
         {
-    // ƒ‰ƒCƒ“‚ğ’´‚¦‚é‚Ü‚Å”CˆÓŠÔƒfƒBƒŒƒC
+    // ãƒ©ã‚¤ãƒ³ã‚’è¶…ãˆã‚‹ã¾ã§ä»»æ„æ™‚é–“ãƒ‡ã‚£ãƒ¬ã‚¤
 	        StraightMove();
-	        _delay_ms(500);	// 10ms ŠÔŠu‚ğ‹ó‚¯‚é
+	        _delay_ms(500);	// 10ms é–“éš”ã‚’ç©ºã‘ã‚‹
     	    break;
         }
         traceCommon(&counter, &maxSpeed);
         counter++;
     }
 
+    currentTraceAction = TRACE_STRAIGHT;
+	setSensorHistory(TRACE_STRAIGHT);
+
 	while (currentTraceAction != TRACE_L_TURN) {
 		traceCommon(&counter, &maxSpeed);
 		counter++;
 	}
 
-	// ¶ù‰ñÀs
+	// å·¦æ—‹å›å®Ÿè¡Œ
 	currentTraceAction = executeLeftTurn();
 	//setSensorHistory(executeLeftTurn());
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
- * ‰˜HƒGƒŠƒA 2 ‚ÌƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å¾€è·¯ã‚¨ãƒªã‚¢ 2 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‚È‚µi‰˜HƒGƒŠƒA 1 ‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±jB
- *   I—¹ğŒFƒZƒ“ƒT‚Å¶ƒ^[ƒ“‚ğŒŸo‚µ‚Ä’¼Špù‰ñ‚ªŠ®—¹‚·‚éB
+ *   é–‹å§‹æ¡ä»¶ï¼šãªã—ï¼ˆå¾€è·¯ã‚¨ãƒªã‚¢ 1 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šï¼‰ã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼šã‚»ãƒ³ã‚µã§å·¦ã‚¿ãƒ¼ãƒ³ã‚’æ¤œå‡ºã—ã¦ç›´è§’æ—‹å›ãŒå®Œäº†ã™ã‚‹ã€‚
  */
  void traceForwardArea_02(void) {
 	int counter = 0;
@@ -145,18 +148,18 @@ void traceCommon(int *counter, int *maxSpeed) {
 		counter++;
 	}
 
-	// ¶ù‰ñÀs
+	// å·¦æ—‹å›å®Ÿè¡Œ
 	currentTraceAction = executeLeftTurn();
 	//setSensorHistory(executeLeftTurn());
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
- * ‰˜HƒGƒŠƒA 3 ‚ÌƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å¾€è·¯ã‚¨ãƒªã‚¢ 3 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‚È‚µi‰˜HƒGƒŠƒA 2 ‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±jB
- *   I—¹ğŒFƒZƒ“ƒT‚Å¶ƒ^[ƒ“‚ğŒŸo‚µ‚Ä’¼Špù‰ñ‚ªŠ®—¹‚·‚éB
+ *   é–‹å§‹æ¡ä»¶ï¼šãªã—ï¼ˆå¾€è·¯ã‚¨ãƒªã‚¢ 2 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šï¼‰ã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼šã‚»ãƒ³ã‚µã§å·¦ã‚¿ãƒ¼ãƒ³ã‚’æ¤œå‡ºã—ã¦ç›´è§’æ—‹å›ãŒå®Œäº†ã™ã‚‹ã€‚
  */
  void traceForwardArea_03(void) {
 	int counter = 0;
@@ -167,18 +170,18 @@ void traceCommon(int *counter, int *maxSpeed) {
 		counter++;
 	}
 
-	// ¶ù‰ñÀs
+	// å·¦æ—‹å›å®Ÿè¡Œ
 	currentTraceAction = executeLeftTurn();
 	//setSensorHistory(executeLeftTurn());
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
- * ‰˜HƒGƒŠƒA 4 ‚ÌƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å¾€è·¯ã‚¨ãƒªã‚¢ 4 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‚È‚µi‰˜HƒGƒŠƒA 3 ‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±jB
- *   I—¹ğŒFƒZƒ“ƒT‚Å‰Eƒ^[ƒ“‚ğŒŸo‚µ‚Ä’¼Špù‰ñ‚ªŠ®—¹‚·‚éB
+ *   é–‹å§‹æ¡ä»¶ï¼šãªã—ï¼ˆå¾€è·¯ã‚¨ãƒªã‚¢ 3 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šï¼‰ã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼šã‚»ãƒ³ã‚µã§å³ã‚¿ãƒ¼ãƒ³ã‚’æ¤œå‡ºã—ã¦ç›´è§’æ—‹å›ãŒå®Œäº†ã™ã‚‹ã€‚
  */
  void traceForwardArea_04(void) {
 	int counter = 0;
@@ -189,18 +192,18 @@ void traceCommon(int *counter, int *maxSpeed) {
 		counter++;
 	}
 
-	// ‰Eù‰ñÀs
+	// å³æ—‹å›å®Ÿè¡Œ
 	currentTraceAction = executeRightTurn();
 	//setSensorHistory(executeRightTurn());
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
- * ‰˜HƒGƒŠƒA 5 ‚ÌƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å¾€è·¯ã‚¨ãƒªã‚¢ 5 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‚È‚µi‰˜HƒGƒŠƒA 4 ‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±jB
- *   I—¹ğŒFƒZƒ“ƒT‚Å‰Eƒ^[ƒ“‚ğŒŸo‚µ‚Ä’¼Špù‰ñ‚ªŠ®—¹‚·‚éB
+ *   é–‹å§‹æ¡ä»¶ï¼šãªã—ï¼ˆå¾€è·¯ã‚¨ãƒªã‚¢ 4 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šï¼‰ã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼šã‚»ãƒ³ã‚µã§å³ã‚¿ãƒ¼ãƒ³ã‚’æ¤œå‡ºã—ã¦ç›´è§’æ—‹å›ãŒå®Œäº†ã™ã‚‹ã€‚
  */
  void traceForwardArea_05(void) {
 	int counter = 0;
@@ -211,18 +214,18 @@ void traceCommon(int *counter, int *maxSpeed) {
 		counter++;
 	}
 
-	// ‰Eù‰ñÀs
+	// å³æ—‹å›å®Ÿè¡Œ
 	currentTraceAction = executeRightTurn();
 	//setSensorHistory(executeRightTurn());
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
- * •œ˜HƒGƒŠƒA 1 ‚ÌƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å¾©è·¯ã‚¨ãƒªã‚¢ 1 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‚È‚µiÜ‚è•Ô‚µ“_‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±jB
- *   I—¹ğŒFƒZƒ“ƒT‚Å¶ƒ^[ƒ“‚ğŒŸo‚µ‚Ä’¼Špù‰ñ‚ªŠ®—¹‚·‚éB
+ *   é–‹å§‹æ¡ä»¶ï¼šãªã—ï¼ˆæŠ˜ã‚Šè¿”ã—ç‚¹ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šï¼‰ã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼šã‚»ãƒ³ã‚µã§å·¦ã‚¿ãƒ¼ãƒ³ã‚’æ¤œå‡ºã—ã¦ç›´è§’æ—‹å›ãŒå®Œäº†ã™ã‚‹ã€‚
  */
  void traceBackwardArea_01(void) {
 	int counter = 0;
@@ -233,18 +236,18 @@ void traceCommon(int *counter, int *maxSpeed) {
 		counter++;
 	}
 
-	// ¶ù‰ñÀs
+	// å·¦æ—‹å›å®Ÿè¡Œ
 	currentTraceAction = executeLeftTurn();
 	//setSensorHistory(executeLeftTurn());
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
- * •œ˜HƒGƒŠƒA 2 ‚ÌƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å¾©è·¯ã‚¨ãƒªã‚¢ 2 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‚È‚µi•œ˜HƒGƒŠƒA 1 ‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±jB
- *   I—¹ğŒFƒZƒ“ƒT‚Å¶ƒ^[ƒ“‚ğŒŸo‚µ‚Ä’¼Špù‰ñ‚ªŠ®—¹‚·‚éB
+ *   é–‹å§‹æ¡ä»¶ï¼šãªã—ï¼ˆå¾©è·¯ã‚¨ãƒªã‚¢ 1 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šï¼‰ã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼šã‚»ãƒ³ã‚µã§å·¦ã‚¿ãƒ¼ãƒ³ã‚’æ¤œå‡ºã—ã¦ç›´è§’æ—‹å›ãŒå®Œäº†ã™ã‚‹ã€‚
  */
  void traceBackwardArea_02(void) {
 	int counter = 0;
@@ -255,18 +258,18 @@ void traceCommon(int *counter, int *maxSpeed) {
 		counter++;
 	}
 
-	// ¶ù‰ñÀs
+	// å·¦æ—‹å›å®Ÿè¡Œ
 	currentTraceAction = executeLeftTurn();
 	//setSensorHistory(executeLeftTurn());
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
- * •œ˜HƒGƒŠƒA 3 ‚ÌƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å¾©è·¯ã‚¨ãƒªã‚¢ 3 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‚È‚µi•œ˜HƒGƒŠƒA 2 ‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±jB
- *   I—¹ğŒFƒZƒ“ƒT‚Å‰Eƒ^[ƒ“‚ğŒŸo‚µ‚Ä’¼Špù‰ñ‚ªŠ®—¹‚·‚éB
+ *   é–‹å§‹æ¡ä»¶ï¼šãªã—ï¼ˆå¾©è·¯ã‚¨ãƒªã‚¢ 2 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šï¼‰ã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼šã‚»ãƒ³ã‚µã§å³ã‚¿ãƒ¼ãƒ³ã‚’æ¤œå‡ºã—ã¦ç›´è§’æ—‹å›ãŒå®Œäº†ã™ã‚‹ã€‚
  */
  void traceBackwardArea_03(void) {
 	int counter = 0;
@@ -278,7 +281,7 @@ void traceCommon(int *counter, int *maxSpeed) {
 		counter++;
 	}
 
-	// ’â~Às
+	// åœæ­¢å®Ÿè¡Œ
 	stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
 	LED_on(1);
 	initSensorHistory();
@@ -287,56 +290,56 @@ void traceCommon(int *counter, int *maxSpeed) {
 }
 
 /*
- * •œ˜HƒGƒŠƒA 4 ‚ÌƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å¾©è·¯ã‚¨ãƒªã‚¢ 4 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‚È‚µi•œ˜HƒGƒŠƒA 3 ‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±jB
- *   I—¹ğŒF
+ *   é–‹å§‹æ¡ä»¶ï¼šãªã—ï¼ˆå¾©è·¯ã‚¨ãƒªã‚¢ 3 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šï¼‰ã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼š
  */
  void traceBackwardArea_04(void) {
     int sensorPattern = BIT_000000;
 	int findAnySensorCount = 0;
-	int loopCount = 0;
+	//int loopCount = 0;
 	StraightMove();
-	_delay_ms(200);
+	_delay_ms(2100);
 
-	// ƒZƒ“ƒT[‚Ì‚¢‚¸‚ê‚©‚ª”’”»’è‚·‚é‚Ü‚ÅA’¼iŒp‘±
-	while (1) {
-		StraightMove();
-		sensorPattern = getSensorPattern();
-		// 3‰ñ˜A‘±‚µ‚Ä”’”»’è‚µ‚½‚çƒ‹[ƒv‚ğ”²‚¯‚é
-		if (sensorPattern != BIT_000000) {
-			findAnySensorCount++;
-			if (findAnySensorCount > 2) {
-				break;
-			}
-		}
-        // ƒ‰ƒCƒ“‚ğŒŸo‚Å‚«‚È‚­‚Ä‚àÅ‚ÉƒGƒŠƒA‚É“ü‚Á‚½•Ó‚è‚Åƒ‹[ƒv‚ğ”²‚¯‚é
-		if (loopCount > 700) {
-			break;
-		}
-		loopCount++;
-		_delay_ms(1);
-	}
+	// ã‚»ãƒ³ã‚µãƒ¼ã®ã„ãšã‚Œã‹ãŒç™½åˆ¤å®šã™ã‚‹ã¾ã§ã€ç›´é€²ç¶™ç¶š
+	//while (1) {
+		//StraightMove();
+		//// sensorPattern = getSensorPattern();
+		//// 3å›é€£ç¶šã—ã¦ç™½åˆ¤å®šã—ãŸã‚‰ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
+		////if (sensorPattern != BIT_000000) {
+			////findAnySensorCount++;
+			////if (findAnySensorCount > 2) {
+				////break;
+			////}
+		////}
+        //// ãƒ©ã‚¤ãƒ³ã‚’æ¤œå‡ºã§ããªãã¦ã‚‚èŠã«ã‚¨ãƒªã‚¢ã«å…¥ã£ãŸè¾ºã‚Šã§ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
+		////if (loopCount > 900) { //700
+			////break;
+		////}
+		////loopCount++;
+		//_delay_ms(1);
+	//}
 
-	// ’â~Às
+	// åœæ­¢å®Ÿè¡Œ
 	stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
 
-	// ƒZƒ“ƒT[’l‚É‰‚¶‚Äù‰ñ‚ğÀs
-	// TODO:À‘•
+	// ã‚»ãƒ³ã‚µãƒ¼å€¤ã«å¿œã˜ã¦æ—‹å›ã‚’å®Ÿè¡Œ
+	// TODO:å®Ÿè£…
 
-	// ù‰ñI—¹ŒãA’â~Às
+	// æ—‹å›çµ‚äº†å¾Œã€åœæ­¢å®Ÿè¡Œ
 	StopMove();
 	initSensorHistory();
 	currentTraceAction = TRACE_STRAIGHT;
 }
 
 /*
- * •œ˜HƒGƒŠƒA 6 ‚ÌƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å¾©è·¯ã‚¨ãƒªã‚¢ 6 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‚È‚µi•œ˜HƒGƒŠƒA 5 ‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±jB
- *   I—¹ğŒF
+ *   é–‹å§‹æ¡ä»¶ï¼šãªã—ï¼ˆå¾©è·¯ã‚¨ãƒªã‚¢ 5 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šï¼‰ã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼š
  */
  //void traceBackwardArea_06(void) {
 	//int counter = 0;
@@ -344,32 +347,32 @@ void traceCommon(int *counter, int *maxSpeed) {
 //
 	//while (currentTraceAction != TRACE_R_TURN) {
 		//traceCommon(&counter, &maxSpeed);
-		//// ‰Á‘¬‚µ‚È‚¢
+		//// åŠ é€Ÿã—ãªã„
 		//maxSpeed = BASE_SPEED_BY_TURF_AREA;
 	//}
 //
-	//// ‰Eù‰ñÀs
+	//// å³æ—‹å›å®Ÿè¡Œ
 	//executeRightTurn();
 	//BaseSpeed = BASE_SPEED_BY_TURF_AREA;
 //}
 
 /*
- * •œ˜HƒGƒŠƒA 6 ‚ÌƒgƒŒ[ƒX“®ìi•ó•¨‚Q‚©‚ç‚ÌƒoƒbƒNj
- * @return ‚È‚µ
+ * å¾©è·¯ã‚¨ãƒªã‚¢ 6 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œï¼ˆå®ç‰©ï¼’ã‹ã‚‰ã®ãƒãƒƒã‚¯ï¼‰
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‚È‚µi•œ˜HƒGƒŠƒA 5 ‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±jB
- *   I—¹ğŒF
+ *   é–‹å§‹æ¡ä»¶ï¼šãªã—ï¼ˆå¾©è·¯ã‚¨ãƒªã‚¢ 5 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šï¼‰ã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼š
  */
 void traceBackwardArea_06(void) {
     traceBackLowMoveArea_01();
 }
 
 /*
- * •œ˜HƒGƒŠƒA 7 ‚ÌƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å¾©è·¯ã‚¨ãƒªã‚¢ 7 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‚È‚µi•œ˜HƒGƒŠƒA 6 ‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±jB
- *   I—¹ğŒF
+ *   é–‹å§‹æ¡ä»¶ï¼šãªã—ï¼ˆå¾©è·¯ã‚¨ãƒªã‚¢ 6 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šï¼‰ã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼š
  */
  void traceBackwardArea_07(void) {
 	int counter = 0;
@@ -377,21 +380,21 @@ void traceBackwardArea_06(void) {
 
 	while (currentTraceAction != TRACE_R_TURN) {
 		traceCommon(&counter, &maxSpeed);
-		// ‰Á‘¬‚µ‚È‚¢
+		// åŠ é€Ÿã—ãªã„
 		maxSpeed = BASE_SPEED_BY_TURF_AREA;
 		_delay_ms(1);
 	}
 
-	// ‰Eù‰ñÀs
+	// å³æ—‹å›å®Ÿè¡Œ
 	executeRightTurn();
 }
 
 /*
- * •œ˜HƒGƒŠƒA 8 ‚ÌƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å¾©è·¯ã‚¨ãƒªã‚¢ 8 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‚È‚µi•œ˜HƒGƒŠƒA 7 ‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±jB
- *   I—¹ğŒF
+ *   é–‹å§‹æ¡ä»¶ï¼šãªã—ï¼ˆå¾©è·¯ã‚¨ãƒªã‚¢ 7 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šï¼‰ã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼š
  */
  //void traceBackwardArea_08(void) {
 	//int counter = 0;
@@ -399,27 +402,27 @@ void traceBackwardArea_06(void) {
     //int sensorPattern = BIT_111111;
 	//int findAnySensorCount = 0;
 //
-	//// ƒ‰ƒCƒ“‚ª“rØ‚ê‚é‚Ü‚Å‚ÍƒgƒŒ[ƒX“®ì
+	//// ãƒ©ã‚¤ãƒ³ãŒé€”åˆ‡ã‚Œã‚‹ã¾ã§ã¯ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
 	//while (sensorPattern != BIT_000000) {
 		//traceCommon(&counter, &maxSpeed);
 		//sensorPattern = getSensorPattern();
-		//// ‰Á‘¬‚µ‚È‚¢
+		//// åŠ é€Ÿã—ãªã„
 		//maxSpeed = BASE_SPEED_BY_TURF_AREA;
 		//_delay_ms(1);
 	//}
 //
-	//// ’â~Às
+	//// åœæ­¢å®Ÿè¡Œ
 	////stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
 //
 	//StraightMove();
     //_delay_ms(10);
 //
-	//// ƒZƒ“ƒT[‚Ì‚¢‚¸‚ê‚©‚ª”’”»’è‚·‚é‚Ü‚ÅA’¼iŒp‘±
+	//// ã‚»ãƒ³ã‚µãƒ¼ã®ã„ãšã‚Œã‹ãŒç™½åˆ¤å®šã™ã‚‹ã¾ã§ã€ç›´é€²ç¶™ç¶š
 	//while (1) {
 		//StraightMove();
 		//sensorPattern = getSensorPattern();
 //
-		//// 3‰ñ˜A‘±‚µ‚Ä”’”»’è‚µ‚½‚çƒ‹[ƒv‚ğ”²‚¯‚é
+		//// 3å›é€£ç¶šã—ã¦ç™½åˆ¤å®šã—ãŸã‚‰ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
 		//if (sensorPattern != BIT_000000) {
 			//findAnySensorCount++;
 			//if (findAnySensorCount > 2) {
@@ -429,10 +432,10 @@ void traceBackwardArea_06(void) {
 		//_delay_ms(1);
 	//}
 //
-	//// ‚¿‚å‚Á‚Æi‚ñ‚Å’â~
+	//// ã¡ã‚‡ã£ã¨é€²ã‚“ã§åœæ­¢
 	//adjustTurnPosition();
 //
-	//// ‰Eù‰ñÀs
+	//// å³æ—‹å›å®Ÿè¡Œ
 	//executeRightTurnFromOnLine();
 	//BaseSpeed = BASE_SPEED_INIT_VAL;
 	//initSensorHistory();
@@ -442,13 +445,13 @@ void traceBackwardArea_08(void) {
     int counter = 0;
 	int maxSpeed = MAX_SPEED;
 
-    // ¶‚Ì’¼Špƒ‰ƒCƒ“‚ğŒŸo‚·‚é‚Ü‚Åƒ‰ƒCƒ“ƒgƒŒ[ƒX‚ğŒp‘±
+    // å·¦ã®ç›´è§’ãƒ©ã‚¤ãƒ³ã‚’æ¤œå‡ºã™ã‚‹ã¾ã§ãƒ©ã‚¤ãƒ³ãƒˆãƒ¬ãƒ¼ã‚¹ã‚’ç¶™ç¶š
     while (currentTraceAction != TRACE_L_TURN) {
         traceCommon(&counter, &maxSpeed);
 		counter++;
     }
 
-    // ’â~Às
+    // åœæ­¢å®Ÿè¡Œ
     stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
 
     initSensorHistory();
@@ -457,24 +460,24 @@ void traceBackwardArea_08(void) {
 }
 
 /*
- * •œ˜HƒGƒŠƒA 9 ‚ÌƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å¾©è·¯ã‚¨ãƒªã‚¢ 9 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‚È‚µi•œ˜HƒGƒŠƒA 8 ‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±jB
- *   I—¹ğŒF
+ *   é–‹å§‹æ¡ä»¶ï¼šãªã—ï¼ˆå¾©è·¯ã‚¨ãƒªã‚¢ 8 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šï¼‰ã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼š
  */
  void traceBackwardArea_09(void) {
 	int counter = 0;
 	int maxSpeed = MAX_SPEED;
 
-    // ¶‚Ì’¼Špƒ‰ƒCƒ“‚ğŒŸo‚·‚é‚Ü‚Åƒ‰ƒCƒ“ƒgƒŒ[ƒX‚ğŒp‘±
+    // å·¦ã®ç›´è§’ãƒ©ã‚¤ãƒ³ã‚’æ¤œå‡ºã™ã‚‹ã¾ã§ãƒ©ã‚¤ãƒ³ãƒˆãƒ¬ãƒ¼ã‚¹ã‚’ç¶™ç¶š
     while (currentTraceAction != TRACE_L_TURN) {
 		traceCommon(&counter, &maxSpeed);
 		counter++;
 		_delay_ms(1);
 	}
 
-	// ‰Eù‰ñÀs
+	// å³æ—‹å›å®Ÿè¡Œ
 	executeRightTurn();
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 	initSensorHistory();
@@ -484,11 +487,11 @@ void traceBackwardArea_08(void) {
 }
 
 /*
- * •œ˜HƒGƒŠƒA 10 ‚ÌƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å¾©è·¯ã‚¨ãƒªã‚¢ 10 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‚È‚µi•œ˜HƒGƒŠƒA 9 ‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±jB
- *   I—¹ğŒF
+ *   é–‹å§‹æ¡ä»¶ï¼šãªã—ï¼ˆå¾©è·¯ã‚¨ãƒªã‚¢ 9 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šï¼‰ã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼š
  */
  void traceBackwardArea_10(void) {
 	int counter = 0;
@@ -499,7 +502,7 @@ void traceBackwardArea_08(void) {
     	counter++;
 	}
 
-	// ’â~Às
+	// åœæ­¢å®Ÿè¡Œ
 	stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
 	initSensorHistory();
 	currentTraceAction = TRACE_STRAIGHT;
@@ -507,11 +510,11 @@ void traceBackwardArea_08(void) {
 }
 
 /*
- * •œ˜HƒGƒŠƒA 11 ‚ÌƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å¾©è·¯ã‚¨ãƒªã‚¢ 11 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‚È‚µi•œ˜HƒGƒŠƒA 10 ‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±jB
- *   I—¹ğŒF
+ *   é–‹å§‹æ¡ä»¶ï¼šãªã—ï¼ˆå¾©è·¯ã‚¨ãƒªã‚¢ 10 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šï¼‰ã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼š
  */
  void traceBackwardArea_11(void) {
 	int sensorPattern = BIT_000000;
@@ -520,18 +523,18 @@ void traceBackwardArea_08(void) {
 	StraightMove();
 	_delay_ms(200);
 
-	// ƒZƒ“ƒT[‚Ì‚¢‚¸‚ê‚©‚ª”’”»’è‚·‚é‚Ü‚ÅA’¼iŒp‘±
+	// ã‚»ãƒ³ã‚µãƒ¼ã®ã„ãšã‚Œã‹ãŒç™½åˆ¤å®šã™ã‚‹ã¾ã§ã€ç›´é€²ç¶™ç¶š
 	while (1) {
 		StraightMove();
 		sensorPattern = getSensorPattern();
-		// 3‰ñ˜A‘±‚µ‚Ä”’”»’è‚µ‚½‚çƒ‹[ƒv‚ğ”²‚¯‚é
+		// 3å›é€£ç¶šã—ã¦ç™½åˆ¤å®šã—ãŸã‚‰ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
 		if (sensorPattern != BIT_000000) {
 			findAnySensorCount++;
 			if (findAnySensorCount > 2) {
 				break;
 			}
 		}
-        // ƒ‰ƒCƒ“‚ğŒŸo‚Å‚«‚È‚­‚Ä‚àÅ‚ÉƒGƒŠƒA‚É“ü‚Á‚½•Ó‚è‚Åƒ‹[ƒv‚ğ”²‚¯‚é
+        // ãƒ©ã‚¤ãƒ³ã‚’æ¤œå‡ºã§ããªãã¦ã‚‚èŠã«ã‚¨ãƒªã‚¢ã«å…¥ã£ãŸè¾ºã‚Šã§ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
         if (loopCount > 700) {
             break;
         }
@@ -539,13 +542,13 @@ void traceBackwardArea_08(void) {
 		_delay_ms(1);
 	}
 
-	// ’â~Às
+	// åœæ­¢å®Ÿè¡Œ
 	stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
 
-	// ƒZƒ“ƒT[’l‚É‰‚¶‚Äù‰ñ‚ğÀs
-	// TODO:À‘•
+	// ã‚»ãƒ³ã‚µãƒ¼å€¤ã«å¿œã˜ã¦æ—‹å›ã‚’å®Ÿè¡Œ
+	// TODO:å®Ÿè£…
 
-	// ù‰ñI—¹ŒãA’â~Às
+	// æ—‹å›çµ‚äº†å¾Œã€åœæ­¢å®Ÿè¡Œ
 	stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
 	initSensorHistory();
 	currentTraceAction = TRACE_STRAIGHT;
@@ -553,11 +556,11 @@ void traceBackwardArea_08(void) {
 }
 
 /*
- * •œ˜HƒGƒŠƒA 12 ‚ÌƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å¾©è·¯ã‚¨ãƒªã‚¢ 12 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‚È‚µi•œ˜HƒGƒŠƒA 11 ‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±jB
- *   I—¹ğŒF
+ *   é–‹å§‹æ¡ä»¶ï¼šãªã—ï¼ˆå¾©è·¯ã‚¨ãƒªã‚¢ 11 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šï¼‰ã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼š
  */
  void traceBackwardArea_12(void) {
 	int counter = 0;
@@ -568,7 +571,7 @@ void traceBackwardArea_08(void) {
 		counter++;
 	}
 
-	// ’â~Às
+	// åœæ­¢å®Ÿè¡Œ
 	StopMove();
 	initSensorHistory();
 	currentTraceAction = TRACE_STRAIGHT;
@@ -576,11 +579,11 @@ void traceBackwardArea_08(void) {
 }
 
 /*
- * •œ˜HƒGƒŠƒA 13 ‚ÌƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å¾©è·¯ã‚¨ãƒªã‚¢ 13 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‚È‚µi•œ˜HƒGƒŠƒA 12 ‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±jB
- *   I—¹ğŒF
+ *   é–‹å§‹æ¡ä»¶ï¼šãªã—ï¼ˆå¾©è·¯ã‚¨ãƒªã‚¢ 12 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šï¼‰ã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼š
  */
  void traceBackwardArea_13(void) {
 	int counter = 0;
@@ -591,7 +594,7 @@ void traceBackwardArea_08(void) {
 		counter++;
 	}
 
-	// ’â~Às
+	// åœæ­¢å®Ÿè¡Œ
 	StopMove();
 	initSensorHistory();
 	currentTraceAction = TRACE_STRAIGHT;
@@ -599,21 +602,21 @@ void traceBackwardArea_08(void) {
 }
 
 /*
- * •œ˜HƒGƒŠƒA 14 ‚ÌƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å¾©è·¯ã‚¨ãƒªã‚¢ 14 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‚È‚µi•œ˜HƒGƒŠƒA 13 ‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±jB
- *   I—¹ğŒF
+ *   é–‹å§‹æ¡ä»¶ï¼šãªã—ï¼ˆå¾©è·¯ã‚¨ãƒªã‚¢ 13 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šï¼‰ã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼š
  */
  void traceBackwardArea_14(void) {
 }
 
 /*
- * •œ˜HƒGƒŠƒA 15 ‚ÌƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å¾©è·¯ã‚¨ãƒªã‚¢ 15 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‚È‚µi•œ˜HƒGƒŠƒA 14 ‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±jB
- *   I—¹ğŒF
+ *   é–‹å§‹æ¡ä»¶ï¼šãªã—ï¼ˆå¾©è·¯ã‚¨ãƒªã‚¢ 14 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šï¼‰ã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼š
  */
  void traceBackwardArea_15(void) {
 	int counter = 0;
@@ -624,18 +627,18 @@ void traceBackwardArea_08(void) {
 		counter++;
 	}
 
-	// ¶ù‰ñÀs
+	// å·¦æ—‹å›å®Ÿè¡Œ
 	currentTraceAction = executeLeftTurn();
 	//setSensorHistory(executeLeftTurn());
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
- * •œ˜HƒGƒŠƒA 16 ‚ÌƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å¾©è·¯ã‚¨ãƒªã‚¢ 16 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‚È‚µi•œ˜HƒGƒŠƒA 15 ‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±jB
- *   I—¹ğŒF
+ *   é–‹å§‹æ¡ä»¶ï¼šãªã—ï¼ˆå¾©è·¯ã‚¨ãƒªã‚¢ 15 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šï¼‰ã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼š
  */
  void traceBackwardArea_16(void) {
 	int counter = 0;
@@ -643,21 +646,21 @@ void traceBackwardArea_08(void) {
 	int sensorPattern = BIT_111111;
 	int findAnySensorCount = 0;
 
-	// ƒ‰ƒCƒ“‚ª“rØ‚ê‚é‚Ü‚Å‚ÍƒgƒŒ[ƒX“®ì
+	// ãƒ©ã‚¤ãƒ³ãŒé€”åˆ‡ã‚Œã‚‹ã¾ã§ã¯ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
 	while (sensorPattern != BIT_000000) {
 		traceCommon(&counter, &maxSpeed);
 		counter++;
 	}
 
-	// ’â~Às
+	// åœæ­¢å®Ÿè¡Œ
 	StopMove();
 
-	// ƒZƒ“ƒT[‚Ì‚¢‚¸‚ê‚©‚ª”’”»’è‚·‚é‚Ü‚ÅA’¼iŒp‘±
+	// ã‚»ãƒ³ã‚µãƒ¼ã®ã„ãšã‚Œã‹ãŒç™½åˆ¤å®šã™ã‚‹ã¾ã§ã€ç›´é€²ç¶™ç¶š
 	while (1) {
 		StraightMove();
 		sensorPattern = getSensorPattern();
 
-		// 3‰ñ˜A‘±‚µ‚Ä”’”»’è‚µ‚½‚çƒ‹[ƒv‚ğ”²‚¯‚é
+		// 3å›é€£ç¶šã—ã¦ç™½åˆ¤å®šã—ãŸã‚‰ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
 		if (sensorPattern != BIT_000000) {
 			findAnySensorCount++;
 			if (findAnySensorCount > 2) {
@@ -666,21 +669,21 @@ void traceBackwardArea_08(void) {
 		}
 	}
 
-	// ’â~Às
+	// åœæ­¢å®Ÿè¡Œ
 	StopMove();
 
-	// ¶ù‰ñÀs
+	// å·¦æ—‹å›å®Ÿè¡Œ
 	currentTraceAction = executeLeftTurn();
 	//setSensorHistory(executeLeftTurn());
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
- * •œ˜HƒGƒŠƒA 17 ‚ÌƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å¾©è·¯ã‚¨ãƒªã‚¢ 17 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‚È‚µi•œ˜HƒGƒŠƒA 16 ‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±jB
- *   I—¹ğŒF
+ *   é–‹å§‹æ¡ä»¶ï¼šãªã—ï¼ˆå¾©è·¯ã‚¨ãƒªã‚¢ 16 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šï¼‰ã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼š
  */
 //void traceBackwardArea_17(void) {
 	//int counter = 0;
@@ -691,7 +694,7 @@ void traceBackwardArea_08(void) {
 		//counter++;
 	//}
 //
-	//// ‰Eù‰ñÀs
+	//// å³æ—‹å›å®Ÿè¡Œ
 	//currentTraceAction = executeRightTurn();
 	////setSensorHistory(executeRightTurn());
 	//BaseSpeed = BASE_SPEED_INIT_VAL;
@@ -705,100 +708,101 @@ void traceBackwardArea_17(void) {
         counter++;
     }
 
-	// ¶ù‰ñÀs
+	// å·¦æ—‹å›å®Ÿè¡Œ
 	currentTraceAction = executeLeftTurn();
 	//setSensorHistory(executeLeftTurn());
     BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
- * •œ˜HƒGƒŠƒA 18 ‚ÌƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å¾©è·¯ã‚¨ãƒªã‚¢ 18 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‚È‚µi•œ˜HƒGƒŠƒA 17 ‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±jB
- *   I—¹ğŒFƒS[ƒ‹ƒGƒŠƒA‚ğŒŸo‚µ‚ÄI—¹“®ì‚ªŠ®—¹‚·‚éB
+ *   é–‹å§‹æ¡ä»¶ï¼šãªã—ï¼ˆå¾©è·¯ã‚¨ãƒªã‚¢ 17 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šï¼‰ã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼šã‚´ãƒ¼ãƒ«ã‚¨ãƒªã‚¢ã‚’æ¤œå‡ºã—ã¦çµ‚äº†å‹•ä½œãŒå®Œäº†ã™ã‚‹ã€‚
  */
 void traceBackwardArea_18(void) {
 	int counter = 0;
 	int maxSpeed = MAX_SPEED;
 
-	// ’¼i
+	// ç›´é€²
 	currentTraceAction = TRACE_STRAIGHT;
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 
-	// AVRƒ^ƒCƒ}ŠJn
+	// AVRã‚¿ã‚¤ãƒé–‹å§‹
 	AvrTimerStart();
 
-	// ˆÚ“®‹——£‚ÌŒv‘ª‚ğŠJn
+	// ç§»å‹•è·é›¢ã®è¨ˆæ¸¬ã‚’é–‹å§‹
 	StartMeasuringMovingDistance();
 
-	// –Ú•W‚Ì‹——£‚Ü‚Å‘Oi
+	// ç›®æ¨™ã®è·é›¢ã¾ã§å‰é€²
 	//currentTraceAction = TRACE_STRAIGHT;
-	int32_t targetDistance = 110;	//–Ú•W‹——£ = 130cm
+	int32_t targetDistance = 110;	//ç›®æ¨™è·é›¢ = 130cm
 	while (targetDistance > GetMovingDistance()) {
-		// ˆÚ“®‹——£‚ğXV
+		// ç§»å‹•è·é›¢ã‚’æ›´æ–°
 		UpdateMovingDistance();
 
-		// ‹¤’ÊƒgƒŒ[ƒX“®ì
+		// å…±é€šãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
 		traceCommon(&counter, &maxSpeed);
 		counter++;
 	}
 
-	// ˆÚ“®‹——£‚ÌŒv‘ª‚ğ’â~
+	// ç§»å‹•è·é›¢ã®è¨ˆæ¸¬ã‚’åœæ­¢
 	StopMeasuringMovingDistance();
 	_delay_ms(10);
 
-	// AVRƒ^ƒCƒ}’â~
+	// AVRã‚¿ã‚¤ãƒåœæ­¢
 	AvrTimerEnd();
 	AvrTimerReset();
 
-	// ’â~Às
+	// åœæ­¢å®Ÿè¡Œ
 	StopMove();
 }
 
 
 /*
- * •œ˜HƒGƒŠƒA 18 ‚ÌƒgƒŒ[ƒX“®ì(ƒXƒ^[ƒgƒ‰ƒCƒ“”»’è—p)
- * @return ‚È‚µ
+ * å¾©è·¯ã‚¨ãƒªã‚¢ 18 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ(ã‚¹ã‚¿ãƒ¼ãƒˆãƒ©ã‚¤ãƒ³åˆ¤å®šç”¨)
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‚È‚µi•œ˜HƒGƒŠƒA 17 ‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±jB
- *   I—¹ğŒFƒS[ƒ‹ƒGƒŠƒA‚ğŒŸo‚µ‚ÄI—¹“®ì‚ªŠ®—¹‚·‚éB
+ *   é–‹å§‹æ¡ä»¶ï¼šãªã—ï¼ˆå¾©è·¯ã‚¨ãƒªã‚¢ 17 ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šï¼‰ã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼šã‚´ãƒ¼ãƒ«ã‚¨ãƒªã‚¢ã‚’æ¤œå‡ºã—ã¦çµ‚äº†å‹•ä½œãŒå®Œäº†ã™ã‚‹ã€‚
  */
 void traceBackwardArea_19(void) {
     int counter = 0;
     int maxSpeed = MAX_SPEED;
 
-    // ’¼i
+    // ç›´é€²
     currentTraceAction = TRACE_STRAIGHT;
     BaseSpeed = BASE_SPEED_INIT_VAL;
 
-    // ƒXƒ^[ƒgƒ‰ƒCƒ“‚Ì”»’è‘Îô
+    // ã‚¹ã‚¿ãƒ¼ãƒˆãƒ©ã‚¤ãƒ³ã®åˆ¤å®šå¯¾ç­–
     while (1) {
         if (currentTraceAction == TRACE_L_TURN)
         {
-            // ƒ‰ƒCƒ“‚ğ’´‚¦‚é‚Ü‚Å”CˆÓŠÔƒfƒBƒŒƒC
+            // ãƒ©ã‚¤ãƒ³ã‚’è¶…ãˆã‚‹ã¾ã§ä»»æ„æ™‚é–“ãƒ‡ã‚£ãƒ¬ã‚¤
             StraightMove();
-            _delay_ms(500);	// 10ms ŠÔŠu‚ğ‹ó‚¯‚é
+            _delay_ms(500);	// 10ms é–“éš”ã‚’ç©ºã‘ã‚‹
             break;
         }
 
         if(currentTraceAction == TRACE_R_TURN)
         {
-            // ƒ‰ƒCƒ“‚ğ’´‚¦‚é‚Ü‚Å”CˆÓŠÔƒfƒBƒŒƒC
+            // ãƒ©ã‚¤ãƒ³ã‚’è¶…ãˆã‚‹ã¾ã§ä»»æ„æ™‚é–“ãƒ‡ã‚£ãƒ¬ã‚¤
             StraightMove();
-            _delay_ms(500);	// 10ms ŠÔŠu‚ğ‹ó‚¯‚é
+            _delay_ms(500);	// 10ms é–“éš”ã‚’ç©ºã‘ã‚‹
             break;
         }
         traceCommon(&counter, &maxSpeed);
         counter++;
     }
 
-    // ’â~Às
+    _delay_ms(500);	// 10ms é–“éš”ã‚’ç©ºã‘ã‚‹
+    // åœæ­¢å®Ÿè¡Œ
     StopMove();
 }
 
 /*
- * ¶‰E‘å‚«–Ú‚Éƒƒ{ƒbƒg‚ğ—h‚ç‚µ‚½ƒWƒOƒUƒO‚Èƒ‰ƒCƒ“ƒgƒŒ[ƒX‚ğÀs
+ * å·¦å³å¤§ãç›®ã«ãƒ­ãƒœãƒƒãƒˆã‚’æºã‚‰ã—ãŸã‚¸ã‚°ã‚¶ã‚°ãªãƒ©ã‚¤ãƒ³ãƒˆãƒ¬ãƒ¼ã‚¹ã‚’å®Ÿè¡Œ
  */
 void TreasureFindingLineTrace(int isFirst) {
 	int sensorPattern = BIT_000000;
@@ -806,7 +810,7 @@ void TreasureFindingLineTrace(int isFirst) {
 
 	sensorPattern = getSensorPattern();
 
-	// ‰‰ñ“®ì‚Ìê‡
+	// åˆå›å‹•ä½œã®å ´åˆ
 	if (isFirst == 0) {
 		if (sensorPattern == BIT_100000 ||
 		sensorPattern == BIT_010000 ||
@@ -822,7 +826,7 @@ void TreasureFindingLineTrace(int isFirst) {
 	    Execute(TRACE_R_TRESURE_FIND);
 	}
 		//_delay_ms(10);
-		_delay_ms(5);//ƒ_ƒ‚È‚ç–ß‚·
+		_delay_ms(5);//ãƒ€ãƒ¡ãªã‚‰æˆ»ã™
 		return;
 	}
 
@@ -831,11 +835,11 @@ void TreasureFindingLineTrace(int isFirst) {
 	    sensorPattern == BIT_001000 ||
 	    sensorPattern == BIT_011000 ||
 	    sensorPattern == BIT_011100// ||
-   	    //sensorPattern == BIT_110000 ||//_delay•Ï‚¦‚Äƒ_ƒ‚È‚ç’Ç‰Á
-        //sensorPattern == BIT_100000//_delay•Ï‚¦‚Äƒ_ƒ‚È‚ç’Ç‰Á
+   	    //sensorPattern == BIT_110000 ||//_delayå¤‰ãˆã¦ãƒ€ãƒ¡ãªã‚‰è¿½åŠ 
+        //sensorPattern == BIT_100000//_delayå¤‰ãˆã¦ãƒ€ãƒ¡ãªã‚‰è¿½åŠ 
 	    )) {
-		// ƒ‰ƒCƒ“‚Ì‰E‘¤ƒT[ƒ`’†‚É¶ƒ‰ƒCƒ“‚ğŒŸo‚µ‚½‚çA
-		// ƒ‰ƒCƒ“‚Ì¶‘¤ƒT[ƒ`‚ÉØ‚è‘Ö‚¦‚é
+		// ãƒ©ã‚¤ãƒ³ã®å³å´ã‚µãƒ¼ãƒä¸­ã«å·¦ãƒ©ã‚¤ãƒ³ã‚’æ¤œå‡ºã—ãŸã‚‰ã€
+		// ãƒ©ã‚¤ãƒ³ã®å·¦å´ã‚µãƒ¼ãƒã«åˆ‡ã‚Šæ›¿ãˆã‚‹
 		isSearchingLeftSide = 1;
 		Execute(TRACE_L_TRESURE_FIND);
 	} else if (
@@ -844,25 +848,25 @@ void TreasureFindingLineTrace(int isFirst) {
 	    sensorPattern == BIT_000100 ||
 	    sensorPattern == BIT_000110 ||
 	    sensorPattern == BIT_001110// ||
-	    //sensorPattern == BIT_000011 ||//_delay•Ï‚¦‚Äƒ_ƒ‚È‚ç’Ç‰Á
-	    //sensorPattern == BIT_000001//_delay•Ï‚¦‚Äƒ_ƒ‚È‚ç’Ç‰Á
+	    //sensorPattern == BIT_000011 ||//_delayå¤‰ãˆã¦ãƒ€ãƒ¡ãªã‚‰è¿½åŠ 
+	    //sensorPattern == BIT_000001//_delayå¤‰ãˆã¦ãƒ€ãƒ¡ãªã‚‰è¿½åŠ 
 	    )) {
-		// ƒ‰ƒCƒ“‚Ì¶‘¤ƒT[ƒ`’†‚É‰Eƒ‰ƒCƒ“‚ğŒŸo‚µ‚½‚çA
-		// ƒ‰ƒCƒ“‚Ì‰E‘¤ƒT[ƒ`‚ÉØ‚è‘Ö‚¦‚é
+		// ãƒ©ã‚¤ãƒ³ã®å·¦å´ã‚µãƒ¼ãƒä¸­ã«å³ãƒ©ã‚¤ãƒ³ã‚’æ¤œå‡ºã—ãŸã‚‰ã€
+		// ãƒ©ã‚¤ãƒ³ã®å³å´ã‚µãƒ¼ãƒã«åˆ‡ã‚Šæ›¿ãˆã‚‹
 		isSearchingLeftSide = 0;
 		Execute(TRACE_R_TRESURE_FIND);
 	}
 	
 	//_delay_ms(10);
-	_delay_ms(5);//ƒ_ƒ‚È‚ç–ß‚·
+	_delay_ms(5);//ãƒ€ãƒ¡ãªã‚‰æˆ»ã™
 }
 
 /*
- * •ó•¨1ŒÂ‚Ìê‡‚Ì¶ù‰ñŒŸo—pƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å®ç‰©1å€‹ã®å ´åˆã®å·¦æ—‹å›æ¤œå‡ºç”¨ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‘O‰ñ‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±B
- *   I—¹ğŒFƒZƒ“ƒT‚Å¶ƒ^[ƒ“‚ğŒŸo‚µ‚Ä’¼Špù‰ñ‚ªŠ®—¹‚·‚éB
+ *   é–‹å§‹æ¡ä»¶ï¼šå‰å›ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼šã‚»ãƒ³ã‚µã§å·¦ã‚¿ãƒ¼ãƒ³ã‚’æ¤œå‡ºã—ã¦ç›´è§’æ—‹å›ãŒå®Œäº†ã™ã‚‹ã€‚
  */
  void shortTraceToLeftTurn(void) {
 	int counter = 0;
@@ -873,18 +877,18 @@ void TreasureFindingLineTrace(int isFirst) {
 		counter++;
 	}
 
-	// ¶ù‰ñÀs
+	// å·¦æ—‹å›å®Ÿè¡Œ
 	currentTraceAction = executeLeftTurn();
 	//setSensorHistory(executeLeftTurn());
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
- * •ó•¨1ŒÂ‚Ìê‡‚Ì‰Eù‰ñŒŸo—pƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å®ç‰©1å€‹ã®å ´åˆã®å³æ—‹å›æ¤œå‡ºç”¨ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‘O‰ñ‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±B
- *   I—¹ğŒFƒZƒ“ƒT‚Å‰Eƒ^[ƒ“‚ğŒŸo‚µ‚Ä’¼Špù‰ñ‚ªŠ®—¹‚·‚éB
+ *   é–‹å§‹æ¡ä»¶ï¼šå‰å›ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼šã‚»ãƒ³ã‚µã§å³ã‚¿ãƒ¼ãƒ³ã‚’æ¤œå‡ºã—ã¦ç›´è§’æ—‹å›ãŒå®Œäº†ã™ã‚‹ã€‚
  */
  void shortTraceToRightTurn(void) {
 	int counter = 0;
@@ -895,103 +899,103 @@ void TreasureFindingLineTrace(int isFirst) {
 		counter++;
 	}
 
-	// ‰Eù‰ñÀs
+	// å³æ—‹å›å®Ÿè¡Œ
 	currentTraceAction = executeRightTurn();
 	//setSensorHistory(executeRightTurn());
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
- * •ó•¨2ŒÂ‚ğæ“¾Œã‚ÌŒã‘Ş—pƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å®ç‰©2å€‹ã‚’å–å¾—å¾Œã®å¾Œé€€ç”¨ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‘O‰ñ‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±B
- *   I—¹ğŒFƒZƒ“ƒT‚Å‰Eƒ^[ƒ“‚ğŒŸo‚µ‚Ä’â~‚ªŠ®—¹‚·‚éB
+ *   é–‹å§‹æ¡ä»¶ï¼šå‰å›ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼šã‚»ãƒ³ã‚µã§å³ã‚¿ãƒ¼ãƒ³ã‚’æ¤œå‡ºã—ã¦åœæ­¢ãŒå®Œäº†ã™ã‚‹ã€‚
  */
 void traceBackLowMoveArea_01(void) {
 	BaseSpeed = BASE_SPEED_BY_TURF_AREA;
 	int sensorPattern = BIT_111111;
 
-    // ˆÀ‘Sô‚Ì‚½‚ßAƒƒ{ƒbƒg‚ğ­‚µ‚¾‚¯¶ù‰ñ‚·‚éB
+    // å®‰å…¨ç­–ã®ãŸã‚ã€ãƒ­ãƒœãƒƒãƒˆã‚’å°‘ã—ã ã‘å·¦æ—‹å›ã™ã‚‹ã€‚
     //LeftTurnMove();
-    //_delay_ms(30);//—v’²®
+    //_delay_ms(200);//è¦èª¿æ•´
 
-	// (Åã‚ÌƒoƒbƒNjƒZƒ“ƒT[‚ª‘O•”»’è‚·‚é‚Ü‚ÅAŒã‘ŞŒp‘±
-	while (sensorPattern != BIT_000000) {
-		BackLowMove();
-		sensorPattern = getSensorPattern();
-		_delay_ms(1);
-	}
+	// (èŠä¸Šã®ãƒãƒƒã‚¯ï¼‰ã‚»ãƒ³ã‚µãƒ¼ãŒå‰é»’åˆ¤å®šã™ã‚‹ã¾ã§ã€å¾Œé€€ç¶™ç¶š
+	//while (sensorPattern != BIT_000000) {
+		//BackLowMove();
+		//sensorPattern = getSensorPattern();
+		//_delay_ms(1);
+	//}
 
-	// ŠmÀ‚Éü‚©‚ç—£‚ê‚é‚½‚ßA‹­§‚ÅŒãi‚·‚é
+	// ç¢ºå®Ÿã«ç·šã‹ã‚‰é›¢ã‚Œã‚‹ãŸã‚ã€å¼·åˆ¶ã§å¾Œé€²ã™ã‚‹
 	BackLowMove();
-	_delay_ms(300);
+	_delay_ms(1500);
 
 	BaseSpeed = SLOW_BACK_VAL;
-	// iƒvƒ‰ƒ_ƒ“ã‚ÌƒoƒbƒNjƒZƒ“ƒT[‚Ì‚¢‚¸‚ê‚©‚ª”’”»’è‚·‚é‚Ü‚ÅAŒã‘ŞŒp‘±
+	// ï¼ˆãƒ—ãƒ©ãƒ€ãƒ³ä¸Šã®ãƒãƒƒã‚¯ï¼‰ã‚»ãƒ³ã‚µãƒ¼ã®ã„ãšã‚Œã‹ãŒç™½åˆ¤å®šã™ã‚‹ã¾ã§ã€å¾Œé€€ç¶™ç¶š
 	while (sensorPattern == BIT_000000) {
 		BackLowMove();
 		sensorPattern = getSensorPattern();
 		_delay_ms(1);
 	}
 
-	// ’â~Às
+	// åœæ­¢å®Ÿè¡Œ
     stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
 
-	// ˆÊ’u’²®‚Ì‚½‚ßƒx[ƒX‘¬“x‚ğ0‚Éİ’è
+	// ä½ç½®èª¿æ•´ã®ãŸã‚ãƒ™ãƒ¼ã‚¹é€Ÿåº¦ã‚’0ã«è¨­å®š
 	BaseSpeed = 0;
 
-	//‰Eù‰ñÀs
+	//å³æ—‹å›å®Ÿè¡Œ
 	executeRightTurn();
-	//setSensorHistory(executeRightTurn());©‚±‚ê‚Å‚¤‚Ü‚­“®‚¢‚Ä—~‚µ‚¢
+	//setSensorHistory(executeRightTurn());â†ã“ã‚Œã§ã†ã¾ãå‹•ã„ã¦æ¬²ã—ã„
 	//currentTraceAction = executeRightTurn();
 	currentTraceAction = TRACE_STRAIGHT;
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }
 
 /*
- * •ó•¨‚ğæ“¾Œã‚Ì­‚µ‰Eù‰ñ‚µ‚ÄŒã‘Ş—pƒgƒŒ[ƒX“®ì
- * @return ‚È‚µ
+ * å®ç‰©ã‚’å–å¾—å¾Œã®å°‘ã—å³æ—‹å›ã—ã¦å¾Œé€€ç”¨ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œ
+ * @return ãªã—
  * @condition
- *   ŠJnğŒF‘O‰ñ‚ÌƒgƒŒ[ƒX“®ì‚©‚çŒp‘±B
- *   I—¹ğŒFƒZƒ“ƒT‚Å‰Eƒ^[ƒ“‚ğŒŸo‚µ‚Ä’â~‚ªŠ®—¹‚·‚éB
+ *   é–‹å§‹æ¡ä»¶ï¼šå‰å›ã®ãƒˆãƒ¬ãƒ¼ã‚¹å‹•ä½œã‹ã‚‰ç¶™ç¶šã€‚
+ *   çµ‚äº†æ¡ä»¶ï¼šã‚»ãƒ³ã‚µã§å³ã‚¿ãƒ¼ãƒ³ã‚’æ¤œå‡ºã—ã¦åœæ­¢ãŒå®Œäº†ã™ã‚‹ã€‚
  */
 void traceBackLowMoveArea_02(void) {
 	BaseSpeed = BASE_SPEED_BY_TURF_AREA;
 	int sensorPattern = BIT_111111;
 
-    // ˆÀ‘Sô‚Ì‚½‚ßAƒƒ{ƒbƒg‚ğ­‚µ‚¾‚¯‰Eù‰ñ‚·‚éB
-    //RightTurnMove();
-    //_delay_ms(30);//—v’²®
+    // å®‰å…¨ç­–ã®ãŸã‚ã€ãƒ­ãƒœãƒƒãƒˆã‚’å°‘ã—ã ã‘å³æ—‹å›ã™ã‚‹ã€‚
+    RightTurnMove();
+    _delay_ms(200);//è¦èª¿æ•´
 
-	// (Åã‚ÌƒoƒbƒNjƒZƒ“ƒT[‚ª‘O•”»’è‚·‚é‚Ü‚ÅAŒã‘ŞŒp‘±
+	// (èŠä¸Šã®ãƒãƒƒã‚¯ï¼‰ã‚»ãƒ³ã‚µãƒ¼ãŒå‰é»’åˆ¤å®šã™ã‚‹ã¾ã§ã€å¾Œé€€ç¶™ç¶š
 	while (sensorPattern != BIT_000000) {
 		BackLowMove();
 		sensorPattern = getSensorPattern();
 		_delay_ms(1);
 	}
 
-	// ŠmÀ‚Éü‚©‚ç—£‚ê‚é‚½‚ßA‹­§‚ÅŒãi‚·‚é
+	// ç¢ºå®Ÿã«ç·šã‹ã‚‰é›¢ã‚Œã‚‹ãŸã‚ã€å¼·åˆ¶ã§å¾Œé€²ã™ã‚‹
 	BackLowMove();
 	_delay_ms(300);
 
 	BaseSpeed = SLOW_BACK_VAL;
-	// iƒvƒ‰ƒ_ƒ“ã‚ÌƒoƒbƒNjƒZƒ“ƒT[‚Ì‚¢‚¸‚ê‚©‚ª”’”»’è‚·‚é‚Ü‚ÅAŒã‘ŞŒp‘±
+	// ï¼ˆãƒ—ãƒ©ãƒ€ãƒ³ä¸Šã®ãƒãƒƒã‚¯ï¼‰ã‚»ãƒ³ã‚µãƒ¼ã®ã„ãšã‚Œã‹ãŒç™½åˆ¤å®šã™ã‚‹ã¾ã§ã€å¾Œé€€ç¶™ç¶š
 	while (sensorPattern == BIT_000000) {
 		BackLowMove();
 		sensorPattern = getSensorPattern();
 		_delay_ms(1);
 	}
 
-	// ’â~Às
+	// åœæ­¢å®Ÿè¡Œ
     stopMoveLessThanVal(STOP_JUDGE_MAX_LIMIT);
 
-	// ˆÊ’u’²®‚Ì‚½‚ßƒx[ƒX‘¬“x‚ğ0‚Éİ’è
+	// ä½ç½®èª¿æ•´ã®ãŸã‚ãƒ™ãƒ¼ã‚¹é€Ÿåº¦ã‚’0ã«è¨­å®š
 	BaseSpeed = 0;
 
-	//¶ù‰ñÀs
+	//å·¦æ—‹å›å®Ÿè¡Œ
 	executeLeftTurn();
-	//setSensorHistory(executeLeftTurn());©‚±‚ê‚Å‚¤‚Ü‚­“®‚¢‚Ä—~‚µ‚¢
+	//setSensorHistory(executeLeftTurn());â†ã“ã‚Œã§ã†ã¾ãå‹•ã„ã¦æ¬²ã—ã„
 	//currentTraceAction = executeLeftTurn();
 	currentTraceAction = TRACE_STRAIGHT;
 	BaseSpeed = BASE_SPEED_INIT_VAL;

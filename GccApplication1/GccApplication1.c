@@ -60,6 +60,8 @@ void LED_off(int i);
 int serCmd[SERIAL_BUFFER_SIZE] = {0};
 
 int isSearchingLeft = 0;
+static long m_MoveCounter = 0;
+static int m_MoveDirerctionFlag = 0;
 
 // ------------------ Method ------------------
 
@@ -119,7 +121,12 @@ int main(void) {
 	//executeTraceProcess();
 	//executeShortTraceProcess();
 	executeHunt1And2TraceProcess();
+    // ゴール判定後の動作実質ここから開始？
+    executeFinalAction();
+	initCargoBedMotor();
+	initDumpMotor();
     //executeFinalRoundTraceProcess();
+    executeFinalRoundWG();
 
     // ゴール判定後の動作実質ここから開始？
 	executeFinalAction();
@@ -167,22 +174,22 @@ void executeTraceProcess(void) {
 * @detail ゴール判定条件を満たすまでライントレース動作を行う。
 */
 void executeHunt1And2TraceProcess(void) {
-	//traceForwardArea_01();
-	//traceForwardArea_02();
-	//traceForwardArea_03();
-	//traceForwardArea_04();
-	//traceForwardArea_05();
-	//treasureHunt_01();
-	//traceBackwardArea_01();
-	//traceBackwardArea_02();
-	//traceBackwardArea_03();
-	//traceBackwardArea_04();
-	//treasureHunt_02();
-	//traceBackLowMoveArea_01();
-	//shortTraceToRightTurn();
+	traceForwardArea_01();
+	traceForwardArea_02();
+	traceForwardArea_03();
+	traceForwardArea_04();
+	traceForwardArea_05();
+	treasureHunt_01();
+	traceBackwardArea_01();
+	traceBackwardArea_02();
+	traceBackwardArea_03();
+	traceBackwardArea_04();
+	treasureHunt_02();
+	traceBackLowMoveArea_01();
 	shortTraceToRightTurn();
-	//traceBackwardArea_18();
-    traceBackwardArea_19();
+	shortTraceToRightTurn();
+	traceBackwardArea_18();
+	traceBackwardArea_19();
 }
 
 /**
@@ -276,19 +283,31 @@ void executeFinalRoundWSS(void){
 void executeFinalRoundWG(void){
     traceForwardArea_01();
     traceForwardArea_02();
-    traceForwardArea_03();
-    traceForwardArea_04();
-    traceForwardArea_05();
-    treasureHunt_01();//白回収
-	shortTraceToLeftTurn();
-	shortTraceToLeftTurn();
-	shortTraceToLeftTurn();
-	shortTraceToRightTurn();
-    traceBackwardArea_10();//右直角ラインを見つけたら停止
-    traceBackwardArea_11();//芝エリアへ移動したら停止
-    treasureHunt_02();//金回収
-    traceBackLowMoveArea_01();//後退して、右旋回
-    traceBackwardArea_18();
+    //traceForwardArea_03();
+    traceBackwardArea_09();
+	traceBackwardArea_10();
+	traceBackwardArea_11();
+	traceBackwardArea_12();
+	traceBackwardArea_13();
+	treasureHunt_03();
+	traceBackwardArea_14();
+	traceBackwardArea_15();
+	traceBackwardArea_16();
+	traceBackwardArea_17();
+	traceBackwardArea_18();
+	traceBackwardArea_19();
+//    traceForwardArea_04();
+//    traceForwardArea_05();
+//    treasureHunt_01();//白回収
+	//shortTraceToLeftTurn();
+	//shortTraceToLeftTurn();
+	//shortTraceToLeftTurn();
+	//shortTraceToRightTurn();
+    //traceBackwardArea_10();//右直角ラインを見つけたら停止
+    //traceBackwardArea_11();//芝エリアへ移動したら停止
+    //treasureHunt_02();//金回収
+    //traceBackLowMoveArea_01();//後退して、右旋回
+    //traceBackwardArea_18();
 }
 
 
@@ -397,7 +416,7 @@ void sensorDebug(void) {
     // 前進or後進する（実動作に合わせて設定）。
     StraightLowMove2();
 	/* 長すぎると、ペットボトルを倒すかも */
-	_delay_ms(350);
+	_delay_ms(300);
 	
     // 停止する
     StopMove();
@@ -424,27 +443,41 @@ void sensorDebug(void) {
  void treasureHunt_02(void) {
     LOG_INFO("treasureHunt_02() %s\r\n", "1");
 
-    //int left = 0, center = 0, right = 0;
-    //int moveCounter = 0;
-    //GetAXS1SensorFireData(&left, &center, &right);
-    //while (center <= 130) {
+    int left = 0;
+    int center = 0;
+    int right = 0;
+    static int moveCounter = 0;
+    //int isFirst = 0;
+    //m_MoveCounter = 0;
+    GetAXS1SensorFireData(&left, &center, &right);
+    while (center <= 130) {
         // 宝物検索用に左右交互に旋回を実行
-        //TreasureFindingZigZagMove(&moveCounter);
-        //moveCounter++:
-        //GetAXS1SensorFireData(&left, &center, &right);
-    //}
+        TreasureFindingZigZagMove(&moveCounter);
+        //TreasureFindingLineTrace(isFirst);
+        //isFirst++;
+
+        //moveCounter++;
+        GetAXS1SensorFireData(&left, &center, &right);
+        _delay_ms(1);
+    }
 
     // 停止する
     StopMove();
     _delay_ms(500);
+
+    BackLowMove();
+    _delay_ms(100);
  
+    StopMove();
+    _delay_ms(300);
+
     // 手を開く
     ArmOpenFormation();
      	
     // 前進or後進する（実動作に合わせて設定）。
     StraightLowMove2();
     /* 長すぎると、ペットボトルを倒すかも */
-    _delay_ms(350);
+    _delay_ms(300);
 
     // 停止する
     StopMove();
@@ -486,7 +519,7 @@ void sensorDebug(void) {
 	// 前進or後進する（実動作に合わせて設定）。
 	StraightLowMove2();
 	/* 長すぎると、ペットボトルを倒すかも */
-	_delay_ms(350);
+	_delay_ms(300);
     
     // 停止する
     StopMove();
@@ -508,27 +541,44 @@ void sensorDebug(void) {
  * ラインセンサーの値は使用せず、決められた間隔で方向を変える。
  */
 void TreasureFindingZigZagMove(int *counter) {
-    const int moveWidthCount = 100;//旋回の幅を指定
+    const int moveWidthCount = 600;//旋回の幅を指定
 
-    if (*counter > (moveWidthCount * 2)) {
-        // counterがmoveWidthCountの２倍になったら
-        // 少しだけ前進してリセット
-        BaseSpeed = 30;//要調整
-        StraightMove();
-        _delay_ms(30);//要調整
-        *counter = 0;
+if (m_MoveCounter == 300) {
+    if(m_MoveDirerctionFlag == 0) {
+        m_MoveDirerctionFlag = 1;
+    }else if(m_MoveDirerctionFlag == 1) {
+        m_MoveDirerctionFlag = 2;
+    }else if(m_MoveDirerctionFlag == 2) {
+        m_MoveDirerctionFlag = 3;
+    }else if(m_MoveDirerctionFlag == 3) {
+        m_MoveDirerctionFlag = 0;
+//        if (m_MoveCounter >= (moveWidthCount * 2)) {
+            // counterがmoveWidthCountの２倍になったら
+            // 少しだけ前進してリセット
+            BaseSpeed = 40;//要調整
+            StraightMove();
+            _delay_ms(150);//要調整
+            m_MoveCounter = 0;
+//        }
     }
+    m_MoveCounter=0;
+}
 
 	// counterを判定
-	if (*counter < moveWidthCount) {
+	if (m_MoveDirerctionFlag == 0) {
         // counterがmoveWidthCount以内なら左旋回
 		LeftTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
 		_delay_ms(1);
+	} else if (m_MoveDirerctionFlag == 1 || m_MoveDirerctionFlag == 2) {
+    	// counterがmoveWidthCount以内なら左旋回
+    	RightTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
+    	_delay_ms(1);
 	} else {
 	    // counterがmoveWidthCountより大きい場合右旋回
-	    RightTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
+	    LeftTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
 		_delay_ms(1);
 	}
+    m_MoveCounter++;
 }
 
 /**
@@ -552,7 +602,7 @@ void executeFinalAction(void)
 	/* 200度くらい右回りで回転 */
 	MotorControl(RIGHT_MOTOR, 75);
 	MotorControl(LEFT_MOTOR, 75);
-	_delay_ms(1200);//！要調整
+	_delay_ms(1330);//！要調整
 	StopMove();
 	_delay_ms(10);
 
@@ -565,8 +615,8 @@ void executeFinalAction(void)
 	_delay_ms(500);
 	
 	/* ゆっくり前進 */
-	MotorControl(RIGHT_MOTOR, 1063);
-	MotorControl(LEFT_MOTOR, 40);
+	//MotorControl(RIGHT_MOTOR, 1063);
+	//MotorControl(LEFT_MOTOR, 40);
 	_delay_ms(500);
 	StopMove();//停止を実行
 }
